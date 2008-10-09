@@ -5,13 +5,15 @@ class BootStrap {
     ProjectService projectService
 
     def init = {servletContext ->
+        def memberFixi = new MemberDBFixture()
         //Just for testing
-        for (i in 1..10) {
-            new Member(name: "name$i", email: "name$i@gmail.com", password: "passwd$i", displayName: "Name $i",
-            about: "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", mailbox: new Mailbox()).save(flush: true)
+        List sampleMembers = []
+        (1..10).each{
+           sampleMembers.add(memberFixi.getAnyNewSubscribedMember())
         }
-        def creatorMember = Member.findByName("name1")		        
-		def project = projectService.createProject(uri: 'http://grailscrowd.com',
+        def creatorMember = sampleMembers[0]
+        assert creatorMember
+        def project = projectService.createProject(uri: 'http://grailscrowd.com',
                 name: 'GrailsCrowd',
                 description: 'Test app',
                 primaryLocation: 'USA',
@@ -27,6 +29,9 @@ class BootStrap {
                 architectureDescription: 'Rich UI (Flex) based application with Grails backend. Has Atom feeds and number of plugins',
                 tagTokens: 'grails,flex,social network'.encodeAsUniqueList(),
                 creatorMember)
+        def anyMember = sampleMembers[1]
+        assert anyMember
+        project.inviteParticipant(creatorMember, anyMember)
     }
 
     def destroy = {
