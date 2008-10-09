@@ -1,7 +1,5 @@
 package grailscrowd.core.message
 
-import grailscrowd.core.message.GenericMessage
-import grailscrowd.core.ProjectParticipation
 
 /**
  * Grailscrowd internal system message payload.
@@ -18,7 +16,7 @@ class SystemMessagePayload extends GenericMessagePayload{
     Long projectId
 
     /** kind of message */
-   // SystemMessageType type
+    SystemMessageType type
 
     /** transient i18n message source, injected by IoC */
     def messageSource
@@ -45,7 +43,7 @@ class SystemMessagePayload extends GenericMessagePayload{
      * Get full versioned i18n message code.
      */
     private String getSubjectMessageCode(int version){
-//        return type.defaultSubjectMessageCode+".v$version"
+        return type.defaultSubjectMessageCode+".v$version"
     }
 
     /**

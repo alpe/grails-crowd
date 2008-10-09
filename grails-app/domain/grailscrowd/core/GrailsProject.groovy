@@ -1,6 +1,7 @@
 package grailscrowd.core
 
 import grailscrowd.capability.NumberOfViewsTrackable
+import grailscrowd.core.message.*
 
 class GrailsProject extends NumberOfViewsTrackable implements Comparable {
 
@@ -21,6 +22,10 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
 	SortedSet taggings
 	SortedSet comments
 
+    MessageService messageService
+
+    static transients =  ['messageService']
+
     static constraints = {
         uri(blank: false, unique: true, url: true)
         name(blank: false, maxSize: 100, unique: true)
@@ -38,8 +43,8 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
             throw new IllegalArgumentException("The member already participates in this project or has a pending participation request. Cannot request participation in projects more than once")
         }
         if (!requestor.isAwareOf(this)) {
-            Message.withTransaction {txStatus ->
-                Message.newRequestMessageFor(ProjectParticipation.request(requestor, this))
+            GenericMessage.withTransaction {txStatus ->
+//TODO:                GenericMessage.newRequestMessageFor(ProjectParticipation.request(requestor, this))
             }
         }
     }
@@ -47,33 +52,32 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     def inviteParticipant(creator, invitee) {
         enforceParticipationInvariants(creator, invitee)
         if (!invitee.isAwareOf(this)) {
-            Message.withTransaction {txStatus ->
-                Message.newInvitationMessageFor(ProjectParticipation.pending(invitee, this))
-            }
+            ProjectParticipation.pending(invitee, this)
+            messageService.submit(invitee, SystemMessageFactory.createInvitation(creator, this));
         }
     }
 
     def approveRequestedParticipation(creator, requestor, messageId) {
         withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
-            Message.newRequestApprovalMessageFor(requestedParticipation.accept())
+//TODO:            GenericMessage.newRequestApprovalMessageFor(requestedParticipation.accept())
         }
     }
 
     def rejectRequestedParticipation(creator, requestor, messageId) {
         withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
-            Message.newRequestRejectionMessageFor(requestedParticipation.reject())
+//TODO:            GenericMessage.newRequestRejectionMessageFor(requestedParticipation.reject())
         }                
     }
 
     def acknowlegeParticipationAcceptance(creator, invitee, messageId) {
         withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
-            Message.newInvitationAcceptanceMessageFor(invitation.accept())
+//TODO:            GenericMessage.newInvitationAcceptanceMessageFor(invitation.accept())
         }
     }
 
     def rejectParticipationInvitation(creator, invitee, messageId) {
         withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
-            Message.newInvitationRejectionMessageFor(invitation.reject())
+//TODO:            GenericMessage.newInvitationRejectionMessageFor(invitation.reject())
         }
     }
 
@@ -147,7 +151,7 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
                 throw new IllegalStateException('The invitation or request does not exist.')
             }
         }
-        Message.withTransaction {txStatus ->
+        GenericMessage.withTransaction {txStatus ->
             if(par.isPending()) {
                 inviteeOrRequestor.mailbox.markMessageAsAcknowleged(messageId)
             }
@@ -176,7 +180,9 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     }
 
     private def findParticipantionFor(member, participationStatus) {
-        this.participants.find {(it.participant.id == member.id && it.status == participationStatus)}
+        this.participants.find {
+            (it.participant.id == member.id
+                && it.status == participationStatus)}
     }
 
     private def hasACreator() {

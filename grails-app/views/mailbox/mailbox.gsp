@@ -19,7 +19,7 @@
             <g:if test="${mailbox.hasAnyDisplayableMessages()}">
                 <table class="data">
                     <tbody>
-                    <g:each in="${mailbox.visibleMessages}" var="message">
+                    <g:each in="${mailbox.inboxMessages}" var="message">
                         <g:if test="${message.isNew()}">
                             <tr class="new">
                         </g:if>
