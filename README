@@ -14,5 +14,6 @@ After fresh checkout from VCS, run the following commands to install the above m
 'grails install-plugin richui'
 'grails install-plugin avatar'
 'grails install-plugin mail'
+'grails install-plugin testingl'
 
 Also change the email related settings in Config.groovy
