@@ -54,7 +54,7 @@ class SystemMessageFactory {
      * @return message
      */
     public static def createDisapprovalToJoinRequest(Member mailCreator, def grailsProject) {
-        creaateSystemMail(SystemMessageType.PROJECT_REQUEST_DISAPPROVAL, mailCreator.name, grailsProject)
+        createSystemMail(SystemMessageType.PROJECT_REQUEST_DISAPPROVAL, mailCreator.name, grailsProject)
     }
 
 
