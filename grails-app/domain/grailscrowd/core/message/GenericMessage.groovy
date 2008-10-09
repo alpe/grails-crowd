@@ -17,7 +17,7 @@ class GenericMessage {
 
     MessageLifecycle status
 
-//    GenericMessagePayload payload
+    GenericMessagePayload payload
 
 
     static belongsTo = [mailbox: Mailbox]
@@ -30,7 +30,7 @@ class GenericMessage {
 //        projectParticipationId(nullable: true)
         fromMember(blank: false, maxSize: 50)
         status(nullable:false)
-//        payload(nullable:false)
+        payload(nullable:false)
     }
 
     GenericMessage(){
