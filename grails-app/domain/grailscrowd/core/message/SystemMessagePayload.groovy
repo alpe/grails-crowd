@@ -52,12 +52,10 @@ class SystemMessagePayload extends GenericMessagePayload{
      * Get message subject in default language: en.
      */
     public String getSubject(){
-        return "bla"
         // use locale from menber, default to: en
-/*        String defaultMessageCode = getSubjectMessageCode(1)
+        String defaultMessageCode = getSubjectMessageCode(1)
         messageSource.getMessage(getSubjectMessageCode(getMessageVersion()),
                 [projectName].toArray(), defaultMessageCode, Locale.ENGLISH)
-*/                
     }
 }
 

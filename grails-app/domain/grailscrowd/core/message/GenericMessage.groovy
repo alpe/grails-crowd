@@ -42,7 +42,7 @@ class GenericMessage {
      * Get message subject. 
      */
     public String getSubject(){
-  //      return payload.subject
+        return payload.subject
     }
  
     def markAsSeen() {
