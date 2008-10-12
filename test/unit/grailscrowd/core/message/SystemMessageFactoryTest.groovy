@@ -2,7 +2,7 @@ package grailscrowd.core.message
 
 import grailscrowd.core.*
 import static org.hamcrest.CoreMatchers.*
-import org.junit.Assert
+import static org.junit.Assert.*
 
 /**
  * @author ap
@@ -45,16 +45,12 @@ class SystemMessageFactoryTest extends GroovyTestCase{
     }
 
 
-
-
-
-
     private void assertMessageMachesExpectations(msg, messageType){
-        Assert.assertThat(msg.fromMember, is(anySender.name))
+        assertThat(msg.fromMember, is(anySender.name))
         def payload = msg.payload
-        Assert.assertThat(payload.type, is(messageType))
-        Assert.assertThat(payload.projectName, is (anyProject.name))
-        Assert.assertThat(payload.projectId, is(anyProject.id))
+        assertThat(payload.type, is(messageType))
+        assertThat(payload.projectName, is (anyProject.name))
+        assertThat(payload.projectId, is(anyProject.id))
 
     }
 }
