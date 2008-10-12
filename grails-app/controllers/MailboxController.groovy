@@ -6,9 +6,31 @@ class MailboxController extends SecureController {
 
     def beforeInterceptor = [action: this.&auth]
 
-    def index = {        
-        render(view: 'mailbox', model: [mailbox: freshCurrentlyLoggedInMember().mailbox])
+    def index = {
+        redirect(action:'inbox')
     }
+
+    def inbox= {
+        def mailbox = freshCurrentlyLoggedInMember().mailbox
+        def messages = mailbox.inboxMessages.collect{
+            def member = Member.findByName(it.fromMember)
+            [id:it.id, subject: it.subject, fromMember:it.fromMember,
+                    sentDate:it.sentDate,
+                    unread:it.isNew(), member_email:member.email,
+                    member_displayName:member.displayName]
+        }
+        render(view: 'mailbox', model: [mailbox: mailbox, messages:messages])
+    }
+
+    def sent= {
+        def mailbox = freshCurrentlyLoggedInMember().mailbox
+        render(view: 'mailbox', model: [mailbox: mailbox, messages:mailbox.sentMessages])
+    }
+
+    def create = {
+        
+    }
+
 
     def showMessage = {
         def msgId = 0
