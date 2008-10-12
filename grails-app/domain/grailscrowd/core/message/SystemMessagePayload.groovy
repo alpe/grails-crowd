@@ -21,14 +21,21 @@ class SystemMessagePayload extends GenericMessagePayload{
     /** transient i18n message source, injected by IoC */
     def messageSource
 
-    static transients =  ['messageSource', 'subject'/*, 'messageVersion'*/]
-
+    static transients =  ['messageSource', 'subject', 'systemPayload'/*, 'messageVersion'*/]
 
     /**
      * Package private constructor to prevent manual instanciation. Use SystemMessageFactory.
      */
     SystemMessagePayload(){
          super()
+    }
+
+    /**
+     * Is system message payload.
+     * @return true
+     */
+    boolean isSystemPayload(){
+        return true
     }
 
     /**
