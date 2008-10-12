@@ -87,6 +87,9 @@ class UrlMappings {
 
         //********* MAILBOX **********************************************************/
         "/mailbox"(controller: 'mailbox', action = 'index') //GET
+        "/mailbox/inbox"(controller: 'mailbox', action = 'inbox') //GET
+        "/mailbox/sent"(controller: 'mailbox', action = 'sent') //GET
+        "/mailbox/create"(controller: 'mailbox', action = 'create') //GET        
         "/mailbox/messages/$id"(controller: 'mailbox', action: 'showMessage') //GET
         "/mailbox/messages/archive"(controller: 'mailbox', action: 'archiveMessage') //POST
 
