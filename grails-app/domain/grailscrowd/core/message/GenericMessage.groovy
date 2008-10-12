@@ -22,7 +22,7 @@ class GenericMessage {
 
     static belongsTo = [mailbox: Mailbox]
 
-    static transients =  ['subject']
+    static transients =  ['subject', 'systemMessage']
 
     static constraints = {
 //        subject(blank: false, maxSize: 1000)
@@ -55,6 +55,10 @@ class GenericMessage {
 
     def isVisibleInInbox(){
         this.status != MessageLifecycle.DELETED        
+    }
+
+    boolean isSystemMessage(){
+     return payload.with{isSystemPayload()}   
     }
 
 
