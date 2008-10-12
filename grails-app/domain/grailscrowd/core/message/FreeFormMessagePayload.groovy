@@ -13,5 +13,15 @@ class FreeFormMessagePayload extends GenericMessagePayload{
     
     String body
 
+    static transients =  ['systemPayload']    
+
+
+    /**
+     * Is system message payload.
+     * @return true
+     */
+    boolean isSystemPayload(){
+        return false
+    }
 
 }
