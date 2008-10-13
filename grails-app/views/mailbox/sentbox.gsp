@@ -11,7 +11,7 @@
       <div class="content" style="width: 120px; padding-left: 5px;padding-right: 5px; float: left;background: red">
           <h6><g:link class="inline-link" controller="mailbox" action="create" >Compose Message</g:link></h6>
           <h6><g:link class="inline-link" controller="mailbox" action="inbox" >Inbox <g:if test="${mailbox.hasAnyNewMessages()}">(${mailbox.numberOfNewMessages} new)</g:if></g:link></h6>
-          <h6><g:link class="inline-link" controller="mailbox" action="sent" >Sent Messages</g:link></h6>
+          <h6>Sent Messages</h6>
     </div>
     <div  style="width: 800px; padding-top:10px; padding-left: 10px; float: left;background: yellow">
         <div class="main">
@@ -33,7 +33,7 @@
                                 ${message.subject}
                             </td>
                             <td style="padding-left: 10px">
-                                <g:link class="inline-link" controller="mailbox" action="showMessage" params="[id:message.id]">details...</g:link>
+                                <g:link class="inline-link" controller="mailbox" action="showSentboxMessage" params="[id:message.id]">details...</g:link>
                             </td>
                              <td><g:formatDate format="yyyy-MM-dd hh:mm.ss" date="${message.sentDate}"/></td>
                             </tr>

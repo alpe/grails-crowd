@@ -29,6 +29,9 @@
       <sourceFolder url="file://$MODULE_DIR$/grails-app/services" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/grails-app/utils" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/grails-app/taglib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/modalbox-0.3/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/testing-0.3/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/testing-0.3/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/groovy" isTestSource="false" />
@@ -37,8 +40,8 @@
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
     </content>
     <orderEntry type="library" name="libs" level="project" />
-    <orderEntry type="library" name="grails-1.0.3" level="application" />
     <orderEntry type="library" name="GROOVY" level="application" />
+    <orderEntry type="library" name="grails-1.0.3" level="application" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

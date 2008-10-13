@@ -21,7 +21,7 @@ class SystemMessagePayload extends GenericMessagePayload{
     /** transient i18n message source, injected by IoC */
     def messageSource
 
-    static transients =  ['messageSource', 'subject', 'systemPayload'/*, 'messageVersion'*/]
+    static transients =  ['messageSource', 'subject', 'systemPayload', 'messageCode'/*, 'messageVersion'*/]
 
     /**
      * Package private constructor to prevent manual instanciation. Use SystemMessageFactory.
@@ -49,17 +49,19 @@ class SystemMessagePayload extends GenericMessagePayload{
     /**
      * Get full versioned i18n message code.
      */
-    private String getSubjectMessageCode(int version){
-        return type.defaultSubjectMessageCode+".v$version"
+    public String getMessageCode(){
+        return type.getMessageCode(getMessageVersion())
     }
+
 
     /**
      * Get message subject in default language: en.
      */
     public String getSubject(){
         // use locale from menber, default to: en
-        String defaultMessageCode = getSubjectMessageCode(1)
-        messageSource.getMessage(getSubjectMessageCode(getMessageVersion()),
+        String defaultMessageCode = type.getMessageCode(1)+'.subject'
+        String currentMessageCode = getMessageCode()+'.subject'
+        messageSource.getMessage(currentMessageCode,
                 [projectName].toArray(), defaultMessageCode, Locale.ENGLISH)
     }
 }

@@ -19,12 +19,20 @@ class MailboxController extends SecureController {
                     unread:it.isNew(), memberEmail:member.email,
                     memberDisplayName:member.displayName]
         }
-        render(view: 'mailbox', model: [mailbox: mailbox, messages:messages])
+        render(view: 'inbox', model: [mailbox: mailbox, messages:messages])
     }
 
-    def sent= {
-        def mailbox = freshCurrentlyLoggedInMember().mailbox
-        render(view: 'mailbox', model: [mailbox: mailbox, messages:mailbox.sentMessages])
+    def sentbox= {
+        // TODO: 
+        def member = freshCurrentlyLoggedInMember()
+        def mailbox = member.mailbox
+        def messages = mailbox.sentboxMessages.collect{
+            [id:it.id, subject: it.subject, fromMember:it.fromMember,
+                    sentDate:it.sentDate,
+                    unread:false, memberEmail:member.email,
+                    memberDisplayName:member.displayName]
+        }
+      render(view: 'sentbox', model: [mailbox: mailbox, messages:messages])
     }
 
     def create = {
@@ -32,26 +40,42 @@ class MailboxController extends SecureController {
     }
 
 
-    def showMessage = {
+    def showInboxMessage = {
         def msgId = 0
 		try {
 			msgId = params.id.toLong()
 		}
 		catch(NumberFormatException) {
 			redirect(uri: '/notAllowed')
-		}
-		
+            return
+        }
 		def mailbox = freshCurrentlyLoggedInMember().mailbox
-		def msg = mailbox.getMessage(msgId)
-		if(!(msg?.isArchived() || msg?.isAcknowleged())) {
-			if(msg.isNew()) {
-				mailbox.markMessageAsSeen(msgId)
-			}
-			renderMessageViewOrGoToMailbox(msg)
+		def msg = mailbox.getInboxMessageAndMarkAsSeen(msgId)
+        if (msg) {
+            render(view: 'message', model: [message: msg])
+			return;
+        } else {
+            redirect(controller:'inbox')
+        }
+    }
+
+    def showSentboxMessage = {
+        def msgId = 0
+		try {
+			msgId = params.id.toLong()
 		}
-		else {
-			renderMessageViewOrGoToMailbox(null)
-		}
+		catch(NumberFormatException) {
+			redirect(uri: '/notAllowed')
+            return
+        }
+		def mailbox = freshCurrentlyLoggedInMember().mailbox
+		def msg = mailbox.getSentboxMessage(msgId)
+        if (msg) {
+            render(view: 'message', model: [message: msg])
+			return;
+        } else {
+            redirect(controller:'sentbox')
+        }
     }
 
     def archiveMessage = {
@@ -59,13 +83,4 @@ class MailboxController extends SecureController {
         redirect(controller:'mailbox')
     }
 
-    private renderMessageViewOrGoToMailbox(msg) {        
-        if (msg) {
-            render(view: 'message', model: [message: msg])
-			return;
-        }
-        else {
-            redirect(controller:'mailbox')
-        }
-    }
 }

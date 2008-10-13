@@ -29,12 +29,12 @@ class Mailbox {
         this.messages.findAll {it.isVisibleInInbox()}
     }
 
-    def getMessage(id) {
+    private def getInboxMessage(id) {
         this.messages.find {it.id == id}
     }
 
-    def markMessageAsSeen(id) {
-        def msg = getMessage(id)
+    def getInboxMessageAndMarkAsSeen(id) {
+        def msg = getInboxMessage(id)
         msg?.markAsSeen()
         return msg
     }
@@ -48,18 +48,28 @@ class Mailbox {
         
     }
 
+    def getSentboxMessage(id){
+        def c = GenericMessage.createCriteria()
+        return  c.get{
+                idEq(id)
+                and(sentboxMessageCriteria)
+                }
+    }
+
     /**
      * Get all messages sent within the last 80 days.
      * @return List of GenericMessages
      */
-    public List getSentMessages(){
+    public List getSentboxMessages(){
         def c = GenericMessage.createCriteria()
-        return  c.list {
+        return  c.list(sentboxMessageCriteria)
+    }
+    
+    private def sentboxMessageCriteria ={
             and {
                 eq('fromMember', member.name)
                 gt('sentDate', new Date()-80)  // not older than 80 days
             }
             order("sentDate", "desc")
-        }
-    }
+        } 
 }
