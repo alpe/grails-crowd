@@ -27,7 +27,7 @@
                             <tr>
                         </g:else>
                         <td>
-                            <h4><avatar:gravatar email="${message.member_email}" defaultGravatarUrl="${'http://grailscrowd.com/images/default-gravatar-50.png'.encodeAsURL()}" size="30"/><g:link controller="member" action="viewProfile" params="[_name:message.fromMember]">${message.member_displayName}</g:link></h4>
+                            <h4><avatar:gravatar email="${message.memberEmail}" defaultGravatarUrl="${'http://grailscrowd.com/images/default-gravatar-50.png'.encodeAsURL()}" size="30"/><g:link controller="member" action="viewProfile" params="[_name:message.fromMember]">${message.memberDisplayName}</g:link></h4>
                         </td>
                             <td>
                                 ${message.subject}
