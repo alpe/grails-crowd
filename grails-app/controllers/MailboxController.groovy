@@ -16,8 +16,8 @@ class MailboxController extends SecureController {
             def member = Member.findByName(it.fromMember)
             [id:it.id, subject: it.subject, fromMember:it.fromMember,
                     sentDate:it.sentDate,
-                    unread:it.isNew(), member_email:member.email,
-                    member_displayName:member.displayName]
+                    unread:it.isNew(), memberEmail:member.email,
+                    memberDisplayName:member.displayName]
         }
         render(view: 'mailbox', model: [mailbox: mailbox, messages:messages])
     }
