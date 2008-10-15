@@ -37,6 +37,9 @@
                                 <g:link class="inline-link" controller="mailbox" action="showSentboxMessage" params="[id:message.id]">details...</g:link>
                             </td>
                              <td><g:formatDate format="yyyy-MM-dd hh:mm.ss" date="${message.sentDate}"/></td>
+                             <td>unread: ${message.unread}</td>
+                             <td>Answered: ${message.answered}</td>
+                             <td>Thread: ${message.thread}</td>
                             </tr>
                      </g:each>
                      </tbody>
