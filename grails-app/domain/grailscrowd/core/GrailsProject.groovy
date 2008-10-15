@@ -51,35 +51,46 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
 
     def inviteParticipant(creator, invitee) {
         enforceParticipationInvariants(creator, invitee)
+        GenericMessage.withTransaction{tx->
         if (!invitee.isAwareOf(this)) {
             ProjectParticipation.pending(invitee, this)
             messageService.submit(invitee, SystemMessageFactory.createInvitation(creator, this));
         }
-    }
-
-    def approveRequestedParticipation(creator, requestor, messageId) {
-        withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
-//TODO:            GenericMessage.newRequestApprovalMessageFor(requestedParticipation.accept())
-        }
-    }
-
-    def rejectRequestedParticipation(creator, requestor, messageId) {
-        withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
-//TODO:            GenericMessage.newRequestRejectionMessageFor(requestedParticipation.reject())
-        }                
+      }
     }
 
     def acknowlegeParticipationAcceptance(creator, invitee, messageId) {
-        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
+        enforceParticipationInvariants(creator, invitee)
+        ProjectParticipation.pending(invitee, this).accept()
+//        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
+            messageService.submit(creator, SystemMessageFactory.createAcceptInvitation(invitee, this));
 //TODO:            GenericMessage.newInvitationAcceptanceMessageFor(invitation.accept())
-        }
+//        }
     }
 
     def rejectParticipationInvitation(creator, invitee, messageId) {
-        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
+        enforceParticipationInvariants(creator, invitee)
+        ProjectParticipation.pending(invitee, this).reject()
+//        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
+            messageService.submit(creator, SystemMessageFactory.createRejectInvitation(invitee, this));
 //TODO:            GenericMessage.newInvitationRejectionMessageFor(invitation.reject())
-        }
+//        }
     }
+    
+
+
+    def approveRequestedParticipation(creator, requestor, messageId) {
+//        withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
+//TODO:            GenericMessage.newRequestApprovalMessageFor(requestedParticipation.accept())
+//        }
+    }
+
+    def rejectRequestedParticipation(creator, requestor, messageId) {
+//        withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
+//TODO:            GenericMessage.newRequestRejectionMessageFor(requestedParticipation.reject())
+//        }
+    }
+
 
     void setCreator(Member owner) {
         if (hasACreator() && this.creatorMemberId != owner.id) {
@@ -142,9 +153,20 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
         return name <=> obj.name
     }
 
-    private def withParticipationInvitationOrRequest(creator, inviteeOrRequestor, messageId, callable) {
+
+    /**
+     * Is a participition response to this project open for given member?
+     * @return result
+     */
+    boolean isParticipitionResponseOpenFor(member){
+         return member && this.participants.any {
+             (it.participant.id == member.id) &&
+                 it.participant.isUnfinished()
+         }
+    }
+/*     private def withParticipationInvitationOrRequest(creator, inviteeOrRequestor, messageId, callable) {
         enforceParticipationInvariants(creator, inviteeOrRequestor)
-        def par = findParticipantionFor(inviteeOrRequestor, ProjectParticipation.PENDING)
+       def par = findParticipantionFor(inviteeOrRequestor, ProjectParticipation.PENDING)
         if (!par) {
             par = findParticipantionFor(inviteeOrRequestor, ProjectParticipation.REQUESTED)
             if(!par) {
@@ -161,7 +183,8 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
             callable(par)
             save()
         }
-    }
+
+    }      */
 
     private def enforceParticipationInvariants(creator, requestor) {
         if (creator?.id != this.creatorMemberId) {

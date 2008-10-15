@@ -42,17 +42,22 @@ class ProjectParticipation {
     }
 
     def reject() {
-        if(this.status == REQUESTED || this.status == PENDING) {
+        if(isUnfinished()) {
             this.status = REJECTED
         }
         return this
     }
 
     def accept() {
-        if (this.status == PENDING || this.status == REQUESTED) {
+        if (isUnfinished()) {
             this.status = ACTIVE
         }
         return this
+    }
+
+    /** Is response of second member still open */
+    def isUnfinished(){
+        return isPending()|| isRequested()
     }
 
     def isActive() {
