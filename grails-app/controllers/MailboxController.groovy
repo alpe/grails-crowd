@@ -35,8 +35,17 @@ class MailboxController extends SecureController {
       render(view: 'sentbox', model: [mailbox: mailbox, messages:messages])
     }
 
+    /** new mail input form */
+    def compose = {
+
+    }
+
+    /* create persistent mail */
     def create = {
-        
+        log.info("persisting!"+params)
+        onUpdateAttempt("Your message has been sent.", true)
+        redirect(action:'inbox')
+
     }
 
 
