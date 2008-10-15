@@ -1,10 +1,15 @@
 import grailscrowd.core.*
+import grailscrowd.core.message.*
+import grails.util.GrailsUtil
 
 class BootStrap {
 
     ProjectService projectService
+    MessageService messageService
 
     def init = {servletContext ->
+
+if(GrailsUtil.environment== "development") {
         def memberFixi = new MemberDBFixture()
         //Just for testing
         List sampleMembers = []
@@ -32,6 +37,11 @@ class BootStrap {
         def anyMember = sampleMembers[1]
         assert anyMember
         project.inviteParticipant(creatorMember, anyMember)
+
+        def message = FreeFormMessageFactory.createMessage(sampleMembers[3],'anySubject' , 'anyBody')
+        messageService.submit(sampleMembers[4], message)
+
+    }
     }
 
     def destroy = {
