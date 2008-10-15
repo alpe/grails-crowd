@@ -25,10 +25,7 @@ class MailboxController extends SecureController {
         def mailbox = freshCurrentlyLoggedInMember().mailbox
         def messages = mailbox.inboxMessages.collect{
             def member = Member.findByName(it.fromMember)
-            [id:it.id, subject: it.subject, fromMember:it.fromMember,
-                    sentDate:it.sentDate,
-                    unread:it.isNew(), memberEmail:member.email,
-                    memberDisplayName:member.displayName]
+            toModel(member, it) + [fromMember:it.fromMember]
         }
         render(view: 'inbox', model: [mailbox: mailbox, messages:messages])
     }
@@ -38,12 +35,18 @@ class MailboxController extends SecureController {
         def mailbox = freshCurrentlyLoggedInMember().mailbox
         def messages = mailbox.sentboxMessages.collect{
             def member = it.mailbox.member
-            [id:it.id, subject: it.subject, toMember:member.name,
-                    sentDate:it.sentDate,
-                    unread:false, memberEmail:member.email,
-                    memberDisplayName:member.displayName]
+            return toModel(member, it) +[toMember:member.name]
         }
       render(view: 'sentbox', model: [mailbox: mailbox, messages:messages])
+    }
+
+    private def toModel(member, message){
+        return [id:message.id, subject: message.subject,
+                sentDate:message.sentDate,
+                unread:message.isNew(), answered: message.isAnswered(),
+                thread:message.thread.id,
+                memberEmail:member.email,
+                memberDisplayName:member.displayName]
     }
 
 
@@ -84,7 +87,7 @@ class MailboxController extends SecureController {
             composeFreeForm(cmd)
             return
         }
-        def message = FreeFormMessageFactory.createMessage(freshCurrentlyLoggedInMember(), cmd.subject, cmd.body)
+        def message = FreeFormMessageFactory.createNewMessage(freshCurrentlyLoggedInMember(), cmd.subject, cmd.body)
         messageService.submit (recipient, message)
 
         onUpdateAttempt("Your message has been sent.", true)
@@ -153,12 +156,12 @@ class FreeFormCommand{
         this.toMemberName = ''
     }
 
-  
-  
     static constraints = {
-        body(nullable: false, blank: false, maxSize: 200)
-        subject(nullable: false, blank:false, maxSize: 2000)
-        toMemberName(nullable:false, blank:false)
-//        toMember(nullable: false)
+        // should match FreeFormMessagePayload#constraints
+        subject(nullable: false, blank:false, maxSize: 100)
+        body(nullable: false, blank: false, maxSize: 500)
+        // member name is not restricted in size but 100 is a lot
+        toMemberName(nullable:false, blank:false, maxSize: 100)
     }
+    
 }
