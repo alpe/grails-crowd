@@ -152,7 +152,7 @@
 
         <div class="sub">
 
-            <h6><g:link class="inline-link" controller="mailbox" action="compose" params="[_name:member.name]" >Send Message</g:link></h6>
+            <h6><g:link class="inline-link" controller="mailbox" action="compose" params="[to:member.name]" >Send Message</g:link></h6>
             
             <g:if test="${member.hasAnyInvolvementWithGrails()}">
                 <h4 class="page-section-header">Involvement with Grails:</h4>
