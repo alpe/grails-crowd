@@ -6,7 +6,7 @@ import grailscrowd.core.Member
  * Factory to create system messages.
  * @author ap
  */
-class SystemMessageFactory {
+class SystemMessageFactory extends AbstractMessageFactory{
 
 
     /**
@@ -22,7 +22,10 @@ class SystemMessageFactory {
      * @return message
      */
     public static def createRejectInvitation(Member mailCreator, def grailsProject) {
-        createSystemMail(SystemMessageType.PROJECT_INVITATION_REJECTION, mailCreator.name, grailsProject)
+       // TODO: dry
+        def thread = mailCreator.mailbox.getConverationThread(SystemMessageType.PROJECT_INVITATION, grailsProject)
+        assert thread!=null
+        createSystemMail(SystemMessageType.PROJECT_INVITATION_REJECTION, mailCreator.name, grailsProject, thread)
     }
 
     /**
@@ -30,7 +33,10 @@ class SystemMessageFactory {
      * @return message
      */
     public static def createAcceptInvitation(Member mailCreator, def grailsProject) {
-        createSystemMail(SystemMessageType.PROJECT_INVITATION_ACCEPTANCE, mailCreator.name, grailsProject)
+        // TODO: dry
+        def thread = mailCreator.mailbox.getConverationThread(SystemMessageType.PROJECT_INVITATION, grailsProject)
+        assert thread!=null
+        def msg = createSystemMail(SystemMessageType.PROJECT_INVITATION_ACCEPTANCE, mailCreator.name, grailsProject, thread)
     }
 
     /**
@@ -63,25 +69,18 @@ class SystemMessageFactory {
      * Create mail with system payload for given type.
      */
     static def createSystemMail(SystemMessageType messageType, String senderInternalName, grailsProject) {
+         return createSystemMail(messageType, senderInternalName, grailsProject, createNewThread())
+    }
+        /**
+         * Create mail with system payload for given type.
+         */
+    static def createSystemMail(SystemMessageType messageType, String senderInternalName, grailsProject, thread) {
         def payload = new SystemMessagePayload(type: messageType,
                 projectId: grailsProject.id,
                 projectName: grailsProject.name
         )
-        return createSimpleMail(senderInternalName, payload)
+        return createSimpleMail(senderInternalName, payload, thread)
     }
 
-
-    /**
-     * Add mail body to given payload
-     */
-    static def createSimpleMail(String senderInternalName, payload) {
-        if (!senderInternalName){
-            throw new IllegalArgumentException("Given sender name must not be null or empty!")
-        }
-        if (!payload){
-            throw new IllegalArgumentException('Given payload must not be null!')
-        }
-        return new GenericMessage(fromMember: senderInternalName, payload: payload)
-    }
 
 }

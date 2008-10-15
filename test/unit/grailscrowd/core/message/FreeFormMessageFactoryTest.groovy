@@ -19,7 +19,7 @@ class FreeFormMessageFactoryTest extends GroovyTestCase{
 
 
     void testCreateMessage_validData_messageReturned(){
-        def message = FreeFormMessageFactory.createMessage(anySender, anySubject, anyBody)
+        def message = FreeFormMessageFactory.createNewMessage(anySender, anySubject, anyBody)
         assertThat(message, is(notNullValue()))
         assertThat(message.payload.subject, is(anySubject))
         assertThat(message.payload.body, is(anyBody))
