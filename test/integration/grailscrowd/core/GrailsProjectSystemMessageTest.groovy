@@ -1,9 +1,8 @@
 package grailscrowd.core
 
+
 import static org.hamcrest.CoreMatchers.*
-import org.junit.Assert
-
-
+import static org.junit.Assert.*
 import grailscrowd.core.message.SystemMessageType
 /**
  * @author ap
@@ -20,7 +19,7 @@ class GrailsProjectSystemMessageTest extends GroovyTestCase {
             anyMember = memberFixi.getAnyNewSubscribedMember()
             projectOwner = memberFixi.getAnyNewSubscribedMember()
             project = new GrailsProjectDBFixture().getAnyNewEnteredProject(projectOwner)
-            Assert.assertThat(project, is(notNullValue()))
+            assertThat(project, is(notNullValue()))
 
     }
 
@@ -30,14 +29,14 @@ class GrailsProjectSystemMessageTest extends GroovyTestCase {
 
     void testInviteParticipant_systemMessageSent(){
         project.inviteParticipant(projectOwner, anyMember)
-        Assert.assertThat(anyMember.mailbox.messages, is(notNullValue()))
-        Assert.assertThat(anyMember.mailbox.messages.size(), is (1))
+        assertThat(anyMember.mailbox.messages, is(notNullValue()))
+        assertThat(anyMember.mailbox.messages.size(), is (1))
         def message = anyMember.mailbox.messages.iterator().next()
-        Assert.assertThat(message.payload.type, is(SystemMessageType.PROJECT_INVITATION))
-        def sentFolder = projectOwner.mailbox.sentMessages
-        Assert.assertThat(sentFolder, is(notNullValue()))
-        Assert.assertThat(sentFolder.size(), is(1))
-        Assert.assertThat(sentFolder.iterator().next(), is(message))
+        assertThat(message.payload.type, is(SystemMessageType.PROJECT_INVITATION))
+        def sentFolder = projectOwner.mailbox.sentboxMessages
+        assertThat(sentFolder, is(notNullValue()))
+        assertThat(sentFolder.size(), is(1))
+        assertThat(sentFolder.iterator().next(), is(message))
     }
 
 }
