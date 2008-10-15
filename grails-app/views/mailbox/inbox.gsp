@@ -7,9 +7,9 @@
 
 
 <body id="mailbox">
-
+      <g:render template="/shared/messagesRenderer" model="[:]" />
       <div class="content" style="width: 120px; padding-left: 5px;padding-right: 5px; float: left;background: red">
-          <h6><g:link class="inline-link" controller="mailbox" action="create" >Compose Message</g:link></h6>
+          <h6><g:link class="inline-link" controller="mailbox" action="compose" >Compose Message</g:link></h6>
           <h6>Inbox <g:if test="${mailbox.hasAnyNewMessages()}">(${mailbox.numberOfNewMessages} new)</g:if></h6>
           <h6><g:link class="inline-link" controller="mailbox" action="sentbox" >Sent Messages</g:link></h6>
     </div>
