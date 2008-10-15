@@ -7,7 +7,10 @@
 <body id="compose message">
     <g:render template="/shared/messagesRenderer" model="[modelBean:formBean]" />
 
+    <g:render template="/shared/memberIconAndNameSmall" model="[email:formBean.toMember.email, name:formBean.toMember.name, displayName: formBean.toMember.displayName]" />
+    
     <g:form method="post" action="create" id="compose">
+        <input type="hidden" name="toMemberName" value="${fieldValue(bean:formBean,field:'toMemberName')}" />
         <g:render template="freeFormMessageInput" model="[formBean:formBean]" />
     </g:form>
 </body>
