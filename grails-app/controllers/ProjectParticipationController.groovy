@@ -47,7 +47,7 @@ class ProjectParticipationController extends SecureController {
                     projectMap.inviteeOrRequestor, params.messageId.toLong())
 			
 			if(projectMap.creator.canBeNotifiedViaEmail) {
-				try {
+/*				try {
 					sendMail {
 						to projectMap.creator.email
 						subject "[Grails Crowd] project participation acceptance"
@@ -57,7 +57,7 @@ class ProjectParticipationController extends SecureController {
 				catch (Exception e) {
 					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
 				}
-			}
+*/			}
         }
     }
 
@@ -67,7 +67,7 @@ class ProjectParticipationController extends SecureController {
                     projectMap.inviteeOrRequestor, params.messageId.toLong())
         	
 			if(projectMap.creator.canBeNotifiedViaEmail) {
-				try {
+/*				try {
 					sendMail {
 						to projectMap.creator.email
 						subject "[Grails Crowd] project participation rejection"
@@ -77,7 +77,7 @@ class ProjectParticipationController extends SecureController {
 				catch (Exception e) {
 					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
 				}
-			}		
+*/			}
 		}
     }
 
@@ -94,7 +94,7 @@ class ProjectParticipationController extends SecureController {
         render(view: '/grailsProject/viewProject', model: [grailsProject: project])
 		
 		if(project.creator.canBeNotifiedViaEmail) {
-			try {
+/*			try {
 				sendMail {
 					to project.creator.email
 					subject "[Grails Crowd] project participation request"
@@ -104,7 +104,7 @@ class ProjectParticipationController extends SecureController {
 			catch (Exception e) {
 				log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
 			}
-		}
+*/		}
 
     }
 
@@ -114,7 +114,7 @@ class ProjectParticipationController extends SecureController {
                     projectMap.inviteeOrRequestor, params.messageId.toLong())
 		
 			if(projectMap.inviteeOrRequestor.canBeNotifiedViaEmail) {
-				try {
+/*				try {
 					sendMail {
 						to projectMap.inviteeOrRequestor.email
 						subject "[Grails Crowd] project participation approval"
@@ -124,7 +124,7 @@ class ProjectParticipationController extends SecureController {
 				catch (Exception e) {
 					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
 				}
-			}
+*/			}
         }
     }
 
@@ -134,7 +134,7 @@ class ProjectParticipationController extends SecureController {
                     projectMap.inviteeOrRequestor, params.messageId.toLong())
 			
 			if(projectMap.inviteeOrRequestor.canBeNotifiedViaEmail) {
-				try {
+/*				try {
 					sendMail {
 						to projectMap.inviteeOrRequestor.email
 						subject "[Grails Crowd] project participation disapproval"
@@ -144,7 +144,7 @@ class ProjectParticipationController extends SecureController {
 				catch (Exception e) {
 					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
 				}
-			}
+*/			}
         }
     }
 
