@@ -1,0 +1,1 @@
+${message.payload.body.encodeAsHTML()}
