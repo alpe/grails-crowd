@@ -64,12 +64,6 @@ class SystemMessagePayload extends GenericMessagePayload{
         messageSource.getMessage(currentMessageCode,
                 [projectName].toArray(), defaultMessageCode, Locale.ENGLISH)
     }
-/*
-    boolean isUnanswered(){
-        GrailsProject.get(projectId).isParticipitionResponseOpenFor
-    }
-
-    */
 }
 
 
