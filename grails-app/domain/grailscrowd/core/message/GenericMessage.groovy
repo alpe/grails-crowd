@@ -28,7 +28,7 @@ class GenericMessage {
 //        subject(blank: false, maxSize: 1000)
 //        body(blank: false, maxSize: 4000)
 //        projectParticipationId(nullable: true)
-        fromMember(blank: false, maxSize: 50)
+        fromMember(nullable:false, blank: false)
         status(nullable:false)
         payload(nullable:false)
     }
