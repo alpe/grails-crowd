@@ -9,5 +9,8 @@ class GenericMessagePayload {
         message(nullable:false)
       }
 */
-    
+    static mapping = {
+        tablePerHierarchy false
+    }
+         
 }
