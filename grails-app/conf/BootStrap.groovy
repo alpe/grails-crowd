@@ -38,7 +38,7 @@ if(GrailsUtil.environment== "development") {
         assert anyMember
         project.inviteParticipant(creatorMember, anyMember)
 
-        def message = FreeFormMessageFactory.createMessage(sampleMembers[3],'anySubject' , 'anyBody')
+        def message = FreeFormMessageFactory.createNewMessage(sampleMembers[3],'anySubject' , 'anyBody')
         messageService.submit(sampleMembers[4], message)
 
     }
