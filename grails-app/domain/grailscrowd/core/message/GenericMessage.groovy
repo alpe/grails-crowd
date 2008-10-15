@@ -21,16 +21,16 @@ class GenericMessage {
 
 
     static belongsTo = [mailbox: Mailbox]
+    
+    ConversationThread thread
 
-    static transients =  ['subject', 'systemMessage']
+    static transients =  ['subject', 'systemMessage', 'answered']
 
     static constraints = {
-//        subject(blank: false, maxSize: 1000)
-//        body(blank: false, maxSize: 4000)
-//        projectParticipationId(nullable: true)
         fromMember(nullable:false, blank: false)
         status(nullable:false)
         payload(nullable:false)
+        thread(nullable:false)
     }
 
     GenericMessage(){
@@ -61,6 +61,8 @@ class GenericMessage {
      return payload.with{isSystemPayload()}   
     }
 
-
+   boolean isAnswered(){
+       return thread.hasResponse(this)
+   }
 }
 
