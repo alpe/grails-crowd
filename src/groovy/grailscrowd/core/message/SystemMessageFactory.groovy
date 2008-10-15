@@ -57,14 +57,12 @@ class SystemMessageFactory {
         createSystemMail(SystemMessageType.PROJECT_REQUEST_DISAPPROVAL, mailCreator.name, grailsProject)
     }
 
+  
 
     /**
      * Create mail with system payload for given type.
      */
     static def createSystemMail(SystemMessageType messageType, String senderInternalName, grailsProject) {
-        if (!senderInternalName){
-            throw new IllegalArgumentException("Given sender name must not be null or empty!")
-        }
         def payload = new SystemMessagePayload(type: messageType,
                 projectId: grailsProject.id,
                 projectName: grailsProject.name
@@ -72,10 +70,14 @@ class SystemMessageFactory {
         return createSimpleMail(senderInternalName, payload)
     }
 
+
     /**
      * Add mail body to given payload
      */
     static def createSimpleMail(String senderInternalName, payload) {
+        if (!senderInternalName){
+            throw new IllegalArgumentException("Given sender name must not be null or empty!")
+        }
         if (!payload){
             throw new IllegalArgumentException('Given payload must not be null!')
         }
