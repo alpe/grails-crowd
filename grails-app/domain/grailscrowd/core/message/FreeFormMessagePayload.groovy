@@ -13,7 +13,13 @@ class FreeFormMessagePayload extends GenericMessagePayload{
     
     String body
 
-    static transients =  ['systemPayload']    
+    static transients =  ['systemPayload']
+
+    static constraints = {
+        subject(nullable:false, blank:false, maxSize:100)
+        body(nullable:false, blank:false, maxSize:500)
+      }
+
 
 
     /**
