@@ -18,8 +18,10 @@ class MailboxTest extends AbstractBaseUnitTestCase{
         super.setUp()
         mailbox = null
         fixi = new MailboxFixture()
-        mailbox = fixi.sampleBox
+        fixi.fixtureType = MailboxFixtureType.SAMPLE_BOX
+        mailbox = fixi.createTestData()
     }
+
 
     void testHasAnyNewMessages_3new_true(){
         assertThat(mailbox, is(notNullValue()))
@@ -28,7 +30,7 @@ class MailboxTest extends AbstractBaseUnitTestCase{
 
     void testGetInboxMessageAndMarkAsSeen_validId_mesageNotNullAndStatusSeen(){
         def msg = mailbox.inboxMessages.find{it}
-        msg.setId(1)
+        msg.id = 1L
         def message = mailbox.getInboxMessageAndMarkAsSeen(1)
         assertThat(message, is(msg))
         assertThat(message.status, is(MessageLifecycle.SEEN))

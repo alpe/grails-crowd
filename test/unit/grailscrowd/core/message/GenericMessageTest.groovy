@@ -12,15 +12,17 @@ import static org.junit.Assert.assertThat
 class GenericMessageTest extends AbstractBaseUnitTestCase{
 
     def message
-
+    def messageFixture
 
     void setUp(){
         super.setUp()
-        message = MessageFixture.anyFreeFormMessage
+        messageFixture = new MessageFixture()
+        message = messageFixture.createTestData()
     }
+    
 
     void testIsSystemMessage_withInvitationMessage_expectTrue(){
-        message = MessageFixture.anyInviationMessage
+        message = messageFixture.createTestData(MessageFixtureType.INVITATION)
         assertTrue(message.isSystemMessage())
     }
 
@@ -42,11 +44,10 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
     }
 
     void testCompareTo_samples_orderedAsExpected(){
-        message = MessageFixture.anyFreeFormMessage
         message.sentDate = new Date()
-        def message2 = MessageFixture.anyInviationMessage
+        def message2 = messageFixture.createTestData(MessageFixtureType.INVITATION)
         message2.sentDate = new Date()-10
-        def message3 = MessageFixture.anyFreeFormMessage
+        def message3 = messageFixture.createTestData(MessageFixtureType.FREEFORM)
         message3.sentDate = new Date()-5
         def sortedList = [message, message2, message3].sort()
         assertThat("recieved: "+sortedList*.sentDate, sortedList, is ([message2, message3, message]))
@@ -55,11 +56,24 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
     void testGetSubject_freeForm_subjectAsExpected(){
         assertThat( message.subject, is (MessageFixture.ANY_FREEFORM_SUBJECT))
     }
+
     void testGetSubject_invitationMessage_subjectAsExpected(){
-        message = MessageFixture.anyInviationMessage
+        messageFixture.fixtureType = MessageFixtureType.INVITATION
+        def message = messageFixture.createTestData()
         assertThat('System message subjects are in message.property. Plesase look for modifications.',
                 message.subject, is (MessageFixture.ANYINVITATION_SUBJECT))
     }
+
+/*    void testGetSubject_invitationResponseMessages_subjectAsExpected(){
+        message = MessageFixture.anyInviationAcceptMessage
+        assertThat('System message subjects are in message.property. Plesase look for modifications.',
+                message.subject, is (MessageFixture.ANYINVITATION_ACCEPT_SUBJECT))
+        message = MessageFixture.anyInviationRejectedlMessage
+        assertThat('System message subjects are in message.property. Plesase look for modifications.',
+                message.subject, is (MessageFixture.ANYINVITATION_REJECTION_SUBJECT))
+
+    }
+  */
 
 
 }

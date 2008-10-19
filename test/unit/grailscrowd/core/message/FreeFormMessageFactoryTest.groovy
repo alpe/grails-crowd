@@ -14,7 +14,7 @@ class FreeFormMessageFactoryTest extends AbstractBaseUnitTestCase{
 
     void setUp(){
         super.setUp()
-        anySender = MemberFixture.ottoOne
+        anySender = new MemberFixture().createTestData()
         anySubject = 'This is any subject'
         anyBody = 'Hello, this is any body'
     }

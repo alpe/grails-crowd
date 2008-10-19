@@ -12,21 +12,24 @@ class SystemMessageFactoryTest extends AbstractBaseUnitTestCase{
 
     def anySender
     def anyProject
+    MemberFixture memberFixture
+    GrailsProjectFixture projectFixture
 
     void setUp(){
-        anySender = MemberFixture.ottoOne
-        anyProject = GrailsProjectFixture.grailscrowdSample
+        memberFixture = new MemberFixture()
+        projectFixture = new GrailsProjectFixture()
+        anySender = memberFixture.createTestData()
+        anyProject = projectFixture.createTestData()
     }
 
     void addInvitationToMailbox(){
-        anySender.mailbox = new MailboxFixture().emptyBox
-        def otherSender = MemberFixture.donnyDuempelmeier
+        def otherSender = memberFixture.createTestData() 
         def invitation = SystemMessageFactory.createInvitation(otherSender, anyProject)
         anySender.mailbox.addToMessages(invitation)
     }
     void addJoinRequestToMailbox(){
-        anySender.mailbox = new MailboxFixture().emptyBox
-        def otherSender = MemberFixture.donnyDuempelmeier
+
+        def otherSender = memberFixture.createTestData()
         def invitation = SystemMessageFactory.createJoinRequest(otherSender, anyProject)
         anySender.mailbox.addToMessages(invitation)
 

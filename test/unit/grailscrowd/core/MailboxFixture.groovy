@@ -7,16 +7,53 @@ import grailscrowd.util.*
  *
  * @author ap
  */
-class MailboxFixture {
-
-    static MessageFixture msgFixture = new MessageFixture()
+class MailboxFixture extends AbstractDomainFixture{
 
 
+    MemberFixture ownerFixture
 
-    static Mailbox getEmptyBox(){
-        Mailbox result = new Mailbox()        
-        MockUtils.mockDomain(result)
-        return result
+    MessageFixture msgFixture
+
+
+    MailboxFixture(){
+        this(new MemberFixture())
+    }
+    MailboxFixture(MemberFixture ownerFixture){
+        super()
+        this.ownerFixture = ownerFixture
+        this.msgFixture = new MessageFixture(ownerFixture)
+    }
+
+   /** {@inheritDoc} */
+    @Override
+    def createTestDataInstance() {
+        return new Mailbox()
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void addRelationData(obj){
+        def sampleData
+        switch (fixtureType) {
+            case MailboxFixtureType.EMPTY_BOX:
+                sampleData = []
+                break
+            case MailboxFixtureType.SAMPLE_BOX:
+                sampleData = getSampleBoxMessages()
+                break
+        }
+        obj.member = ownerFixture.testData
+        sampleData.each{
+            obj.addToMessages(it)
+        }
+    }
+
+
+   /** {@inheritDoc} */
+    @Override
+    void reset() {
+        super.reset()
+        fixtureType = MailboxFixtureType.EMPTY_BOX
     }
 
 
@@ -26,30 +63,27 @@ class MailboxFixture {
      * 1 deleted
      *
      */
-    static Mailbox getSampleBox(){
-        def result = getEmptyBox()
+    private def getSampleBoxMessages(){
+         def messages =[]
         2.times{
-            result.addToMessages(msgFixture.getAnyFreeFormMessage('bla$it'))
+            messages << msgFixture.getAnyFreeFormMessage('bla$it')
         }
         3.times{
             def msg = msgFixture.getAnyFreeFormMessage('bla$it')
             msg.status = MessageLifecycle.SEEN
-            result.addToMessages(msg)
+            messages << msg
         }
         1.times{
             def msg = msgFixture.getAnyFreeFormMessage('bla$it')
             msg.status = MessageLifecycle.DELETED
-            result.addToMessages(msg)
+            messages << msg
         }
 
-        return result
+        return messages
     }
 
-    static Mailbox getMailboxWithUnread(int quantity){
-        def result = getEmptyBox()
-//        quantity.times{
-//            result.addToMessages(msgFixture.anyFreeFormMessage('bla$it'))
-//        }
-        return result
-    }
+
+}
+enum MailboxFixtureType{
+    EMPTY_BOX, SAMPLE_BOX
 }

@@ -1,7 +1,8 @@
 package grailscrowd.core
 
 
-import grailscrowd.util.MockUtils
+import grailscrowd.util.AbstractDomainFixture
+
 
 
 /**
@@ -9,42 +10,67 @@ import grailscrowd.util.MockUtils
  *
  * @author ap
  */
-class GrailsProjectFixture {
+class GrailsProjectFixture extends AbstractDomainFixture{
+
+    MemberFixture creatorFixture
+
+    GrailsProjectFixture(){
+        this(new MemberFixture())
+    }
+
+    GrailsProjectFixture(creatorFixture){
+        super()
+        this.creatorFixture = creatorFixture
+    }
+   /** {@inheritDoc} */
+   def createTestDataInstance(){
+         def result
+         switch(fixtureType){
+             case GrailsProjectFixtureType.GRAILSCROWD:
+                 result =   new GrailsProject(getGrailscrowdSample())
+                 break
+             case GrailsProjectFixtureType.EXAMPLE1:
+                 result = new GrailsProject(getExampleOneSample())
+                 break
+         }
+         return result
+     }
+
+    /** {@inheritDoc} */
+    void addRelationData(obj){
+        obj.creatorMemberId = creatorFixture.getTestData().id
+    }
+    
+
+    /** {@inheritDoc} */
+    void reset(){
+        super.reset()
+        fixtureType = GrailsProjectFixtureType.GRAILSCROWD
+    }
+
 
     /**
      * Get an initialized grailsProject sample for testing purpose.
      */
-   public static GrailsProject getGrailscrowdSample(){
-       def result = new GrailsProject(uri: 'http://grailscrowd.com',
+   private  def getGrailscrowdSample(){
+       return [uri: 'http://grailscrowd.com',
                name: 'GrailsCrowd',
                description: 'Test app',
                primaryLocation: 'USA',
-               architectureDescription: 'grails/mvc')
-//                tagTokens: 'grails,groovy,java'.split(','))
-/*
-
-               args.tagTokens.each {
-                   project.addToTaggings(Tagging.createFor(creator, it, project))
-               }
-*/
-//       result.creatorMemberId = MemberFixture.Sample.id
-       MockUtils.mockDomain(result)
-       result.id = 1L
-       return result
+               architectureDescription: 'grails/mvc']
       }
     
     /**
      * Get an initialized grailsProject sample for testing purpose.
      */
-   public static GrailsProject getExampleOneSample(){
-
-       def result = new GrailsProject(uri: 'http://example1.com',
+   private  def getExampleOneSample(){
+       return [uri: 'http://example1.com',
                name: 'ExampleOne',
                description: 'Example 1 project',
                primaryLocation: 'USA',
-               architectureDescription: 'Rich UI (Flex) based application with Grails backend. Has Atom feeds and number of plugins')
-       MockUtils.mockDomain(result)
-       result.id = 2L
-       return result
+               architectureDescription: 'Rich UI (Flex) based application with Grails backend. Has Atom feeds and number of plugins']
       }
+}
+enum GrailsProjectFixtureType{
+    GRAILSCROWD, EXAMPLE1
 }
