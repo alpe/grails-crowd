@@ -30,37 +30,58 @@ class MockUtils {
      * @see grails.test.MockUtils#mockDomain
      */
      static void mockDomain(obj){
-       Class clazz = obj.getClass()
-       saveMetaClassForUndo(clazz)
-       ['id', 'version'].each{
-           if (!clazz.metaClass.hasProperty(obj, it)){
-                clazz.metaClass."$it" = null
-           }
-           // init with long value, must not be integer 
-           if(!obj.getProperty(it)){
-               obj.setProperty(it, 1L)
-           }
-       }
-
-       def missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "hasMany")
-       if (missingProperties){
-         missingProperties.each{key, value->
-             if (!clazz.metaClass.hasProperty(obj, key)){
-                  clazz.metaClass."$key" = null
-             }
-         }
-       }
-      missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "belongsTo")
-         if (missingProperties){
-           missingProperties.each{key, value->
-               if (!clazz.metaClass.hasProperty(obj, key)){
-                    clazz.metaClass."$key" = null
-               }
-           }
-         }
+         Class clazz = obj.getClass()
+         saveMetaClassForUndo(clazz)
+         addPersistenceAttributes(clazz, obj)
+         addRelations(clazz, obj)
+         addCriteriaMethod(clazz, obj)
 
        grails.test.MockUtils.mockDomain(clazz, [obj])
      }
+
+    static def addCriteriaMethod(Class clazz, obj) {
+       clazz.metaClass.'static'.createCriteria ={
+           return new Expando([list:{closure->[]}])
+       }
+    }
+
+
+     static def addPersistenceAttributes(Class clazz, obj) {
+         ['id', 'version'].each {
+            if (!clazz.metaClass.hasProperty(obj, it)) {
+                clazz.metaClass."$it" =null
+            }
+        }
+        obj.metaClass = clazz.metaClass
+        ['id', 'version'].each {
+            // init with long value, must not be integer
+            if (!obj."$it") {
+                obj."$it" = 1L
+            }
+          }
+    }
+
+    /** add hasMany, belongsTo methods */
+    static def addRelations(Class clazz, obj) {
+        def missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "hasMany")
+        if (missingProperties) {
+            missingProperties.each {key, value ->
+                if (!clazz.metaClass.hasProperty(obj, key)) {
+                    clazz.metaClass."$key" = null
+                }
+            }
+        }
+
+        missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "belongsTo")
+        if (missingProperties) {
+            missingProperties.each {key, value ->
+                if (!clazz.metaClass.hasProperty(obj, key)) {
+                    clazz.metaClass."$key" = null
+                }
+            }
+        }
+
+    }
 }
 
 /** Use GrailsUnitTestCase metaclass store functionality */ 
