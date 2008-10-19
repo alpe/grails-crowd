@@ -3,7 +3,7 @@ package grailscrowd.core.message
 import grailscrowd.core.*
 import grailscrowd.util.*
 import static org.hamcrest.CoreMatchers.*
-import static org.junit.Assert.*
+import static org.junit.Assert.assertThat
 
 /**
  * @author ap
