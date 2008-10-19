@@ -54,6 +54,8 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
     }
 
     void testGetSubject_freeForm_subjectAsExpected(){
+        // get subject from conversation
+        messageFixture.conversationThreadFixture.testData.topic =MessageFixture.ANY_FREEFORM_SUBJECT
         assertThat( message.subject, is (MessageFixture.ANY_FREEFORM_SUBJECT))
     }
 

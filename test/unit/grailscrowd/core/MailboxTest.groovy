@@ -30,8 +30,8 @@ class MailboxTest extends AbstractBaseUnitTestCase{
 
     void testGetInboxMessageAndMarkAsSeen_validId_mesageNotNullAndStatusSeen(){
         def msg = mailbox.inboxMessages.find{it}
-        msg.id = 1L
-        def message = mailbox.getInboxMessageAndMarkAsSeen(1)
+        msg.id = 123123L
+        def message = mailbox.getInboxMessageAndMarkAsSeen(msg.id)
         assertThat(message, is(msg))
         assertThat(message.status, is(MessageLifecycle.SEEN))
     }

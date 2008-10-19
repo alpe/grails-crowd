@@ -70,7 +70,7 @@ class MessageFixture extends AbstractDomainFixture{
    private GenericMessage getAnyInviationMessage(){
         return  doInContext{anySender, anyProject->
             def result = SystemMessageFactory.createInvitation(anySender, anyProject)
-            result.payload.messageSource = createFakeMessages(ANYINVITATION_SUBJECT)
+//            result.payload.messageSource = createFakeMessages(ANYINVITATION_SUBJECT)
             return result
         }
     }
@@ -101,7 +101,7 @@ class MessageFixture extends AbstractDomainFixture{
 
    private GenericMessage createFreeFormMessage(def subject =ANY_FREEFORM_SUBJECT){
         def result = new GenericMessage()
-        result.setPayload(new FreeFormMessagePayload(subject:subject, body:"Hello World,\nthis is a test message.\n with subject: $subject"))
+        result.setPayload(new FreeFormMessagePayload(body:"Hello World,\nthis is a test message.\n with subject: $subject"))
         return result
     }
 }

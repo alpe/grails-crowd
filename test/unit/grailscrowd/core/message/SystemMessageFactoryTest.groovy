@@ -32,7 +32,7 @@ class SystemMessageFactoryTest extends AbstractBaseUnitTestCase{
         def otherSender = memberFixture.createTestData()
         def invitation = SystemMessageFactory.createJoinRequest(otherSender, anyProject)
         anySender.mailbox.addToMessages(invitation)
-
+                                     
     }
 
     void testCreateInvitation_withValidValues_returnMessageAsExpected(){
@@ -73,8 +73,8 @@ class SystemMessageFactoryTest extends AbstractBaseUnitTestCase{
         assertThat(msg.fromMember, is(anySender.name))
         def payload = msg.payload
         assertThat(payload.type, is(messageType))
-        assertThat(payload.projectName, is (anyProject.name))
-        assertThat(payload.projectId, is(anyProject.id))
-
+        assertThat(payload.messageVersion, is (SystemMessageFactory.getLatestMessageVersion(messageType)))
+        // framework id should be long
+        assertThat(payload.projectId, is((Long)anyProject.id))
     }
 }
