@@ -34,8 +34,12 @@ class MockUtils {
        saveMetaClassForUndo(clazz)
        ['id', 'version'].each{
            if (!clazz.metaClass.hasProperty(obj, it)){
-           clazz.metaClass."$it" = null
-        }
+                clazz.metaClass."$it" = null
+           }
+           // init with long value, must not be integer 
+           if(!obj.getProperty(it)){
+               obj.setProperty(it, 1L)
+           }
        }
 
        def missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "hasMany")
@@ -59,7 +63,7 @@ class MockUtils {
      }
 }
 
-
+/** Use GrailsUnitTestCase metaclass store functionality */ 
 class ThreadLocalMetaClassStorage extends ThreadLocal{
 
     protected def initialValue(){
