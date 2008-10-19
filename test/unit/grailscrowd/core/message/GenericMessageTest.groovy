@@ -1,11 +1,12 @@
 package grailscrowd.core.message
 
 import grailscrowd.core.*
+import grailscrowd.util.*
 
 /**
  * @author ap
  */
-class GenericMessageTest extends GroovyTestCase{
+class GenericMessageTest extends AbstractBaseUnitTestCase{
 
     def message
 

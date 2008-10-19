@@ -1,17 +1,19 @@
 package grailscrowd.core.message
 
 import grailscrowd.core.*
+import grailscrowd.util.*
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.*
 
 /**
  * @author ap
  */
-class FreeFormMessageFactoryTest extends GroovyTestCase{
+class FreeFormMessageFactoryTest extends AbstractBaseUnitTestCase{
 
     def anySender, anySubject, anyBody
 
     void setUp(){
+        super.setUp()
         anySender = MemberFixture.ottoOne
         anySubject = 'This is any subject'
         anyBody = 'Hello, this is any body'
