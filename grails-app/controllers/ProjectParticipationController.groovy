@@ -1,5 +1,7 @@
 import grailscrowd.core.*
 
+import grailscrowd.core.message.GenericMessage
+
 class ProjectParticipationController extends SecureController {
 
     def allowedMethods = [invite: 'POST', acceptParticipationInvitation: 'POST',
@@ -149,10 +151,12 @@ class ProjectParticipationController extends SecureController {
     }
 
     private def withProject(callable) {
-        def inviteeOrRequestor = Member.findByName(params.inviteeOrRequestor)
-        def creator = Member.findByName(params.creator)
-        def project = GrailsProject.get(params.projectId)
-        callable([project: project, creator: creator, inviteeOrRequestor: inviteeOrRequestor])
+        GenericMessage.withTransaction{tx->
+            def inviteeOrRequestor = Member.findByName(params.inviteeOrRequestor)
+            def creator = Member.findByName(params.creator)
+            def project = GrailsProject.get(params.projectId)
+            callable([project: project, creator: creator, inviteeOrRequestor: inviteeOrRequestor])
+        }
         redirect(controller: 'mailbox')
     }
 }
