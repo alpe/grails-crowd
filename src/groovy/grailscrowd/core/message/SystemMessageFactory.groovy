@@ -6,7 +6,34 @@ import grailscrowd.core.Member
  * Factory to create system messages.
  * @author ap
  */
-class SystemMessageFactory extends AbstractMessageFactory{
+class SystemMessageFactory extends AbstractMessageFactory {
+
+    /** transient i18n message source, injected by IoC  */
+    def messageSource
+
+    /**
+     * To support new and legacy message a version number is stored in payload.
+     * @return latest version by type
+     */
+    static int getLatestMessageVersion(messageType){
+        return 1
+    }
+
+    /**
+     * Get message subject in default language: en.
+     */
+    static String getSubject(messageType, projectName) {
+        // always latest version
+        switch(messageType){
+            case  SystemMessageType.PROJECT_JOIN_REQUEST:
+                return "Project ${projectName} participation request"
+            case SystemMessageType.PROJECT_INVITATION:
+            return "Project Invitation"
+            default:
+                throw new AssertionError("Not supported messageType: "+messageType)
+        }
+    }
+
 
 
     /**
@@ -58,24 +85,27 @@ class SystemMessageFactory extends AbstractMessageFactory{
      */
     public static def createDisapprovalToJoinRequest(Member mailCreator, def grailsProject) {
         def thread = mailCreator.mailbox.getConverationThread(SystemMessageType.PROJECT_JOIN_REQUEST, grailsProject)
-        createSystemMail(SystemMessageType.PROJECT_REQUEST_DISAPPROVAL, mailCreator.name, grailsProject, thread)
+        createSystemMail(SystemMessageType.PROJECT_REQUEST_DISAPPROVAL, mailCreator.name, grailsProject,
+                thread)
     }
 
-  
+
 
     /**
      * Create mail with system payload for given type.
      */
     static def createSystemMail(SystemMessageType messageType, String senderInternalName, grailsProject) {
-         return createSystemMail(messageType, senderInternalName, grailsProject, createNewThread())
+        return createSystemMail(messageType, senderInternalName, grailsProject,
+                createNewThread(getSubject(messageType, grailsProject.name)))
     }
-        /**
-         * Create mail with system payload for given type.
-         */
+
+    /**
+     * Create mail with system payload for given type.
+     */
     static def createSystemMail(SystemMessageType messageType, String senderInternalName, grailsProject, thread) {
         def payload = new SystemMessagePayload(type: messageType,
                 projectId: grailsProject.id,
-                projectName: grailsProject.name
+                messageVersion:getLatestMessageVersion(messageType)
         )
         return createSimpleMail(senderInternalName, payload, thread)
     }

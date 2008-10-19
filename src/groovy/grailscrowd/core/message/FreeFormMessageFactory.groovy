@@ -22,8 +22,8 @@ class FreeFormMessageFactory extends AbstractMessageFactory{
         if (!body && !subject){
             throw new IllegalArgumentException("Subject and body must not empty!")
         }
-        def payload = new FreeFormMessagePayload(subject:subject, body:body)
-        return createSimpleMail(mailCreator.name, payload)
+        def payload = new FreeFormMessagePayload(body:body)
+        return createSimpleMail(mailCreator.name, payload, createNewThread(subject))
     }
    /**
      * Create a free form message with given subject and body.

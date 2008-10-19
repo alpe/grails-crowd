@@ -43,7 +43,7 @@ class GenericMessage implements Comparable {
      * Get message subject. 
      */
     public String getSubject(){
-        return payload.subject
+            return thread.getSubject(this)
     }
  
     def markAsSeen() {

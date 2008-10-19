@@ -9,17 +9,13 @@ import grailscrowd.core.message.GenericMessage
  */
 class FreeFormMessagePayload extends GenericMessagePayload{
 
-    String subject
-    
     String body
 
     static transients =  ['systemPayload']
 
     static constraints = {
-        subject(nullable:false, blank:false, maxSize:100)
         body(nullable:false, blank:false, maxSize:500)
       }
-
 
 
     /**

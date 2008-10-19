@@ -33,12 +33,11 @@ class FreeFormMessageSentTest extends GroovyTestCase {
             message = FreeFormMessageFactory.createNewMessage(anySender, anySubject, anyBody)
             messageService.submit(anyRecipient, message)
             anyRecipient.save(flush:true)
-        }
-        assertThat(message.id, is(notNullValue()))
-        def persistentMessage = GenericMessage.get(message.id)
-        assertThat(persistentMessage, is(notNullValue()))
-        assertThat(persistentMessage.subject, is(anySubject))
-        
+            assertThat(message.id, is(notNullValue()))
+            def persistentMessage = GenericMessage.get(message.id)
+            assertThat(persistentMessage, is(notNullValue()))
+            assertThat(persistentMessage.subject, is(anySubject))
+        }        
     }
 
 }
