@@ -1,6 +1,7 @@
 package grailscrowd.core.message
 
 import grailscrowd.core.Mailbox
+import grailscrowd.core.Member 
 
 /**
  * Base class to all message implementation with common attributes and methods.
@@ -8,7 +9,7 @@ import grailscrowd.core.Mailbox
  * set the payload.
  * @author ap
  */
-class GenericMessage {
+class GenericMessage implements Comparable {
 
     Date sentDate
 
@@ -24,7 +25,7 @@ class GenericMessage {
     
     ConversationThread thread
 
-    static transients =  ['subject', 'systemMessage', 'answered']
+    static transients =  ['subject']
 
     static constraints = {
         fromMember(nullable:false, blank: false)
@@ -46,23 +47,37 @@ class GenericMessage {
     }
  
     def markAsSeen() {
-        this.status = MessageLifecycle.SEEN
+        this.status = MessageLifecycle.SEEN  
     }
 
     def isNew() {
-        this.status == MessageLifecycle.NEW
+        MessageLifecycle.NEW == this.status 
     }
 
-    def isVisibleInInbox(){
-        this.status != MessageLifecycle.DELETED        
+    def isDeleted(){
+        MessageLifecycle.DELETED == this.status
     }
 
-    boolean isSystemMessage(){
-     return payload.with{isSystemPayload()}   
+    def isSystemMessage(){
+        payload.with{isSystemPayload()}
     }
 
-   boolean isAnswered(){
-       return thread.hasResponse(this)
+    def isAnswered(){
+        thread.hasResponse(this)
    }
-}
 
+   def isSender(Member member){
+       member && this.fromMember == member.name
+   }
+    def isRecipient(Member member){
+        member && mailbox.member == member 
+    }
+
+    /**
+     * Compare by sentData asc.
+     */
+    public int compareTo(other){
+      return this.sentDate <=> other.sentDate
+    }
+
+}

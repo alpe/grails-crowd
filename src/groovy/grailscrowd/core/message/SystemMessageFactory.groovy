@@ -22,9 +22,7 @@ class SystemMessageFactory extends AbstractMessageFactory{
      * @return message
      */
     public static def createRejectInvitation(Member mailCreator, def grailsProject) {
-       // TODO: dry
         def thread = mailCreator.mailbox.getConverationThread(SystemMessageType.PROJECT_INVITATION, grailsProject)
-        assert thread!=null
         createSystemMail(SystemMessageType.PROJECT_INVITATION_REJECTION, mailCreator.name, grailsProject, thread)
     }
 
@@ -33,10 +31,8 @@ class SystemMessageFactory extends AbstractMessageFactory{
      * @return message
      */
     public static def createAcceptInvitation(Member mailCreator, def grailsProject) {
-        // TODO: dry
         def thread = mailCreator.mailbox.getConverationThread(SystemMessageType.PROJECT_INVITATION, grailsProject)
-        assert thread!=null
-        def msg = createSystemMail(SystemMessageType.PROJECT_INVITATION_ACCEPTANCE, mailCreator.name, grailsProject, thread)
+        createSystemMail(SystemMessageType.PROJECT_INVITATION_ACCEPTANCE, mailCreator.name, grailsProject, thread)
     }
 
     /**
@@ -52,7 +48,8 @@ class SystemMessageFactory extends AbstractMessageFactory{
      * @return message
      */
     public static def createApproveToJoinRequest(Member mailCreator, def grailsProject) {
-        createSystemMail(SystemMessageType.PROJECT_REQUEST_APPROVAL, mailCreator.name, grailsProject)
+        def thread = mailCreator.mailbox.getConverationThread(SystemMessageType.PROJECT_JOIN_REQUEST, grailsProject)
+        createSystemMail(SystemMessageType.PROJECT_REQUEST_APPROVAL, mailCreator.name, grailsProject, thread)
     }
 
     /**
@@ -60,7 +57,8 @@ class SystemMessageFactory extends AbstractMessageFactory{
      * @return message
      */
     public static def createDisapprovalToJoinRequest(Member mailCreator, def grailsProject) {
-        createSystemMail(SystemMessageType.PROJECT_REQUEST_DISAPPROVAL, mailCreator.name, grailsProject)
+        def thread = mailCreator.mailbox.getConverationThread(SystemMessageType.PROJECT_JOIN_REQUEST, grailsProject)
+        createSystemMail(SystemMessageType.PROJECT_REQUEST_DISAPPROVAL, mailCreator.name, grailsProject, thread)
     }
 
   
