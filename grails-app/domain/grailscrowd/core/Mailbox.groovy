@@ -9,29 +9,39 @@ import grailscrowd.core.message.GenericMessage
 
 class Mailbox {
 
+
+    /** maximum days any message is visible in in- or sentbox */
+    public static final int MAX_DAYS_VISIBILITY = 80
+
+    SortedSet messages
+    
     static hasMany = [messages: GenericMessage]
     static belongsTo = [member: Member]
     static fetchMode = [messages: 'eager']
 
 
     def hasAnyDisplayableMessages() {
-        getInboxMessages().size() > 0
+        !getInboxMessages().empty
     }
 
     def hasAnyNewMessages() {
-        this.messages.any { it.isNew() }
+        this.messages.any { it.isNew() && visibleInInbox(it) }
     }
 
     def getNumberOfNewMessages() {
-        this.messages.findAll { it.isNew() }.size()
+        this.inboxMessages.findAll {it.isNew() }.size()
     }
 
     def getInboxMessages(){
-        this.messages.findAll {it.isVisibleInInbox()}
+        this.messages.findAll(visibleInInbox)
     }
 
     private def getInboxMessage(id) {
-        this.messages.find {it.id == id}
+        this.inboxMessages.find {it.id}
+    }
+
+    def visibleInInbox = {msg->
+        !msg.isDeleted() && msg.sentDate >( new Date()-MAX_DAYS_VISIBILITY)
     }
 
     def getInboxMessageAndMarkAsSeen(id) {
@@ -40,33 +50,28 @@ class Mailbox {
         return msg
     }
 
+    @Deprecated
     def markMessageAsArchived(id) {
+        throw new AssertionError("Will be removed after refactoring")
         // remove
     }
 
+    @Deprecated
     def markMessageAsAcknowleged(id) {
+        throw new AssertionError("Will be removed after refactoring")        
         // remove
 
     }
 
 
-    /** get converation thread for given message type and grails project */ 
+    /** get converation thread for given message type and grails project */
     def getConverationThread(systemMessageType, grailsProject){
         def msg = getInboxMessages().find{
-            println it;
              return it.isSystemMessage() &&
              it.payload.type==systemMessageType &&
              it.payload.projectId == grailsProject.id
          }
         return msg?.thread
-    }
-
-    def getSentboxMessage(id){
-        def c = GenericMessage.createCriteria()
-        return  c.get{
-                idEq(id)
-                and(sentboxMessageCriteria)
-                }
     }
 
     /**
@@ -77,12 +82,23 @@ class Mailbox {
         def c = GenericMessage.createCriteria()
         return  c.list(sentboxMessageCriteria)
     }
+   
+
+    def getSentboxMessage(id){
+        def c = GenericMessage.createCriteria()
+        return  c.get{
+                idEq(id)
+                and(sentboxMessageCriteria)
+                }
+    }
 
     private def sentboxMessageCriteria ={
             and {
                 eq('fromMember', member.name)
-                gt('sentDate', new Date()-80)  // not older than 80 days
+                gt('sentDate', new Date()-MAX_DAYS_VISIBILITY)  // not older than x days
             }
             order("sentDate", "desc")
         }
+
+
 }
