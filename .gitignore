@@ -12,3 +12,4 @@ web-app/index.gsp
 *.iws
 *.war
 *DB*
+out
