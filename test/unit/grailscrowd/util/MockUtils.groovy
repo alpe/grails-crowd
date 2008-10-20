@@ -74,9 +74,11 @@ class MockUtils {
 
         missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "belongsTo")
         if (missingProperties) {
-            missingProperties.each {key, value ->
-                if (!clazz.metaClass.hasProperty(obj, key)) {
-                    clazz.metaClass."$key" = null
+            missingProperties.each {entry->
+                if (entry instanceof Map.Entry){
+                    if (!clazz.metaClass.hasProperty(obj, entry.key)) {
+                        clazz.metaClass."${entry.key}" = null
+                    }
                 }
             }
         }
