@@ -77,7 +77,7 @@ class GenericMessage implements Comparable {
      * Compare by sentData asc.
      */
     public int compareTo(other){
-      return this.sentDate <=> other.sentDate
+      return other.sentDate<=>this.sentDate
     }
 
 }
