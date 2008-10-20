@@ -29,7 +29,7 @@ class FreeFormMessageSentTest extends GroovyTestCase {
         def anySubject = "anySubject"
         def anyBody = "anyBody"
         def message = null
-        GenericMessage.withTransaction{ctx->
+        ConversationThread.withTransaction{ctx->
             message = FreeFormMessageFactory.createNewMessage(anySender, anySubject, anyBody)
             messageService.submit(anyRecipient, message)
             anyRecipient.save(flush:true)

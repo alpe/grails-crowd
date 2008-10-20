@@ -9,9 +9,9 @@ import grailscrowd.util.*
 class MessageFixture extends AbstractDomainFixture{
 
     static final String ANY_FREEFORM_SUBJECT = 'Testmail'
-    static final String ANYINVITATION_SUBJECT = 'Test: Project Invitation'
-    static final String ANYINVITATION_ACCEPT_SUBJECT = 'Test: Grails Crowd member has joined your project'
-    static final String ANYINVITATION_REJECTION_SUBJECT = 'Test: Grails Crowd member has rejected your invitation'
+    static final String ANYINVITATION_SUBJECT = 'Project Invitation'
+//    static final String ANYINVITATION_ACCEPT_SUBJECT = 'Grails Crowd member has joined your project'
+//    static final String ANYINVITATION_REJECTION_SUBJECT = 'Grails Crowd member has rejected your invitation'
 
 
     MemberFixture anySenderFixture
@@ -44,7 +44,7 @@ class MessageFixture extends AbstractDomainFixture{
     @Override
     void addRelationData(obj){
          // already done?
-        obj.thread = conversationThreadFixture.getTestData()
+       // obj.thread = conversationThreadFixture.getTestData()
     }
 
     @Override
@@ -100,9 +100,8 @@ class MessageFixture extends AbstractDomainFixture{
 
 
    private GenericMessage createFreeFormMessage(def subject =ANY_FREEFORM_SUBJECT){
-        def result = new GenericMessage()
-        result.setPayload(new FreeFormMessagePayload(body:"Hello World,\nthis is a test message.\n with subject: $subject"))
-        return result
+       def body = "Hello World,\nthis is a test message.\n with subject: $subject"
+       return new FreeFormMessageFactory().createNewMessage(anySenderFixture.testData,subject, body)
     }
 }
 enum MessageFixtureType{

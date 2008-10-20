@@ -59,11 +59,10 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
         assertThat( message.subject, is (MessageFixture.ANY_FREEFORM_SUBJECT))
     }
 
-    void testGetSubject_invitationMessage_subjectAsExpected(){
+    void testGetSubject_invitationMessage_subjectFromConversation(){
         messageFixture.fixtureType = MessageFixtureType.INVITATION
         def message = messageFixture.createTestData()
-        assertThat('System message subjects are in message.property. Plesase look for modifications.',
-                message.subject, is (MessageFixture.ANYINVITATION_SUBJECT))
+        assertThat(message.subject, is (MessageFixture.ANYINVITATION_SUBJECT))
     }
 
 /*    void testGetSubject_invitationResponseMessages_subjectAsExpected(){
