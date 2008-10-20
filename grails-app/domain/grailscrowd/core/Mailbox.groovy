@@ -74,6 +74,12 @@ class Mailbox {
         return msg?.thread
     }
 
+    def getInboxConversationAndMarkMessageAsSeen(id){
+        log.debug "Looking for conversation of message id: "+id
+        def msg = getInboxMessageAndMarkAsSeen(id)
+        return msg?.thread
+    }
+
     /**
      * Get all messages sent within the last 80 days.
      * @return List of GenericMessages
