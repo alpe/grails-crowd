@@ -8,16 +8,19 @@ class ConversationThread {
 
     private static final String RESPONSE_PREFIX = "RE"
 
-    static belongsTo = [messages: GenericMessage]
-    static transients = ['subject']
 
     String topic
 
+    static belongsTo = GenericMessage
+    static transients = ['subject']
+    
     static constraints = {
         topic(nullable:false, blank:false, maxSize:100)
     }
 
-
+     public List getMessages(){
+         return getOrderedMessageList(this)
+     }
 
     /**
      * Get message subject.  
