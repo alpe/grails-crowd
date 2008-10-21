@@ -49,6 +49,11 @@ class GenericMessage implements Comparable {
     def markAsSeen() {
         this.status = MessageLifecycle.SEEN  
     }
+    
+    def markAsDeleted() {
+        this.status = MessageLifecycle.DELETED  
+    }
+
 
     def isNew() {
         MessageLifecycle.NEW == this.status 

@@ -40,7 +40,11 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
     }
     void testIsDeleted_delStatus_true(){
         message.status=MessageLifecycle.DELETED
-        assertTrue(message.isDeleted())
+        assertThat(message.isDeleted(), is(true))
+    }
+    void testMarkAsDeleted_success(){
+        message.markAsDeleted()
+        assertThat(message.isDeleted(), is(true))
     }
 
     void testCompareTo_samples_orderedAsExpected(){

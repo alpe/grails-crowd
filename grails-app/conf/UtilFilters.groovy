@@ -6,7 +6,7 @@ class UtilFilters {
         clearFlashMessage(controller: '*', action: '*') {
             before = {
 				if(flash.message) {                
-					flash.message = null
+//					flash.message = null
 				}
             }
         }

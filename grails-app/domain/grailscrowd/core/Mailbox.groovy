@@ -80,6 +80,16 @@ class Mailbox {
         return msg?.thread
     }
 
+    def deleteInboxMessage(id){
+        def msg = getInboxMessage(id)
+        if (!msg){
+            return false
+        }
+        msg.markAsDeleted()
+        return true
+    }
+
+
     /**
      * Get all messages sent within the last 80 days.
      * @return List of GenericMessages
