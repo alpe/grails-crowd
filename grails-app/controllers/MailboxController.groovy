@@ -12,7 +12,7 @@ class MailboxController extends SecureController {
 
     def beforeInterceptor = [action: this.&auth]
 
-
+    /** message infrastructure service */
     MessageService messageService
 
     /** start with inbox */
@@ -20,37 +20,46 @@ class MailboxController extends SecureController {
         redirect(action:'inbox')
     }
 
-    /** show incomming mails */
+    /** Show incomming mails */
     def inbox= {
         def mailbox = freshCurrentlyLoggedInMember().mailbox
-        def messages = mailbox.inboxMessages.collect{
-            def member = Member.findByName(it.fromMember)
-            toModel(member, it) + [fromMember:it.fromMember]
-        }
+        def messages = mailbox.inboxMessages.collect(mapMessagesForInView)
         render(view: 'inbox', model: [mailbox: mailbox, messages:messages])
     }
 
-    /** show outgoing mails */
+    /** Show outgoing mails */
     def sentbox= {
         def mailbox = freshCurrentlyLoggedInMember().mailbox
-        def messages = mailbox.sentboxMessages.collect{
-            def member = it.mailbox.member
-            return toModel(member, it) +[toMember:member.name]
-        }
+        def messages = mailbox.sentboxMessages.collect(mapMessagesForSentView)
       render(view: 'sentbox', model: [mailbox: mailbox, messages:messages])
     }
 
-    private def toModel(member, message){
-        return [id:message.id, subject: message.subject,
-                sentDate:message.sentDate,
-                unread:message.isNew(), answered: message.isAnswered(),
-                thread:message.thread.id,
-                memberEmail:member.email,
-                memberDisplayName:member.displayName]
+    private def mapMessagesForInView ={
+        def member = Member.findByName(it.fromMember)
+        toModel(member, it) + [fromMember:it.fromMember]
+    }
+    private def mapMessagesForSentView = {
+        def member = it.mailbox.member
+        return toModel(member, it) +[toMember:member.name]
     }
 
 
-    /** fill form command and render compose page */
+
+    /** copy to model */
+    private def toModel(sender, message){
+        return [id:message.id, subject: message.subject,
+                sentDate:message.sentDate,
+                unread:message.isNew(),
+                answered: message.isAnswered(),
+                systemMessage: message.isSystemMessage(),
+                payload:message.isSystemMessage()?message.payload:null,
+                thread:message.thread.id,
+                memberEmail:sender.email,
+                memberDisplayName:sender.displayName]
+    }
+
+
+    /** Fill form command and render compose page */
     private def composeFreeForm = {cmd->
         String name = cmd.toMemberName
         if (name){
@@ -63,19 +72,22 @@ class MailboxController extends SecureController {
                 onUpdateAttempt("Member not found.", true)                
             }
         }
+        render (view:'compose', model:[formBean:cmd])
+        return
+/*
         println "redirecting"
         onUpdateAttempt("Free recipient selection not enabled, yet!", true)
         redirect(action:'inbox')
         return false
-    }
+  */  }
 
-    /** new mail input form */
+    /** New mail input form */
     def compose = {
            def cmd = new FreeFormCommand(toMemberName:params.to)
            composeFreeForm(cmd)
     }
 
-    /* create persistent mail */
+    /* Create persistent mail */
     def create = {FreeFormCommand cmd->
         if (cmd.hasErrors()){
             composeFreeForm(cmd)
@@ -95,17 +107,28 @@ class MailboxController extends SecureController {
 
     }
 
-
-    def showInboxMessage = {
-        def msgId = 0
-		try {
-			msgId = params.id.toLong()
-		}
-		catch(NumberFormatException) {
-			redirect(uri: '/notAllowed')
-            return
+    def showConversation = {
+        Long msgId = params.id.toLong()
+        def mailbox = freshCurrentlyLoggedInMember().mailbox
+        def conversation = mailbox.getInboxConversationAndMarkMessageAsSeen(msgId)
+        log.info "Converation messages found for id (${msgId}): "+conversation.messages.size()
+        if (conversation) {
+            render(view:'conversation', model:[topic:conversation.topic,
+                    messages:conversation.messages.collect(mapMessagesForInView), focusMsgId:msgId])
+            log.debug "Returning from showConversation"
+            return;
+        } else {
+            redirect(controller:'inbox')
         }
-		def mailbox = freshCurrentlyLoggedInMember().mailbox
+    }
+
+    /** Show single inbox message
+     */
+    def showInboxMessage = {
+        long msgId = params.id.toLong()
+//redirect failure:        redirect(uri: '/notAllowed')
+
+        def mailbox = freshCurrentlyLoggedInMember().mailbox
 		def msg = mailbox.getInboxMessageAndMarkAsSeen(msgId)
         if (msg) {
             render(view: 'message', model: [message: msg])
@@ -115,15 +138,14 @@ class MailboxController extends SecureController {
         }
     }
 
+
+
+
+    /** Show single sent message.
+     */
     def showSentboxMessage = {
-        def msgId = 0
-		try {
-			msgId = params.id.toLong()
-		}
-		catch(NumberFormatException) {
-			redirect(uri: '/notAllowed')
-            return
-        }
+	    def msgId = params.id.toLong()
+//			redirect(uri: '/notAllowed')
 		def mailbox = freshCurrentlyLoggedInMember().mailbox
 		def msg = mailbox.getSentboxMessage(msgId)
         if (msg) {
@@ -134,13 +156,28 @@ class MailboxController extends SecureController {
         }
     }
 
+    @Deprecated
     def archiveMessage = {
         freshCurrentlyLoggedInMember().mailbox.markMessageAsArchived(params.id.toLong())
         redirect(controller:'mailbox')
     }
 
+    def deleteInboxMessage = {
+        def msgId = params.id.toLong()
+        log.info "deleting message with id:$msgId"
+        if (freshCurrentlyLoggedInMember().mailbox.deleteInboxMessage(msgId)){
+            onUpdateAttempt("Message deleted.", false)
+        }else{
+            onUpdateAttempt("Failed to delete message.", true)
+        }
+        redirect(action:'inbox')
+    }
+
 }
 
+/**
+ * Formular validation command.
+ */
 class FreeFormCommand{
 
     /** transient member data */
@@ -154,6 +191,10 @@ class FreeFormCommand{
         this.subject = ''
         this.body = ''
         this.toMemberName = ''
+    }
+
+    boolean isKnownMember(){
+        return toMember!=null
     }
 
     static constraints = {
