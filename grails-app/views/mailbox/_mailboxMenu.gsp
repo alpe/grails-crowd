@@ -8,7 +8,7 @@
 <h6>
 <g:if test="${location != 'inbox'}">
     <g:link class="inline-link" controller="mailbox" action="inbox" >
-        <g:message code="mailbox.menu.inbox" /> <g:if test="${mailbox.hasAnyNewMessages()}">(${mailbox.numberOfNewMessages} new)</g:if>
+        <g:message code="mailbox.menu.inbox" /> <g:if test="${loggedInMember.mailbox.hasAnyNewMessages()}">(${loggedInMember.mailbox.numberOfNewMessages} new)</g:if>
     </g:link>
 </g:if>
 <g:else>
