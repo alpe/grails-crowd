@@ -1,59 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<content tag="pageNav">sentbox</content>
 <head>
-    <title>Mailbox: ${loggedInMember.name}</title>
-    <meta name="layout" content="grailscrowd" />
+    <meta name="layout" content="mailbox" />
 </head>
 
-
-<body id="mailbox">
-      <g:render template="/shared/messagesRenderer" model="[:]" />
-
-      <div class="content" style="width: 120px; padding-left: 5px;padding-right: 5px; float: left;background: red">
-          <h6><g:link class="inline-link" controller="mailbox" action="compose" >Compose Message</g:link></h6>
-          <h6><g:link class="inline-link" controller="mailbox" action="inbox" >Inbox <g:if test="${mailbox.hasAnyNewMessages()}">(${mailbox.numberOfNewMessages} new)</g:if></g:link></h6>
-          <h6>Sent Messages</h6>
-    </div>
-    <div  style="width: 800px; padding-top:10px; padding-left: 10px; float: left;background: yellow">
-        <div class="main">
+<body>
+        <div >
             <span class="content-font">
             <g:if test="${messages}">
                 <table class="data">
                     <tbody>
-                    <g:each in="${messages}" var="message">
-                        <g:if test="${message.unread}">
-                            <tr class="new">
-                        </g:if>
-                        <g:else>
-                            <tr>
-                        </g:else>
-                        <td>
-                             <g:render template="/shared/memberIconAndNameSmall" model="[email:message.memberEmail, name:message.toMember, displayName: memberDisplayName]" />
-                        </td>
-                            <td>
-                                ${message.subject}
-                            </td>
-                            <td style="padding-left: 10px">
-                                <g:link class="inline-link" controller="mailbox" action="showSentboxMessage" params="[id:message.id]">details...</g:link>
-                            </td>
-                             <td><g:formatDate format="yyyy-MM-dd hh:mm.ss" date="${message.sentDate}"/></td>
-                             <td>unread: ${message.unread}</td>
-                             <td>Answered: ${message.answered}</td>
-                             <td>Thread: ${message.thread}</td>
-                            </tr>
-                     </g:each>
+                        <g:render template="messageSummary" collection="${messages}" var="message" />
                      </tbody>
                 </table>
             </g:if>
             <g:else>
-                <h2>Your mailbox is empty</h2>
+                <h2>Your sentbox is empty</h2>
             </g:else>
             </span>
-
         </div><!-- main-->
-
-    <div style="clear: both;" />
-    </div> <!-- content -->
-
 </body>
-</html>
