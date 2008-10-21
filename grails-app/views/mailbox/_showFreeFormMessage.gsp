@@ -1,1 +1,1 @@
-${message.payload.body.encodeAsHTML()}
+${message.payload.body.encodeAsTextile()}
