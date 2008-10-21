@@ -17,10 +17,31 @@ hibernate {
 // environment specific settings
 environments {
     development {
+        dataSource {
+            boolean pooling = true
+            dbCreate = "create-drop"
+            url = "jdbc:mysql://localhost/crowdmail"
+            driverClassName = "com.mysql.jdbc.Driver"
+            username = "crowd"
+            password = "x"
+        }
+    }
+
+    mem_development {
 		dataSource {
 			dbCreate = "create-drop" // one of 'create', 'create-drop','update'
 			url = "jdbc:hsqldb:mem:devDB"
-		}
+            //url = "jdbc:hsqldb:file:grailscrowdDB;shutdown=true"
+        }
+	}
+
+
+    mem_development {
+		dataSource {
+			dbCreate = "create-drop" // one of 'create', 'create-drop','update'
+			//url = "jdbc:hsqldb:mem:devDB"
+            //url = "jdbc:hsqldb:file:grailscrowdDB;shutdown=true"
+        }
 	}
 
     dimaDevelopment {
@@ -47,10 +68,8 @@ environments {
         dataSource {
             boolean pooling = true
             dbCreate = "update"
-            url = "jdbc:mysql://localhost/grailscrowd_production"
-            driverClassName = "com.mysql.jdbc.Driver"
-            username = "gcrowd_prod"
-            password = "crowd#pa55"
+            jndiName = "java:comp/env/jdbc/morph-ds"
+//            dialect = "org.hibernate.dialect.MySQL5Dialect"
         }
     }
     test {
