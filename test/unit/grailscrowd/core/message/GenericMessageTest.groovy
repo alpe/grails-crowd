@@ -50,7 +50,7 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
         def message3 = messageFixture.createTestData(MessageFixtureType.FREEFORM)
         message3.sentDate = new Date()-5
         def sortedList = [message, message2, message3].sort()
-        assertThat("recieved: "+sortedList*.sentDate, sortedList, is ([message2, message3, message]))
+        assertThat("recieved: "+sortedList*.sentDate, sortedList, is ([message, message3, message2]))
     }
 
     void testGetSubject_freeForm_subjectAsExpected(){
