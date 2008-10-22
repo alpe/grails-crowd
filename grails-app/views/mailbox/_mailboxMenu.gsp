@@ -12,7 +12,7 @@
     </g:link>
 </g:if>
 <g:else>
-   <g:message code="mailbox.menu.inbox" /> <g:if test="${mailbox.hasAnyNewMessages()}">(${mailbox.numberOfNewMessages} new)</g:if>
+   <g:message code="mailbox.menu.inbox" /> <g:if test="${loggedInMember.mailbox.hasAnyNewMessages()}">(${loggedInMember.mailbox.numberOfNewMessages} new)</g:if>
 </g:else>
 </h6>
 <h6>
