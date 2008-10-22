@@ -22,17 +22,69 @@ class MailboxController extends SecureController {
 
     /** Show incomming mails */
     def inbox= {
-        def mailbox = freshCurrentlyLoggedInMember().mailbox
-        def messages = mailbox.inboxMessages.collect(mapMessagesForInView)
-        render(view: 'inbox', model: [mailbox: mailbox, messages:messages])
+        def member = freshCurrentlyLoggedInMember()
+        def mailbox = member.mailbox
+        def threads = mailbox.inboxThreads .collect{
+            def msg = it.getHighlightInboxMessageFor(member)
+            mapThreadForView(member, it) +
+                    [highlightUnreadMessages:true]+
+                    [highlightMessage: mapMessageForView(msg)]
+        }
+        render(view: 'inbox', model: [mailbox: mailbox, threads:threads])
     }
 
     /** Show outgoing mails */
     def sentbox= {
-        def mailbox = freshCurrentlyLoggedInMember().mailbox
-        def messages = mailbox.sentboxMessages.collect(mapMessagesForSentView)
-      render(view: 'sentbox', model: [mailbox: mailbox, messages:messages])
+        def member = freshCurrentlyLoggedInMember()
+        def mailbox = member.mailbox
+        def threads = mailbox.sentboxThreads .collect{
+
+            def msg = it.getHighlightSentboxMessageFor(member)
+            mapThreadForView(member, it) +
+                    [highlightUnreadMessages:false] +
+                    [highlightMessage: mapMessageForView(msg)]
+        }
+        render(view: 'sentbox', model: [mailbox: mailbox, threads:threads])
     }
+
+    /** thread domain to data transfer object */
+    def mapThreadForView = {member, thread ->
+        return [id:thread.id, topic:thread.topic ]
+    }
+
+    def mapMessageForView = {msg, withPayload = false->
+        if (!msg){return null}
+        def sender = msg.getSender()
+        sender = [name:sender.name, displayName:sender.displayName, email:sender.email,]
+        def message = [id:msg.id, subject:msg.subject, systemMessage:msg.isSystemMessage(), sentDate:msg.sentDate,
+                hasReply:msg.isAnswered(),sender:sender, unread:msg.isNew()]
+        if (withPayload && message.systemMessage){
+            message = message +[payload:[messageCode:msg.payload.messageCode, projectId:msg.payload.projectId]] 
+        }
+        return message
+    }
+
+
+    def showConversation = {
+        Long threadId = params.id.toLong()
+        def member = freshCurrentlyLoggedInMember()
+        def mailbox = member.mailbox
+        def thread = mailbox.getTheadByIdAndMarkAllAsSeen(threadId)
+        log.info "Looking for thread ${threadId}: "+thread.messages.size()
+        if (thread) {
+            render(view:'conversation', model:[thread:mapThreadForView(member, thread)+
+                    [messages:thread.messages.collect{mapMessageForView(it, true)}]
+            ])
+            log.debug "Returning from showConversation"
+            return;
+        } else {
+            redirect(controller:'inbox')
+        }
+    }
+
+
+  /*
+
 
     private def mapMessagesForInView ={
         def member = Member.findByName(it.fromMember)
@@ -42,10 +94,10 @@ class MailboxController extends SecureController {
         def member = it.mailbox.member
         return toModel(member, it) +[toMember:member.name]
     }
+*/
 
 
-
-    /** copy to model */
+    /** copy to model
     private def toModel(sender, message){
         return [id:message.id, subject: message.subject,
                 sentDate:message.sentDate,
@@ -57,7 +109,7 @@ class MailboxController extends SecureController {
                 memberEmail:sender.email,
                 memberDisplayName:sender.displayName]
     }
-
+*/
 
     /** Fill form command and render compose page */
     private def composeFreeForm = {cmd->
@@ -74,12 +126,7 @@ class MailboxController extends SecureController {
         }
         render (view:'compose', model:[formBean:cmd])
         return
-/*
-        println "redirecting"
-        onUpdateAttempt("Free recipient selection not enabled, yet!", true)
-        redirect(action:'inbox')
-        return false
-  */  }
+ }
 
     /** New mail input form */
     def compose = {
@@ -99,33 +146,19 @@ class MailboxController extends SecureController {
             composeFreeForm(cmd)
             return
         }
-        def message = FreeFormMessageFactory.createNewMessage(freshCurrentlyLoggedInMember(), cmd.subject, cmd.body)
-        messageService.submit (recipient, message)
-
+        def message = FreeFormMessageFactory.createNewMessage(freshCurrentlyLoggedInMember(), cmd.body)
+        messageService.startNewConversation (cmd.subject, freshCurrentlyLoggedInMember(), recipient, message)
         onUpdateAttempt("Your message has been sent.", true)
         redirect(action:'inbox')
 
     }
 
-    def showConversation = {
-        Long msgId = params.id.toLong()
-        def mailbox = freshCurrentlyLoggedInMember().mailbox
-        def conversation = mailbox.getInboxConversationAndMarkMessageAsSeen(msgId)
-        log.info "Converation messages found for id (${msgId}): "+conversation.messages.size()
-        if (conversation) {
-            render(view:'conversation', model:[topic:conversation.topic,
-                    messages:conversation.messages.collect(mapMessagesForInView), focusMsgId:msgId])
-            log.debug "Returning from showConversation"
-            return;
-        } else {
-            redirect(controller:'inbox')
-        }
-    }
 
     /** Show single inbox message
      */
     def showInboxMessage = {
-        long msgId = params.id.toLong()
+        params.each{println it}
+//        long msgId = params.id.toLong()
 //redirect failure:        redirect(uri: '/notAllowed')
 
         def mailbox = freshCurrentlyLoggedInMember().mailbox

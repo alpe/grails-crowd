@@ -54,25 +54,37 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
         GenericMessage.withTransaction{tx->
         if (!invitee.isAwareOf(this)) {
             ProjectParticipation.pending(invitee, this)
-            messageService.submit(invitee, SystemMessageFactory.createInvitation(creator, this));
+            def msg = SystemMessageFactory.createInvitation(creator, this)
+            messageService.startNewSystemConversation(name, creator, invitee, msg)
         }
       }
     }
 
-    def acknowlegeParticipationAcceptance(creator, invitee, messageId) {
+    def acknowlegeParticipationAcceptance(invitee, messageId) {
+        acknowlegeParticipationAcceptance(getCreator(), invitee, messageId)
+    }
+    private def acknowlegeParticipationAcceptance(creator, invitee, messageId) {
         enforceParticipationInvariants(creator, invitee)
         ProjectParticipation.pending(invitee, this).accept()
+        messageService.responseTo(messageId, creator,
+                SystemMessageFactory.createRejectInvitation(invitee, this))
 //        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
-            messageService.submit(creator, SystemMessageFactory.createAcceptInvitation(invitee, this));
+//            messageService.submit(creator, SystemMessageFactory.createAcceptInvitation(invitee, this));
 //TODO:            GenericMessage.newInvitationAcceptanceMessageFor(invitation.accept())
 //        }
     }
 
-    def rejectParticipationInvitation(creator, invitee, messageId) {
+    def rejectParticipationInvitation(invitee, messageId) {
+        rejectParticipationInvitation(getCreator(), invitee, messageId)
+    }
+
+    private def rejectParticipationInvitation(creator, invitee, messageId) {
         enforceParticipationInvariants(creator, invitee)
         ProjectParticipation.pending(invitee, this).reject()
+        messageService.responseTo(messageId, creator,
+                SystemMessageFactory.createRejectInvitation(invitee, this))
 //        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
-            messageService.submit(creator, SystemMessageFactory.createRejectInvitation(invitee, this));
+//            messageService.submit(creator, SystemMessageFactory.createRejectInvitation(invitee, this));
 //TODO:            GenericMessage.newInvitationRejectionMessageFor(invitation.reject())
 //        }
     }

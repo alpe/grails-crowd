@@ -21,10 +21,9 @@ class FreeFormMessageFactoryTest extends AbstractBaseUnitTestCase{
 
 
     void testCreateMessage_validData_messageReturned(){
-        def message = FreeFormMessageFactory.createNewMessage(anySender, anySubject, anyBody)
+        def message = FreeFormMessageFactory.createNewMessage(anySender, anyBody)
         MockUtils.mockDomain(message)
         assertThat(message, is(notNullValue()))
-        assertThat(message.subject, is(anySubject))
         assertThat(message.payload.body, is(anyBody))
         assertThat(message.fromMember, is(anySender.name))
     }

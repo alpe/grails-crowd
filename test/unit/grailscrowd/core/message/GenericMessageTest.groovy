@@ -57,17 +57,12 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
         assertThat("recieved: "+sortedList*.sentDate, sortedList, is ([message, message3, message2]))
     }
 
-    void testGetSubject_freeForm_subjectAsExpected(){
+    void testGetSubject_subjectIsConversationTopic_true(){
         // get subject from conversation
         messageFixture.conversationThreadFixture.testData.topic =MessageFixture.ANY_FREEFORM_SUBJECT
         assertThat( message.subject, is (MessageFixture.ANY_FREEFORM_SUBJECT))
     }
 
-    void testGetSubject_invitationMessage_subjectFromConversation(){
-        messageFixture.fixtureType = MessageFixtureType.INVITATION
-        def message = messageFixture.createTestData()
-        assertThat(message.subject, is (MessageFixture.ANYINVITATION_SUBJECT))
-    }
 
 /*    void testGetSubject_invitationResponseMessages_subjectAsExpected(){
         message = MessageFixture.anyInviationAcceptMessage

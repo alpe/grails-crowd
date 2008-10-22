@@ -12,23 +12,33 @@ class MessageService {
 
     boolean transactional = true
 
-    /**
-     * Send given message to list of Members as recipients.
-     */
-    public void submit(List<Member> recipients, GenericMessage msg){
-        recipients.each{
-           submit(it, msg)
+    public void startNewSystemConversation(projectName, Member sender, Member recipient, GenericMessage msg){
+        if(!msg.isSystemMessage()){
+            throw new IllegalAccessException("Given message is not a system message!");
         }
+        def topic = SystemMessageFactory.getSubject(msg, projectName)
+        startNewConversation(topic, sender, recipient, msg)
     }
 
-    /**
-     * Send given message to recipient.
-     */
-    public void submit(Member recipient, GenericMessage msg){
-        log.debug "sending message to "+recipient.name+ ">"+msg.dump()
-        recipient.mailbox.addToMessages(msg)
-//        Thread.start{
-            // TODO: push to message submit stack.
-//        }
+    public void startNewConversation(String topic, Member sender, Member recipient, GenericMessage msg){
+        assert sender
+        assert recipient
+        List participators = [sender, recipient]
+        def thread = ConversationThread.newInstance(topic, participators)
+        participators.each{it.mailbox.addToConversations(thread)}
+        addMessage(thread, sender, msg)
     }
+
+    public void responseTo(long messageId, Member sender, GenericMessage msg){
+        responseTo(GenericMessage.get(messageId).getThread(), sender, msg)
+    }
+    public void responseTo(ConversationThread thread, Member sender, GenericMessage msg){
+        addMessage(thread, sender, msg)
+    }
+
+    private void addMessage(thread, sender, msg){
+         thread.addNewMessage(sender, msg)
+        // Todo: inform conversation members except sender
+    }
+  
 }

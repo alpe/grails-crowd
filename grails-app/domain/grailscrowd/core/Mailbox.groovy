@@ -1,6 +1,8 @@
 package grailscrowd.core
 
-import grailscrowd.core.message.GenericMessage
+import grailscrowd.core.message.*
+import grailscrowd.core.message.ConversationThread
+import org.hibernate.SessionFactory
 
 /** added a test line to determine svn working status (mgk) **/
 //The idea of mailbox is kind of like del.icio.us for:username idea.
@@ -9,46 +11,52 @@ import grailscrowd.core.message.GenericMessage
 
 class Mailbox {
 
-
     /** maximum days any message is visible in in- or sentbox */
     public static final int MAX_DAYS_VISIBILITY = 80
 
-    SortedSet messages
+    SortedSet conversations
     
-    static hasMany = [messages: GenericMessage]
+    static hasMany = [conversations: ConversationThread]
     static belongsTo = [member: Member]
-    static fetchMode = [messages: 'eager']
+//    static fetchMode = [messages: 'eager']
 
 
-    def hasAnyDisplayableMessages() {
-        !getInboxMessages().empty
-    }
-
+    /** has any new message in any thread */
     def hasAnyNewMessages() {
-        this.messages.any { it.isNew() && visibleInInbox(it) }
+        return getNumberOfNewMessages()
+//            conversations.any{it.hasAnyNewMessages(member)}
     }
 
+    /** get number of new message in all thread */
     def getNumberOfNewMessages() {
-        this.inboxMessages.findAll {it.isNew() }.size()
+        def result =  Mailbox.executeQuery(
+            "select count(m.id) from grailscrowd.core.Mailbox as b inner join b.conversations as c inner join c.messages as m where b.id=? and m.status =? and m.fromMember!=?",
+                [id, MessageLifecycle.NEW, member.name]
+        )
+        if (result){
+            result = result.iterator().next()
+        }
+        println "found: "+result
+        return result
+        
+/*        conversations.inject(0){count, it->
+            count+it.getNumberOfNewMessagesFor(member)
+        }
+*/
     }
 
-    def getInboxMessages(){
-        this.messages.findAll(visibleInInbox)
-    }
-
-    private def getInboxMessage(id) {
-        this.inboxMessages.find {it.id}
-    }
 
     def visibleInInbox = {msg->
         !msg.isDeleted() && msg.sentDate >( new Date()-MAX_DAYS_VISIBILITY)
     }
 
+/*
     def getInboxMessageAndMarkAsSeen(id) {
         def msg = getInboxMessage(id)
         msg?.markAsSeen()
         return msg
     }
+    */
 
     @Deprecated
     def markMessageAsArchived(id) {
@@ -64,7 +72,7 @@ class Mailbox {
     }
 
 
-    /** get converation thread for given message type and grails project */
+    /** get converation thread for given message type and grails project
     def getConverationThread(systemMessageType, grailsProject){
         def msg = getInboxMessages().find{
              return it.isSystemMessage() &&
@@ -79,21 +87,40 @@ class Mailbox {
         def msg = getInboxMessageAndMarkAsSeen(id)
         return msg?.thread
     }
-
+ */
     def deleteInboxMessage(id){
-        def msg = getInboxMessage(id)
+/*        def msg = getInboxMessage(id)
         if (!msg){
             return false
         }
         msg.markAsDeleted()
         return true
+        */
+    }
+
+    public def getTheadById(id){
+        return conversations.find{it.id == id}
+    }
+
+    public def getTheadByIdAndMarkAllAsSeen(id){
+        def result =getTheadById(id)
+        result.getNewMessagesFor(member).each{it.markAsSeen()}
+        return result
+    }
+
+    public Collection getInboxThreads(){
+        return conversations.grep{it.containsMessageFor(member)}
+    }
+
+    public Collection getSentboxThreads(){
+        return conversations.grep{it.containsMessageFrom(member)}
     }
 
 
     /**
      * Get all messages sent within the last 80 days.
      * @return List of GenericMessages
-     */
+
     public List getSentboxMessages(){
         def c = GenericMessage.createCriteria()
         return  c.list(sentboxMessageCriteria)
@@ -115,6 +142,6 @@ class Mailbox {
             }
             order("sentDate", "desc")
         }
-
+         */
 
 }

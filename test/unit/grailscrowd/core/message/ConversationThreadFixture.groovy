@@ -7,19 +7,24 @@ import grailscrowd.util.AbstractDomainFixture
  */
 class ConversationThreadFixture extends AbstractDomainFixture{
 
+    static final String ANY_TOPIC ="anyTopic..blabla"
+
     MessageFixture messageFixture
+
+    String topic
 
     ConversationThreadFixture(){
         this(new MessageFixture())
     }
 
     ConversationThreadFixture(messageFixture){
+        super()
         this.messageFixture = messageFixture
     }
 
     @Override
     def createTestDataInstance(){
-        return new ConversationThread()
+        return new ConversationThread(topic:topic)
     }
 
     @Override
@@ -31,6 +36,7 @@ class ConversationThreadFixture extends AbstractDomainFixture{
     void reset(){
         super.reset()
         fixtureType = ConversationThreadFixtureType.NEW
+        topic = ANY_TOPIC
     }
 }
 

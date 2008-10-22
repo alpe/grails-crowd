@@ -18,8 +18,6 @@ class MessageFixture extends AbstractDomainFixture{
     GrailsProjectFixture anyProjectFixture
     ConversationThreadFixture conversationThreadFixture
 
-    String freeFormMailSubject
-
     MessageFixture(){
         this(new MemberFixture())
     }
@@ -35,7 +33,7 @@ class MessageFixture extends AbstractDomainFixture{
     def createTestDataInstance(){
         switch(fixtureType){
            case MessageFixtureType.FREEFORM:
-               return createFreeFormMessage(freeFormMailSubject)
+               return createFreeFormMessage()
            case MessageFixtureType.INVITATION:
                 return getAnyInviationMessage()
         }
@@ -43,22 +41,21 @@ class MessageFixture extends AbstractDomainFixture{
 
     @Override
     void addRelationData(obj){
-         // already done?
-       // obj.thread = conversationThreadFixture.getTestData()
+        obj.thread = conversationThreadFixture.getTestData()
     }
 
     @Override
     void reset(){
         super.reset()
         fixtureType = MessageFixtureType.FREEFORM
-        freeFormMailSubject = ANY_FREEFORM_SUBJECT
     }
 
-
+    /** short way to single freeform message */
      public def getAnyFreeFormMessage(def subject =ANY_FREEFORM_SUBJECT){
         fixtureType = MessageFixtureType.FREEFORM
-        freeFormMailSubject = subject
-         return this.createTestData()
+        conversationThreadFixture.topic = subject
+        conversationThreadFixture.createTestData()
+        return this.createTestData()
      }
 
 
@@ -70,6 +67,7 @@ class MessageFixture extends AbstractDomainFixture{
    private GenericMessage getAnyInviationMessage(){
         return  doInContext{anySender, anyProject->
             def result = SystemMessageFactory.createInvitation(anySender, anyProject)
+
 //            result.payload.messageSource = createFakeMessages(ANYINVITATION_SUBJECT)
             return result
         }
@@ -99,9 +97,8 @@ class MessageFixture extends AbstractDomainFixture{
 
 
 
-   private GenericMessage createFreeFormMessage(def subject =ANY_FREEFORM_SUBJECT){
-       def body = "Hello World,\nthis is a test message.\n with subject: $subject"
-       return new FreeFormMessageFactory().createNewMessage(anySenderFixture.testData,subject, body)
+   private GenericMessage createFreeFormMessage(def anyBody ="Hello World,\nthis is a test message.\n"){
+       return new FreeFormMessageFactory().createNewMessage(anySenderFixture.testData, anyBody)
     }
 }
 enum MessageFixtureType{

@@ -29,7 +29,7 @@ class ProjectParticipationController extends SecureController {
         render(view: '/member/viewProfile', model: [member: invitee])
 		
 		if(invitee.canBeNotifiedViaEmail) {
-			try {
+/*TODO:			try {
 				sendMail {
 		   			to invitee.email
 		   			subject "[Grails Crowd] project participation invitation"
@@ -40,47 +40,22 @@ class ProjectParticipationController extends SecureController {
 				log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
 			}
 				
-		}
+*/		}
+
     }
 
-    def acceptParticipationInvitation = {
-        withProject {projectMap ->
-            projectMap.project.acknowlegeParticipationAcceptance(projectMap.creator,
-                    projectMap.inviteeOrRequestor, params.messageId.toLong())
-			
-			if(projectMap.creator.canBeNotifiedViaEmail) {
-/*				try {
-					sendMail {
-						to projectMap.creator.email
-						subject "[Grails Crowd] project participation acceptance"
-						body "Grails Crowd member '$projectMap.inviteeOrRequestor.displayName' has joined project '$projectMap.project.name'\n\nGo to your mailbox to see more details: ${createLink(controller: 'mailbox', action: 'index', absolute: true)}"
-					}
-				}
-				catch (Exception e) {
-					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
-				}
-*/			}
+    def acceptParticipationInvitation = {InvitationResponseForm cmd->
+        if (!cmd.hasErrors()){
+            GrailsProject.get(cmd.projectId).acknowlegeParticipationAcceptance(freshCurrentlyLoggedInMember(), cmd.messageId)
         }
+  redirect(controller: 'mailbox')
     }
 
-    def rejectParticipationInvitation = {
-        withProject {projectMap ->
-            projectMap.project.rejectParticipationInvitation(projectMap.creator,
-                    projectMap.inviteeOrRequestor, params.messageId.toLong())
-        	
-			if(projectMap.creator.canBeNotifiedViaEmail) {
-/*				try {
-					sendMail {
-						to projectMap.creator.email
-						subject "[Grails Crowd] project participation rejection"
-						body "Grails Crowd member '$projectMap.inviteeOrRequestor.displayName' has rejected to join project '$projectMap.project.name'\n\nGo to your mailbox to see more details: ${createLink(controller: 'mailbox', action: 'index', absolute: true)}"
-					}
-				}
-				catch (Exception e) {
-					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
-				}
-*/			}
-		}
+    def rejectParticipationInvitation = {InvitationResponseForm cmd->
+        if (!cmd.hasErrors()){
+            GrailsProject.get(cmd.projectId).rejectParticipationInvitation(freshCurrentlyLoggedInMember(), cmd.messageId)
+        }
+        redirect(controller: 'mailbox')
     }
 
     def requestParticipation = {
@@ -96,7 +71,7 @@ class ProjectParticipationController extends SecureController {
         render(view: '/grailsProject/viewProject', model: [grailsProject: project])
 		
 		if(project.creator.canBeNotifiedViaEmail) {
-/*			try {
+/*TODO:		try {
 				sendMail {
 					to project.creator.email
 					subject "[Grails Crowd] project participation request"
@@ -116,7 +91,7 @@ class ProjectParticipationController extends SecureController {
                     projectMap.inviteeOrRequestor, params.messageId.toLong())
 		
 			if(projectMap.inviteeOrRequestor.canBeNotifiedViaEmail) {
-/*				try {
+/*TODO:				try {
 					sendMail {
 						to projectMap.inviteeOrRequestor.email
 						subject "[Grails Crowd] project participation approval"
@@ -136,7 +111,7 @@ class ProjectParticipationController extends SecureController {
                     projectMap.inviteeOrRequestor, params.messageId.toLong())
 			
 			if(projectMap.inviteeOrRequestor.canBeNotifiedViaEmail) {
-/*				try {
+/*TODO:				try {
 					sendMail {
 						to projectMap.inviteeOrRequestor.email
 						subject "[Grails Crowd] project participation disapproval"
@@ -160,3 +135,17 @@ class ProjectParticipationController extends SecureController {
         redirect(controller: 'mailbox')
     }
 }
+/**
+ * Form
+ * @author ap
+ */
+class InvitationResponseForm{
+
+    Long messageId, projectId
+
+    static constraints = {
+        messageId(nullable: false)
+        projectId(nullable: false)
+    }
+}
+

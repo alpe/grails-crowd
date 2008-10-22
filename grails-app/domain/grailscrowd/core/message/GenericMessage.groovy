@@ -10,8 +10,12 @@ import grailscrowd.core.Member
  * @author ap
  */
 class GenericMessage implements Comparable {
+    
+    /** DB entry last modified field, automatically set */
+    Date lastUpdated
 
     Date sentDate
+
 
     /** internal unique member name */
     String fromMember
@@ -21,9 +25,7 @@ class GenericMessage implements Comparable {
     GenericMessagePayload payload
 
 
-    static belongsTo = [mailbox: Mailbox]
-    
-    ConversationThread thread
+    static belongsTo = [thread: ConversationThread]
 
     static transients =  ['subject']
 
@@ -31,7 +33,7 @@ class GenericMessage implements Comparable {
         fromMember(nullable:false, blank: false)
         status(nullable:false)
         payload(nullable:false)
-        thread(nullable:false)
+//        thread(nullable:false)
     }
 
     GenericMessage(){
@@ -42,6 +44,7 @@ class GenericMessage implements Comparable {
     /**
      * Get message subject. 
      */
+    @Deprecated
     public String getSubject(){
             return thread.getSubject(this)
     }
@@ -72,17 +75,21 @@ class GenericMessage implements Comparable {
    }
 
    def isSender(Member member){
-       member && this.fromMember == member.name
+       member && isSender(member.name)
    }
-    def isRecipient(Member member){
-        member && mailbox.member == member 
-    }
+   protected isSender(String name){
+        name && this.fromMember == name
+   }
+
+   def getSender(){
+       thread.getSender(this)
+   }
 
     /**
-     * Compare by sentData asc.
+     * Compare by sentData.
      */
     public int compareTo(other){
-      return other.sentDate<=>this.sentDate
+      return this.sentDate<=>other.sentDate
     }
 
 }

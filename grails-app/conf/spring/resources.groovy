@@ -30,7 +30,7 @@ beans = {
     namingStrategy(MetadataNamingStrategy){
         attributeSource = jmxAttributeSource
     }
-
+/*
     exporter(MBeanExporter){
         server = mbeanServer
         assembler = assembler
@@ -38,5 +38,5 @@ beans = {
         beans = ['gc.hibernate:name=hibernate.statistics':hibernateStatistics,
         ]
     }
-
+                */
 }

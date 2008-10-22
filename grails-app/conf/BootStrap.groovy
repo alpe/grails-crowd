@@ -41,8 +41,8 @@ class BootStrap {
             assert anyMember
             project.inviteParticipant(creatorMember, anyMember)
 
-            def message = FreeFormMessageFactory.createNewMessage(sampleMembers[3], 'anySubject', 'anyBody')
-            messageService.submit(sampleMembers[4], message)
+            def message = FreeFormMessageFactory.createNewMessage(sampleMembers[3], 'anyBody')
+//            messageService.submit(sampleMembers[4], message)
         }
     }
 
