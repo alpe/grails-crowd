@@ -14,7 +14,7 @@ class FreeFormMessagePayload extends GenericMessagePayload{
     static transients =  ['systemPayload']
 
     static constraints = {
-        body(nullable:false, blank:false, maxSize:500)
+        body(nullable:false, blank:false, maxSize:3500)
       }
 
 
