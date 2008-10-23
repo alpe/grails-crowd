@@ -29,9 +29,14 @@ class MessageService {
         addMessage(thread, sender, msg)
     }
 
-    public void responseTo(long messageId, Member sender, GenericMessage msg){
+    public void respondToMessage(long messageId, Member sender, GenericMessage msg){
         responseTo(GenericMessage.get(messageId).getThread(), sender, msg)
     }
+    public void respondToThread(long threadId, Member sender, GenericMessage msg){
+        responseTo(ConversationThread.get(threadId), sender, msg)
+    }
+
+
     public void responseTo(ConversationThread thread, Member sender, GenericMessage msg){
         addMessage(thread, sender, msg)
     }

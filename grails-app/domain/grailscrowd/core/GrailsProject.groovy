@@ -66,7 +66,7 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     private def acknowlegeParticipationAcceptance(creator, invitee, messageId) {
         enforceParticipationInvariants(creator, invitee)
         ProjectParticipation.pending(invitee, this).accept()
-        messageService.responseTo(messageId, creator,
+        messageService.respondToMessage(messageId, creator,
                 SystemMessageFactory.createRejectInvitation(invitee, this))
 //        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
 //            messageService.submit(creator, SystemMessageFactory.createAcceptInvitation(invitee, this));
@@ -81,7 +81,7 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     private def rejectParticipationInvitation(creator, invitee, messageId) {
         enforceParticipationInvariants(creator, invitee)
         ProjectParticipation.pending(invitee, this).reject()
-        messageService.responseTo(messageId, creator,
+        messageService.respondToMessage(messageId, creator,
                 SystemMessageFactory.createRejectInvitation(invitee, this))
 //        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
 //            messageService.submit(creator, SystemMessageFactory.createRejectInvitation(invitee, this));
