@@ -42,7 +42,7 @@ class MailboxController extends SecureController {
             def msg = it.getHighlightSentboxMessageFor(member)
             mapThreadForView(member, it) +
                     [highlightUnreadMessages:false] +
-                    [highlightMessage: mapMessageForView(msg)]
+                    [highlightMessage: mapMessageForView(msg, false, false)]
         }
         render(view: 'sentbox', model: [mailbox: mailbox, threads:threads])
     }
@@ -52,14 +52,18 @@ class MailboxController extends SecureController {
         return [id:thread.id, topic:thread.topic ]
     }
 
-    def mapMessageForView = {msg, withPayload = false->
+    def mapMessageForView = {msg, withPayload = false, displaySender=true->
         if (!msg){return null}
-        def sender = msg.getSender()
+        def sender = displaySender? msg.getSender():msg.getRecipients().iterator().next()
         sender = [name:sender.name, displayName:sender.displayName, email:sender.email,]
         def message = [id:msg.id, subject:msg.subject, systemMessage:msg.isSystemMessage(), sentDate:msg.sentDate,
                 hasReply:msg.isAnswered(),sender:sender, unread:msg.isNew()]
-        if (withPayload && message.systemMessage){
-            message = message +[payload:[messageCode:msg.payload.messageCode, projectId:msg.payload.projectId]] 
+        if (withPayload){
+             if (message.systemMessage){
+                message = message +[payload:[messageCode:msg.payload.messageCode, projectId:msg.payload.projectId]]
+             }else{
+                 message = message +[payload:[body:msg.payload.body]]
+             }
         }
         return message
     }
