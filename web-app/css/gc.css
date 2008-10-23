@@ -245,3 +245,14 @@
    #footer {font-size:11px; clear:both; margin-top:18px; border-top:1px solid #ddd; padding:18px 10px; width:940px;}
    #footer .clear {clear:both; border-top:1px solid #ddd;}
    #footer img {float:right;}
+
+    a.membernameSmall {
+        text-decoration:none;vertical-align:top;
+        font-size: 15px;
+        font-weight:bold;
+    }
+    a.membernameBig {
+        text-decoration:none;vertical-align:bottom;
+        font-size: 20px;
+        font-weight:bold;
+    }
