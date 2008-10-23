@@ -71,6 +71,10 @@ class MailboxController extends SecureController {
 
     def showConversation = {
         Long threadId = params.id.toLong()
+        renderConversation(threadId)
+    }
+
+    def renderConversation ={Long threadId ->
         def member = freshCurrentlyLoggedInMember()
         def mailbox = member.mailbox
         def thread = mailbox.getTheadByIdAndMarkAllAsSeen(threadId)
@@ -84,6 +88,7 @@ class MailboxController extends SecureController {
         } else {
             redirect(controller:'inbox')
         }
+
     }
 
 
@@ -154,7 +159,6 @@ class MailboxController extends SecureController {
         messageService.startNewConversation (cmd.subject, freshCurrentlyLoggedInMember(), recipient, message)
         onUpdateAttempt("Your message has been sent.", true)
         redirect(action:'inbox')
-
     }
 
 
@@ -173,6 +177,18 @@ class MailboxController extends SecureController {
         } else {
             redirect(controller:'inbox')
         }
+    }
+
+    def reply = { ReplyFormCommand cmd->
+        if (cmd.hasErrors()){
+            println "form: "+cmd.dump()
+            renderConversation(cmd.threadId)
+            return 
+        }
+        def message = FreeFormMessageFactory.createNewMessage(freshCurrentlyLoggedInMember(), cmd.body)
+        messageService.respondToThread (cmd.threadId, freshCurrentlyLoggedInMember(), message)
+        onUpdateAttempt("Your message has been sent.", true)
+        redirect(action:'inbox')
     }
 
 
@@ -209,7 +225,6 @@ class MailboxController extends SecureController {
         }
         redirect(action:'inbox')
     }
-
 }
 
 /**
@@ -237,9 +252,21 @@ class FreeFormCommand{
     static constraints = {
         // should match FreeFormMessagePayload#constraints
         subject(nullable: false, blank:false, maxSize: 100)
-        body(nullable: false, blank: false, maxSize: 500)
+        body(nullable: false, blank: false, maxSize: 3500)
         // member name is not restricted in size but 100 is a lot
         toMemberName(nullable:false, blank:false, maxSize: 100)
     }
-    
+}
+
+/**
+ * Formular validation command.
+ */
+class ReplyFormCommand{
+    Long threadId
+    String body
+
+    static constraints = {
+        threadId(nullable: false)
+        body(nullable: false, blank: false, maxSize: 3500)
+    }
 }
