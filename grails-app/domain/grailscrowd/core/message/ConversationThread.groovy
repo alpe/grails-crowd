@@ -17,6 +17,8 @@ class ConversationThread implements Comparable {
 
     SortedSet messages
 
+    ThreadVisibility visibility
+
     static belongsTo = Mailbox
     static transients = ['subject']
     static hasMany = [messages: GenericMessage, participators:Member]
@@ -24,6 +26,7 @@ class ConversationThread implements Comparable {
     
     static constraints = {
         topic(nullable:false, blank:false, maxSize:100)
+        visibility(nullable:false)
     }
 
     /**
@@ -36,9 +39,9 @@ class ConversationThread implements Comparable {
         if(!topic){
             throw new IllegalArgumentException('Given topic must not be null or empty!')
         }
-        def result = new ConversationThread(topic:topic, dateCreated:new Date())
+        def result = new ConversationThread(topic:topic, dateCreated:new Date(),
+                visibility:ThreadVisibility.PRIVATE)
         members.each{
-            println "adding member: "+it.dump()
             result.addToParticipators(it)
         }
         return result
@@ -49,12 +52,20 @@ class ConversationThread implements Comparable {
         return participators.any{it.name==member.name}
     }
 
-    /** Check participation status of member, fail when unknonw or execute closure.
+    /** Check visibility and participation status of member, fail when not allowed else execute closure.
      */
     def inThreadContext(member, closure){
-         if(!isParticipator(member)){
-             throw new IllegalArgumentException("Given member is not part of this conversation!")
-         }
+        switch(visibility){
+            case ThreadVisibility.PRIVATE:
+                if(!isParticipator(member)){
+                    throw new IllegalArgumentException("Given member is not part of this private conversation!")
+                }
+            break
+            case ThreadVisibility.MEMBERS:
+                if (!member){
+                    throw new IllegalArgumentException("Current thread is only visible to members!")
+                }
+        }
         closure.call()
     }
 
@@ -177,4 +188,8 @@ class ConversationThread implements Comparable {
       return other.dateCreated<=>this.dateCreated
     }
 
+}
+
+enum  ThreadVisibility{
+    PRIVATE, MEMBERS, ALL
 }
