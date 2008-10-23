@@ -85,6 +85,10 @@ class GenericMessage implements Comparable {
        thread.getSender(this)
    }
 
+    def getRecipients(){
+        thread.getRecipients(this)
+    }
+
     /**
      * Compare by sentData.
      */

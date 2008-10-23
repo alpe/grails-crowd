@@ -156,6 +156,9 @@ class ConversationThread implements Comparable {
 //        }
 //        return topic
     }
+    def getRecipients(message){
+        return participators.grep{it.name!=message.fromMember}
+    }
 
     /** Is a response message to thread start message. */
     boolean isResponse(message){
