@@ -4,6 +4,7 @@ import grailscrowd.core.message.GenericMessage
 
 class ProjectParticipationController extends SecureController {
 
+
     def allowedMethods = [invite: 'POST', acceptParticipationInvitation: 'POST',
             rejectParticipationInvitation: 'POST', requestParticipation: 'POST',
             approveParticipationRequest: 'POST', rejectParticipationRequest: 'POST', index: 'POST']
@@ -27,35 +28,19 @@ class ProjectParticipationController extends SecureController {
         flash.message = """Project participation invitation has been submitted.
                            A reply from the member you are inviting should appear in your inbox."""
         render(view: '/member/viewProfile', model: [member: invitee])
-		
-		if(invitee.canBeNotifiedViaEmail) {
-/*TODO:			try {
-				sendMail {
-		   			to invitee.email
-		   			subject "[Grails Crowd] project participation invitation"
-		   			body "Grails Crowd member '$projectCreator.displayName' wants you to join project '$project.name'\n\nGo to your mailbox to see more details: ${createLink(controller: 'mailbox', action: 'index', absolute: true)}"
-				}
-			}
-			catch (Exception e) {
-				log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
-			}
-				
-*/		}
-
     }
 
-    def acceptParticipationInvitation = {InvitationResponseForm cmd->
-        if (!cmd.hasErrors()){
+    def acceptParticipationInvitation = {ProjectResponseForm cmd->
+          handleForm(cmd){
             GrailsProject.get(cmd.projectId).acknowlegeParticipationAcceptance(freshCurrentlyLoggedInMember(), cmd.messageId)
+            onUpdateAttempt("Your response is sent to the project owner.", true)
         }
-  redirect(controller: 'mailbox')
     }
 
-    def rejectParticipationInvitation = {InvitationResponseForm cmd->
-        if (!cmd.hasErrors()){
+    def rejectParticipationInvitation = {ProjectResponseForm cmd->
+          handleForm(cmd){
             GrailsProject.get(cmd.projectId).rejectParticipationInvitation(freshCurrentlyLoggedInMember(), cmd.messageId)
         }
-        redirect(controller: 'mailbox')
     }
 
     def requestParticipation = {
@@ -69,77 +54,56 @@ class ProjectParticipationController extends SecureController {
         flash.message = """Project participation request has been submitted.
                            A reply from the project creator should appear in your inbox."""
         render(view: '/grailsProject/viewProject', model: [grailsProject: project])
-		
-		if(project.creator.canBeNotifiedViaEmail) {
-/*TODO:		try {
-				sendMail {
-					to project.creator.email
-					subject "[Grails Crowd] project participation request"
-					body "Grails Crowd member '$requestor.displayName' has requested to join project '$project.name' as a participant.\n\nGo to your mailbox to see more details: ${createLink(controller: 'mailbox', action: 'index', absolute: true)}"
-				}
-			}
-			catch (Exception e) {
-				log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
-			}
-*/		}
 
     }
 
-    def approveParticipationRequest = {
-        withProject {projectMap ->
-            projectMap.project.approveRequestedParticipation(projectMap.creator,
-                    projectMap.inviteeOrRequestor, params.messageId.toLong())
-		
-			if(projectMap.inviteeOrRequestor.canBeNotifiedViaEmail) {
-/*TODO:				try {
-					sendMail {
-						to projectMap.inviteeOrRequestor.email
-						subject "[Grails Crowd] project participation approval"
-						body "Grails Crowd member '$projectMap.creator.displayName' has approved your request to join project '$projectMap.project.name' as a participant.\n\nGo to your mailbox to see more details: ${createLink(controller: 'mailbox', action: 'index', absolute: true)}"
-					}
-				}
-				catch (Exception e) {
-					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
-				}
-*/			}
-        }
-    }
-
-    def rejectParticipationRequest = {
-        withProject {projectMap ->
-            projectMap.project.rejectRequestedParticipation(projectMap.creator,
-                    projectMap.inviteeOrRequestor, params.messageId.toLong())
-			
-			if(projectMap.inviteeOrRequestor.canBeNotifiedViaEmail) {
-/*TODO:				try {
-					sendMail {
-						to projectMap.inviteeOrRequestor.email
-						subject "[Grails Crowd] project participation disapproval"
-						body "Grails Crowd member '$projectMap.creator.displayName' has rejected your request to join project '$projectMap.project.name' as a participant.\n\nGo to your mailbox to see more details: ${createLink(controller: 'mailbox', action: 'index', absolute: true)}"
-					}
-				}
-				catch (Exception e) {
-					log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
-				}
-*/			}
-        }
-    }
-
-    private def withProject(callable) {
-        GenericMessage.withTransaction{tx->
-            def inviteeOrRequestor = Member.findByName(params.inviteeOrRequestor)
-            def creator = Member.findByName(params.creator)
-            def project = GrailsProject.get(params.projectId)
-            callable([project: project, creator: creator, inviteeOrRequestor: inviteeOrRequestor])
+    /** handle project response form in no error context */
+    private def handleForm(ProjectResponseForm cmd, c){
+        if (!cmd.hasErrors()){
+            try{
+                c.call()
+            }catch (Exception e){
+                log.debug "Failed to handle submitted form.", e
+                onUpdateAttempt("Failed to submit your respons, technical problems..", false)
+            }
+        }else{
+            onUpdateAttempt("Failed to submit your respons, data incomplete.", false)
         }
         redirect(controller: 'mailbox')
     }
+
+    def approveParticipationRequest = {ProjectResponseForm cmd->
+        handleForm(cmd){
+            def reader  = freshCurrentlyLoggedInMember()
+            assert reader
+            def msg = reader.mailbox.getInboxMessageById(cmd.messageId)
+            assert msg
+            def sender = msg.getSender()
+            assert sender
+            def p = GrailsProject.get(cmd.projectId)
+
+            p.approveRequestedParticipation(reader, sender, msg)
+            onUpdateAttempt("Your response is sent to ${sender.displayName}.", true)
+        }
+    }
+
+    def rejectParticipationRequest = {ProjectResponseForm cmd->
+        handleForm(cmd){
+            def reader  = freshCurrentlyLoggedInMember()
+            def msg = reader.mailbox.getInboxMessageById(cmd.messageId)
+            def sender = msg.getSender()
+            GrailsProject.get(cmd.projectId).rejectRequestedParticipation(reader, sender, msg)
+            onUpdateAttempt("Your response is sent to ${sender.displayName}.", true)
+        }
+
+    }
+
 }
 /**
- * Form
+ * Input form used by system message form submition. 
  * @author ap
  */
-class InvitationResponseForm{
+class ProjectResponseForm{
 
     Long messageId, projectId
 
