@@ -60,7 +60,12 @@ class MailboxController extends SecureController {
                 hasReply:msg.isAnswered(),sender:sender, unread:msg.isNew()]
         if (withPayload){
              if (message.systemMessage){
-                message = message +[payload:[messageCode:msg.payload.messageCode, projectId:msg.payload.projectId]]
+                 def reader = freshCurrentlyLoggedInMember()
+                 // do not show actions in sentbox && anything pending                               
+                 boolean responseActionPending=  msg.getSender().name!=reader.name &&
+                         msg.payload.isResponseActionPending(reader)
+                message = message +[payload:[messageCode:msg.payload.messageCode, projectId:msg.payload.projectId,
+                        responseActionPending:responseActionPending]]
              }else{
                  message = message +[payload:[body:msg.payload.body]]
              }
@@ -77,48 +82,19 @@ class MailboxController extends SecureController {
     def renderConversation ={Long threadId ->
         def member = freshCurrentlyLoggedInMember()
         def mailbox = member.mailbox
-        def thread = mailbox.getTheadByIdAndMarkAllAsSeen(threadId)
+        def thread = mailbox.getTheadById(threadId)
         log.info "Looking for thread ${threadId}: "+thread.messages.size()
         if (thread) {
             render(view:'conversation', model:[thread:mapThreadForView(member, thread)+
                     [messages:thread.messages.collect{mapMessageForView(it, true)}]
             ])
-            log.debug "Returning from showConversation"
-            return;
+            mailbox.markThreadAsSeen(thread)            
+            return
         } else {
             redirect(controller:'inbox')
         }
 
     }
-
-
-  /*
-
-
-    private def mapMessagesForInView ={
-        def member = Member.findByName(it.fromMember)
-        toModel(member, it) + [fromMember:it.fromMember]
-    }
-    private def mapMessagesForSentView = {
-        def member = it.mailbox.member
-        return toModel(member, it) +[toMember:member.name]
-    }
-*/
-
-
-    /** copy to model
-    private def toModel(sender, message){
-        return [id:message.id, subject: message.subject,
-                sentDate:message.sentDate,
-                unread:message.isNew(),
-                answered: message.isAnswered(),
-                systemMessage: message.isSystemMessage(),
-                payload:message.isSystemMessage()?message.payload:null,
-                thread:message.thread.id,
-                memberEmail:sender.email,
-                memberDisplayName:sender.displayName]
-    }
-*/
 
     /** Fill form command and render compose page */
     private def composeFreeForm = {cmd->
@@ -155,8 +131,7 @@ class MailboxController extends SecureController {
             composeFreeForm(cmd)
             return
         }
-        def message = FreeFormMessageFactory.createNewMessage(freshCurrentlyLoggedInMember(), cmd.body)
-        messageService.startNewConversation (cmd.subject, freshCurrentlyLoggedInMember(), recipient, message)
+        messageService.startNewFreeFormConversation (cmd.subject, freshCurrentlyLoggedInMember(), recipient, cmd.body)
         onUpdateAttempt("Your message has been sent.", true)
         redirect(action:'inbox')
     }
@@ -181,7 +156,6 @@ class MailboxController extends SecureController {
 
     def reply = { ReplyFormCommand cmd->
         if (cmd.hasErrors()){
-            println "form: "+cmd.dump()
             renderConversation(cmd.threadId)
             return 
         }
@@ -216,9 +190,9 @@ class MailboxController extends SecureController {
     }
 
     def deleteInboxMessage = {
-        def msgId = params.id.toLong()
-        log.info "deleting message with id:$msgId"
-        if (freshCurrentlyLoggedInMember().mailbox.deleteInboxMessage(msgId)){
+        def threadId = params.id.toLong()
+        log.info "deleting message with id:$threadId"
+        if (freshCurrentlyLoggedInMember().mailbox.deleteInboxThread(threadId)){
             onUpdateAttempt("Message deleted.", false)
         }else{
             onUpdateAttempt("Failed to delete message.", true)
