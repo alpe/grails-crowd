@@ -95,10 +95,13 @@ class UrlMappings {
 //        "/mailbox/inbox/converation/$id/$msgId"(controller: 'mailbox', action: 'showConversation') //GET
         "/mailbox/sentbox/$id"(controller: 'mailbox', action: 'showSentboxMessage') //GET
         "/mailbox/inbox/$id/delete"(controller: 'mailbox', action: 'deleteInboxMessage') //GET
+        "/mailbox/inbox/$id/reply"(controller: 'mailbox', action: 'reply') //POST
+
 
         "/mailbox/messages/archive"(controller: 'mailbox', action: 'archiveMessage') //POST
 
-		//********* SEARCH ******************************************************/
+
+        //********* SEARCH ******************************************************/
 		"/search"(controller: 'search', action = 'searchForMembersAndProjects') //GET
 		"/members/byFirstLetter/$letter"(controller: 'search', action = 'searchForMembersByFirstLetter') //GET
 		"/projects/byFirstLetter/$letter"(controller: 'search', action = 'searchForProjectsByFirstLetter') //GET
