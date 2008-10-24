@@ -8,9 +8,6 @@ import grailscrowd.core.Member
  */
 class SystemMessageFactory extends AbstractMessageFactory {
 
-    /** transient i18n message source, injected by IoC  */
-    def messageSource
-
     /**
      * To support new and legacy message a version number is stored in payload.
      * @return latest version by type
@@ -31,9 +28,9 @@ class SystemMessageFactory extends AbstractMessageFactory {
         // always latest version
         switch(messageType){
             case  SystemMessageType.PROJECT_JOIN_REQUEST:
-                return "Project ${projectName} participation request"
+                return "Project '${projectName}' participation request"
             case SystemMessageType.PROJECT_INVITATION:
-            return "Project Invitation"
+            return "Project Invitation to '${projectName}'"
             default:
                 throw new AssertionError("Not supported messageType: "+messageType)
         }
