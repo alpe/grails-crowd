@@ -35,19 +35,6 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     }
     //static fetchMode = [participants: 'eager']
 
-    def requestParticipation(Member requestor) {
-        if (requestor.id == this.creatorMemberId) {
-            throw new IllegalArgumentException("The member is the creator of this project. Cannot request participation for the owning project")
-        }
-        if (participatesInThisProject(requestor)) {
-            throw new IllegalArgumentException("The member already participates in this project or has a pending participation request. Cannot request participation in projects more than once")
-        }
-        if (!requestor.isAwareOf(this)) {
-            GenericMessage.withTransaction {txStatus ->
-//TODO:                GenericMessage.newRequestMessageFor(ProjectParticipation.request(requestor, this))
-            }
-        }
-    }
 
     def inviteParticipant(creator, invitee) {
         enforceParticipationInvariants(creator, invitee)
@@ -66,12 +53,8 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     private def acknowlegeParticipationAcceptance(creator, invitee, messageId) {
         enforceParticipationInvariants(creator, invitee)
         ProjectParticipation.pending(invitee, this).accept()
-        messageService.respondToMessage(messageId, creator,
+        messageService.respondToMessage(messageId, invitee,
                 SystemMessageFactory.createRejectInvitation(invitee, this))
-//        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
-//            messageService.submit(creator, SystemMessageFactory.createAcceptInvitation(invitee, this));
-//TODO:            GenericMessage.newInvitationAcceptanceMessageFor(invitation.accept())
-//        }
     }
 
     def rejectParticipationInvitation(invitee, messageId) {
@@ -81,26 +64,36 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     private def rejectParticipationInvitation(creator, invitee, messageId) {
         enforceParticipationInvariants(creator, invitee)
         ProjectParticipation.pending(invitee, this).reject()
-        messageService.respondToMessage(messageId, creator,
+        messageService.respondToMessage(messageId, invitee,
                 SystemMessageFactory.createRejectInvitation(invitee, this))
-//        withParticipationInvitationOrRequest(creator, invitee, messageId) {invitation ->
-//            messageService.submit(creator, SystemMessageFactory.createRejectInvitation(invitee, this));
-//TODO:            GenericMessage.newInvitationRejectionMessageFor(invitation.reject())
-//        }
     }
-    
 
+   def requestParticipation(Member requestor) {
+        if (requestor.id == this.creatorMemberId) {
+            throw new IllegalArgumentException("The member is the creator of this project. Cannot request participation for the owning project")
+        }
+        if (participatesInThisProject(requestor)) {
+            throw new IllegalArgumentException("The member already participates in this project or has a pending participation request. Cannot request participation in projects more than once")
+        }
+        if (!requestor.isAwareOf(this)) {
+            ProjectParticipation.request(requestor, this)
+            def msg = SystemMessageFactory.createJoinRequest(creator, this)
+            messageService.startNewSystemConversation(name, requestor, creator, msg)
+        }
+    }    
 
     def approveRequestedParticipation(creator, requestor, messageId) {
-//        withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
-//TODO:            GenericMessage.newRequestApprovalMessageFor(requestedParticipation.accept())
-//        }
+        enforceParticipationInvariants(creator, requestor)
+        ProjectParticipation.request(requestor, this).accept()
+        messageService.respondToMessage(messageId, creator,
+                SystemMessageFactory.createApproveToJoinRequest(creator, this))
     }
 
     def rejectRequestedParticipation(creator, requestor, messageId) {
-//        withParticipationInvitationOrRequest(creator, requestor, messageId) {requestedParticipation ->
-//TODO:            GenericMessage.newRequestRejectionMessageFor(requestedParticipation.reject())
-//        }
+        enforceParticipationInvariants(creator, requestor)
+        ProjectParticipation.request(requestor, this).reject()
+        messageService.respondToMessage(messageId, creator,
+                SystemMessageFactory.createDisapprovalToJoinRequest(creator, this))
     }
 
 
@@ -173,30 +166,11 @@ class GrailsProject extends NumberOfViewsTrackable implements Comparable {
     boolean isParticipitionResponseOpenFor(member){
          return member && this.participants.any {
              (it.participant.id == member.id) &&
-                 it.participant.isUnfinished()
+                 it.isUnfinished()
          }
     }
-/*     private def withParticipationInvitationOrRequest(creator, inviteeOrRequestor, messageId, callable) {
-        enforceParticipationInvariants(creator, inviteeOrRequestor)
-       def par = findParticipantionFor(inviteeOrRequestor, ProjectParticipation.PENDING)
-        if (!par) {
-            par = findParticipantionFor(inviteeOrRequestor, ProjectParticipation.REQUESTED)
-            if(!par) {
-                throw new IllegalStateException('The invitation or request does not exist.')
-            }
-        }
-        GenericMessage.withTransaction {txStatus ->
-            if(par.isPending()) {
-                inviteeOrRequestor.mailbox.markMessageAsAcknowleged(messageId)
-            }
-            else if(par.isRequested()) {
-                creator.mailbox.markMessageAsAcknowleged(messageId)                
-            }
-            callable(par)
-            save()
-        }
+ 
 
-    }      */
 
     private def enforceParticipationInvariants(creator, requestor) {
         if (creator?.id != this.creatorMemberId) {

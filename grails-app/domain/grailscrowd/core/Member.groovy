@@ -186,4 +186,8 @@ class Member extends NumberOfViewsTrackable implements Comparable {
     public int compareTo(Object obj) {
         return displayName <=> obj.displayName
     }
+    
+    public String toString(){
+        return "displayName: $displayName ($name)"
+    }
 } 

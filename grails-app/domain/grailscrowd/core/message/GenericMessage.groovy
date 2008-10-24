@@ -1,7 +1,8 @@
 package grailscrowd.core.message
 
 import grailscrowd.core.Mailbox
-import grailscrowd.core.Member 
+import grailscrowd.core.Member
+import java.sql.Timestamp
 
 /**
  * Base class to all message implementation with common attributes and methods.
@@ -12,9 +13,9 @@ import grailscrowd.core.Member
 class GenericMessage implements Comparable {
     
     /** DB entry last modified field, automatically set */
-    Date lastUpdated
+    Timestamp lastUpdated
 
-    Date sentDate
+    Timestamp sentDate
 
 
     /** internal unique member name */
@@ -37,7 +38,7 @@ class GenericMessage implements Comparable {
     }
 
     GenericMessage(){
-        sentDate = new Date()
+        sentDate = new Timestamp(System.currentTimeMillis())
         status = MessageLifecycle.NEW
     }
 
@@ -50,7 +51,9 @@ class GenericMessage implements Comparable {
     }
  
     def markAsSeen() {
-        this.status = MessageLifecycle.SEEN  
+        if(MessageLifecycle.NEW == this.status){
+            this.status = MessageLifecycle.SEEN
+        }
     }
     
     def markAsDeleted() {

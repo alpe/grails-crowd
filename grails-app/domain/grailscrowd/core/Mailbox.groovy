@@ -2,7 +2,6 @@ package grailscrowd.core
 
 import grailscrowd.core.message.*
 import grailscrowd.core.message.ConversationThread
-import org.hibernate.SessionFactory
 
 /** added a test line to determine svn working status (mgk) **/
 //The idea of mailbox is kind of like del.icio.us for:username idea.
@@ -29,34 +28,23 @@ class Mailbox {
 
     /** get number of new message in all thread */
     def getNumberOfNewMessages() {
+        // TODO: put into cache when performance is bad  
         def result =  Mailbox.executeQuery(
-            "select count(m.id) from grailscrowd.core.Mailbox as b inner join b.conversations as c inner join c.messages as m where b.id=? and m.status =? and m.fromMember!=?",
+            "select count(m.id) from grailscrowd.core.Mailbox as b "+
+                    "inner join b.conversations as c inner join c.messages as m "+
+                    "where b.id=? and m.status =? and m.fromMember!=?",
                 [id, MessageLifecycle.NEW, member.name]
         )
         if (result){
             result = result.iterator().next()
         }
-        println "found: "+result
         return result
-        
-/*        conversations.inject(0){count, it->
-            count+it.getNumberOfNewMessagesFor(member)
-        }
-*/
     }
 
 
     def visibleInInbox = {msg->
         !msg.isDeleted() && msg.sentDate >( new Date()-MAX_DAYS_VISIBILITY)
     }
-
-/*
-    def getInboxMessageAndMarkAsSeen(id) {
-        def msg = getInboxMessage(id)
-        msg?.markAsSeen()
-        return msg
-    }
-    */
 
     @Deprecated
     def markMessageAsArchived(id) {
@@ -71,51 +59,43 @@ class Mailbox {
 
     }
 
-
-    /** get converation thread for given message type and grails project
-    def getConverationThread(systemMessageType, grailsProject){
-        def msg = getInboxMessages().find{
-             return it.isSystemMessage() &&
-             it.payload.type==systemMessageType &&
-             it.payload.projectId == grailsProject.id
-         }
-        return msg?.thread
-    }
-
-    def getInboxConversationAndMarkMessageAsSeen(id){
-        log.debug "Looking for conversation of message id: "+id
-        def msg = getInboxMessageAndMarkAsSeen(id)
-        return msg?.thread
-    }
- */
-    def deleteInboxMessage(id){
-/*        def msg = getInboxMessage(id)
-        if (!msg){
-            return false
-        }
-        msg.markAsDeleted()
-        return true
-        */
+    def deleteInboxThread(id){
+       getTheadById(id)?.markAsDeleted(member) 
     }
 
     public def getTheadById(id){
         return conversations.find{it.id == id}
     }
 
-    public def getTheadByIdAndMarkAllAsSeen(id){
-        def result =getTheadById(id)
-        result.getNewMessagesFor(member).each{it.markAsSeen()}
-        return result
+    /** Mark all unread messages of given Thread as read.
+     */
+    public void markThreadAsSeen(ConversationThread thread){
+        thread?.markNewMessagesAsSeen(member)
     }
 
+    /** Get Collection of threads with messages for this member
+     * @return collection
+     */
     public Collection getInboxThreads(){
         return conversations.grep{it.containsMessageFor(member)}
     }
 
+    /** Get Collection of threads with messages sent out by this member.
+     * @return collection
+     */
     public Collection getSentboxThreads(){
         return conversations.grep{it.containsMessageFrom(member)}
     }
 
+    /** Find inbox message by given id.
+     * @return msg or null when not found.
+     */
+    def getInboxMessageById(msgId){
+        for (thread in conversations){
+            def result = thread.getMessageByIdFor(msgId, member)
+            if (result){ return result}
+         }
+    }
 
     /**
      * Get all messages sent within the last 80 days.

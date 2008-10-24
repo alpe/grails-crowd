@@ -1,5 +1,6 @@
 package grailscrowd.core.message
 
+import java.sql.Timestamp
 import grailscrowd.core.*
 /**
  * @author ap
@@ -9,9 +10,9 @@ class ConversationThread implements Comparable {
     private static final String RESPONSE_PREFIX = "RE"
 
      /** DB entry created automatically set */
-    Date dateCreated
+    Timestamp dateCreated
     /** DB entry last modified field, automatically set */
-    Date lastUpdated
+    Timestamp lastUpdated
 
     String topic
 
@@ -39,7 +40,7 @@ class ConversationThread implements Comparable {
         if(!topic){
             throw new IllegalArgumentException('Given topic must not be null or empty!')
         }
-        def result = new ConversationThread(topic:topic, dateCreated:new Date(),
+        def result = new ConversationThread(topic:topic,
                 visibility:ThreadVisibility.PRIVATE)
         members.each{
             result.addToParticipators(it)
@@ -112,8 +113,8 @@ class ConversationThread implements Comparable {
     /** Get member instance of mail sender
      */
     protected def getSender(mail){
-        if (mail?.fromMember){
-            return participators.find{mail.fromMember==it.name}
+        if (mail.fromMember){
+            return participators.find{it.name == mail.fromMember}
         }
     }
 
@@ -132,6 +133,9 @@ class ConversationThread implements Comparable {
     /** Get all unread messages for given member */
     def getNewMessagesFor(recipient){
         getMessagesFor(recipient).grep{it.isNew()}
+    }
+    void markNewMessagesAsSeen(recipient){
+       getNewMessagesFor(recipient).each{it.markAsSeen()}
     }
 
 
@@ -154,6 +158,11 @@ class ConversationThread implements Comparable {
     /** last sent message of given member */
     def getHighlightSentboxMessageFor(sender){
         return getMessagesFrom(sender).max()
+    }
+
+    def markAsDeleted(member){
+        getMessagesFor(member).each{it.markAsDeleted()}
+        return true
     }
 
     /**
@@ -186,6 +195,10 @@ class ConversationThread implements Comparable {
      */
     public int compareTo(other){
       return other.dateCreated<=>this.dateCreated
+    }
+
+    public def getMessageByIdFor(id, recipient){
+        getMessagesFor(recipient).find{it.id==id}
     }
 
 }

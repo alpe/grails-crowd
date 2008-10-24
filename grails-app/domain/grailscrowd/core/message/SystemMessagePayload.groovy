@@ -1,5 +1,7 @@
 package grailscrowd.core.message
 
+import grailscrowd.core.GrailsProject
+
 
 /**
  * Grailscrowd internal system message payload.
@@ -41,6 +43,19 @@ class SystemMessagePayload extends GenericMessagePayload{
         return type.getMessageCode(getMessageVersion())
     }
 
+    /** Is response required by given member */
+   def isResponseActionPending(member){
+       if (type.isResponseRequired()){
+           def project = GrailsProject.get(projectId)
+           switch(type){
+               case SystemMessageType.PROJECT_JOIN_REQUEST:
+               return project.isParticipitionResponseOpenFor(message.sender)                   
+               case SystemMessageType.PROJECT_INVITATION:
+               return project.isParticipitionResponseOpenFor(member)
+           }
+       }
+       return false
+   }
 
 }
 
