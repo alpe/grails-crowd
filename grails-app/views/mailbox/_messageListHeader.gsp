@@ -19,7 +19,7 @@
 
                 <g:link style="margin-left: 10px;vertical-align:top;text-decoration:none; " controller="mailbox" action="showConversation" params="[id:threadId, msgId:message.id]">
                     <g:if test="${message.hasReply}">
-                        <img src="${createLinkTo(dir: 'images', file: '../images/icons/arrow_right.png')}" alt="response"/>
+                        <img src="${createLinkTo(dir: 'images', file: '../images/icons/arrow_rotate_clockwise.png')}" alt="response"/>
                     </g:if>
                     <g:else>
                         <img src="${createLinkTo(dir: 'images', file: '../images/icons/reply.gif')}" alt="reply"/>
