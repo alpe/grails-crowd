@@ -21,19 +21,19 @@ class Mailbox {
 
 
     /** has any new message in any thread */
-    def hasAnyNewMessages() {
+    boolean hasAnyNewMessages() {
         return getNumberOfNewMessages()
 //            conversations.any{it.hasAnyNewMessages(member)}
     }
 
     /** get number of new message in all thread */
     def getNumberOfNewMessages() {
-        // TODO: put into cache when performance is bad  
+        // TODO: put into cache when performance is bad
         def result =  Mailbox.executeQuery(
             "select count(m.id) from grailscrowd.core.Mailbox as b "+
                     "inner join b.conversations as c inner join c.messages as m "+
                     "where b.id=? and m.status =? and m.fromMember!=?",
-                [id, MessageLifecycle.NEW, member.name]
+                [id, MessageLifecycle.NEW, this.member.name]
         )
         if (result){
             result = result.iterator().next()
