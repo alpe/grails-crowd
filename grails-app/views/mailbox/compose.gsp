@@ -4,7 +4,6 @@
     <meta name="layout" content="mailbox"/>
 </head>
 <body id="compose message">
-<g:render template="/shared/messagesRenderer" model="[modelBean:formBean]"/>
 <% def recipient = formBean.toMember %>
 <g:if test="${formBean?.isKnownMember()}">
     <g:render template="/shared/memberIconSmall" model="[email:recipient.email, name:recipient.name, displayName: recipient.displayName]"/>    
