@@ -40,10 +40,16 @@ class BootStrap {
             def anyMember = sampleMembers[1]
             assert anyMember
             project.inviteParticipant(creatorMember, anyMember)
-
-            def message = FreeFormMessageFactory.createNewMessage(sampleMembers[3], 'anyBody')
-//            messageService.submit(sampleMembers[4], message)
+            int x = 1 // 
+    x.times{i->
+        GrailsProject.withTransaction{tx->
+            messageService.startNewFreeFormConversation('anySubject'+i, sampleMembers[3], sampleMembers[6], 'anyBody'+i)
         }
+
+    }
+    assert sampleMembers[6].mailbox.getInboxThreads().size() == x
+    }
+
     }
 
     def destroy = {
