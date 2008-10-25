@@ -22,6 +22,32 @@
     <facet type="web" name="Web">
       <configuration>
         <webroots />
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/grails-app/conf" />
+          <root url="file://$MODULE_DIR$/grails-app/controllers" />
+          <root url="file://$MODULE_DIR$/grails-app/domain" />
+          <root url="file://$MODULE_DIR$/grails-app/services" />
+          <root url="file://$MODULE_DIR$/grails-app/taglib" />
+          <root url="file://$MODULE_DIR$/grails-app/utils" />
+          <root url="file://$MODULE_DIR$/plugins/avatar-0.3/grails-app/taglib" />
+          <root url="file://$MODULE_DIR$/plugins/avatar-0.3/src/java" />
+          <root url="file://$MODULE_DIR$/plugins/mail-0.4/grails-app/services" />
+          <root url="file://$MODULE_DIR$/plugins/mail-0.4/grails-app/taglib" />
+          <root url="file://$MODULE_DIR$/plugins/mail-0.4/src/groovy" />
+          <root url="file://$MODULE_DIR$/plugins/modalbox-0.3/grails-app/taglib" />
+          <root url="file://$MODULE_DIR$/plugins/richui-0.4/grails-app/conf" />
+          <root url="file://$MODULE_DIR$/plugins/richui-0.4/grails-app/controllers" />
+          <root url="file://$MODULE_DIR$/plugins/richui-0.4/grails-app/services" />
+          <root url="file://$MODULE_DIR$/plugins/richui-0.4/grails-app/taglib" />
+          <root url="file://$MODULE_DIR$/plugins/richui-0.4/src/groovy" />
+          <root url="file://$MODULE_DIR$/plugins/richui-0.4/test/integration" />
+          <root url="file://$MODULE_DIR$/plugins/testing-0.3/src/groovy" />
+          <root url="file://$MODULE_DIR$/plugins/testing-0.3/src/java" />
+          <root url="file://$MODULE_DIR$/src/groovy" />
+          <root url="file://$MODULE_DIR$/src/java" />
+          <root url="file://$MODULE_DIR$/test/integration" />
+          <root url="file://$MODULE_DIR$/test/unit" />
+        </sourceRoots>
         <building>
           <setting name="EXPLODED_URL" value="file://" />
           <setting name="EXPLODED_ENABLED" value="false" />
@@ -74,6 +100,10 @@
       <sourceFolder url="file://$MODULE_DIR$/grails-app/utils" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/grails-app/taglib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/test/integration" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/test/unit" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/mail-0.4/grails-app/services" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/mail-0.4/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/mail-0.4/src/groovy" isTestSource="false" />
@@ -114,9 +144,11 @@
           <root url="file://$MODULE_DIR$/plugins/richui-0.4/lib" />
           <root url="file://$MODULE_DIR$/plugins/mail-0.4/lib" />
           <root url="file://$MODULE_DIR$/plugins/richui-0.4/lib" />
+          <root url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/mail-0.4/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/richui-0.4/lib" recursive="false" />
       </library>
