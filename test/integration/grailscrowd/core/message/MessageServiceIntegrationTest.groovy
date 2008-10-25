@@ -13,11 +13,11 @@ class MessageServiceIntegrationTest extends GroovyTestCase {
 
      def anySender
      def anyRecipient
+    def memberFixi
 
      void setUp(){
          super.setUp()
-         def memberFixi = new MemberDBFixture()
-         anySender = memberFixi.getAnyNewSubscribedMember()
+         memberFixi = new MemberDBFixture()
          anyRecipient = memberFixi.getAnyNewSubscribedMember()
      }
 
@@ -30,14 +30,21 @@ class MessageServiceIntegrationTest extends GroovyTestCase {
         def anyBody = "anyBody"
         def message = null
         ConversationThread.withTransaction{ctx->
+            10.times{index->
+            anySender = memberFixi.getAnyNewSubscribedMember()
             message = FreeFormMessageFactory.createNewMessage(anySender, anyBody)
-            messageService.startNewConversation(anySubject, anyRecipient, message)
+            messageService.startNewConversation( anySubject,  anySender,  anyRecipient, message)            
             anyRecipient.save(flush:true)
             assertThat(message.id, is(notNullValue()))
-            def persistentMessage = GenericMessage.get(message.id)
+            def persistentMessage = anyRecipient.mailbox.getInboxMessageById(message.id) 
             assertThat(persistentMessage, is(notNullValue()))
             assertThat(persistentMessage.subject, is(anySubject))
-        }        
+            assertThat GenericMessage.exists(message.id), is(true)
+            }
+            assertThat(anyRecipient.mailbox.getInboxThreads().size(), is(10))
+        }
+       // assertThat(anyRecipient.mailbox.getNumberOfNewMessages(), is(10L))
+        
     }
 
 }

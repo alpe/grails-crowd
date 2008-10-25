@@ -29,13 +29,16 @@ class GrailsProjectSystemMessageTest extends GroovyTestCase {
 
     void testInviteParticipant_systemMessageSent(){
         project.inviteParticipant(projectOwner, anyMember)
-        assertThat(anyMember.mailbox.messages, is(notNullValue()))
-        assertThat(anyMember.mailbox.messages.size(), is (1))
-        def message = anyMember.mailbox.messages.iterator().next()
+        assertThat(anyMember.mailbox.getNumberOfNewMessages(), is (1L))
+        def inboxThreads = anyMember.mailbox.inboxThreads
+        assertThat(inboxThreads.size(), is(1))
+        def message = inboxThreads.iterator().next().getHighlightInboxMessageFor(anyMember)
         assertThat(message.payload.type, is(SystemMessageType.PROJECT_INVITATION))
-        def sentFolder = projectOwner.mailbox.sentboxMessages
-        assertThat(sentFolder, is(notNullValue()))
-        assertThat(sentFolder.size(), is(1))
+        def sentThreads = projectOwner.mailbox.getSentboxThreads()
+        assertThat(sentThreads, is(notNullValue()))
+        assertThat(sentThreads.size(), is(1))
+        message = inboxThreads.iterator().next().getMessagesFrom(projectOwner).iterator().next()
+        assertThat(message.payload.type, is(SystemMessageType.PROJECT_INVITATION))
         //TODO: thread->message: assertThat(sentFolder.iterator().next(), is(message))
     }
 

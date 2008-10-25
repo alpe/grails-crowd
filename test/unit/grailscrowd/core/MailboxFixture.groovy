@@ -12,16 +12,26 @@ class MailboxFixture extends AbstractDomainFixture{
 
     MemberFixture ownerFixture
 
-    MessageFixture msgFixture
+    List threadFixtures
 
-
-    MailboxFixture(){
-        this(new MemberFixture())
+    public MailboxFixture(){
+       this(null, [])
+       this.ownerFixture = new MemberFixture(this)
     }
-    MailboxFixture(MemberFixture ownerFixture){
+    
+    public MailboxFixture(MemberFixture ownerFixture){
+        this(ownerFixture, new ConversationThreadFixture(new MessageFixture(ownerFixture)))
+    }
+
+    public MailboxFixture(MemberFixture ownerFixture, ConversationThreadFixture threadFixture){
+        this(ownerFixture, [threadFixture])
+    }
+
+    public MailboxFixture(MemberFixture ownerFixture, List threadFixtures){
         super()
         this.ownerFixture = ownerFixture
-        this.msgFixture = new MessageFixture(ownerFixture)
+        this.threadFixtures = []
+        this.threadFixtures.addAll(threadFixtures)
     }
 
    /** {@inheritDoc} */
@@ -33,7 +43,7 @@ class MailboxFixture extends AbstractDomainFixture{
     /** {@inheritDoc} */
     @Override
     void addRelationData(obj){
-        def sampleData
+/*        def sampleData
         switch (fixtureType) {
             case MailboxFixtureType.EMPTY_BOX:
                 sampleData = []
@@ -41,11 +51,17 @@ class MailboxFixture extends AbstractDomainFixture{
             case MailboxFixtureType.SAMPLE_BOX:
                 sampleData = getSampleBoxMessages()
                 break
-        }
+        }      */
+        assert obj
         obj.member = ownerFixture.testData
-        sampleData.each{
-            obj.addToMessages(it)
+        threadFixtures.each{
+            obj.addToConversations(it.testData)
         }
+        long newMessageCount = !obj.getConversations()?0:obj.getConversations().inject(0){count, thread->
+                thread.getNumberOfNewMessagesFor(obj.member)
+            }
+
+        obj.metaClass.getNumberOfNewMessages = {-> newMessageCount}
     }
 
 
@@ -56,13 +72,26 @@ class MailboxFixture extends AbstractDomainFixture{
         fixtureType = MailboxFixtureType.EMPTY_BOX
     }
 
+   public static def setupSampleBoxFixture(){
+       MailboxFixture result = new MailboxFixture()
+       def ownerFixture = result.ownerFixture
+       assert ownerFixture
+       def anyMember1Fixture = new MemberFixture()
+       def thread1Fixture = new ConversationThreadFixture(topic:"sample thread1")
+       result.threadFixtures.add(thread1Fixture)
+       def msg1Fixture = new MessageFixture()
+       assert msg1Fixture.createTestData()
+       thread1Fixture.messageFixtures = [msg1Fixture]
+       result.createTestData()
+       return result
+   }
 
     /**
      * 2 unread
      * 3 read
      * 1 deleted
      *
-     */
+
     private def getSampleBoxMessages(){
          def messages =[]
         2.times{
@@ -81,7 +110,7 @@ class MailboxFixture extends AbstractDomainFixture{
 
         return messages
     }
-
+      */
 
 }
 enum MailboxFixtureType{

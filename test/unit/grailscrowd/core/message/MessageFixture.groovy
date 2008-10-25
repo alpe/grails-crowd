@@ -21,11 +21,15 @@ class MessageFixture extends AbstractDomainFixture{
     MessageFixture(){
         this(new MemberFixture())
     }
-    MessageFixture(anySenderFixture){
+    MessageFixture(MemberFixture anySenderFixture){
+        this(anySenderFixture, new ConversationThreadFixture())
+        conversationThreadFixture.messageFixtures.add(this)
+    }
+    MessageFixture(MemberFixture anySenderFixture, ConversationThreadFixture conversationThreadFixture){        
         super()
         this.anySenderFixture = anySenderFixture
         anyProjectFixture = new GrailsProjectFixture(anySenderFixture)
-        conversationThreadFixture = new ConversationThreadFixture(this)
+        this.conversationThreadFixture = conversationThreadFixture
     }
 
 

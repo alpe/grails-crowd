@@ -13,19 +13,32 @@ class MailboxTest extends AbstractBaseUnitTestCase{
     Mailbox mailbox
     
     MailboxFixture fixi
+    MemberFixture ownerFixture
+    List threadFixtures
+    List messageFixtures
+    def newMessageFixture
 
     void setUp(){
         super.setUp()
         mailbox = null
         fixi = new MailboxFixture()
+        ownerFixture = fixi.ownerFixture
+        threadFixtures = fixi.threadFixtures
+        messageFixtures = fixi.threadFixtures*.messageFixtures
+        newMessageFixture = new MessageFixture(ownerFixture, threadFixtures[0])
         fixi.fixtureType = MailboxFixtureType.SAMPLE_BOX
         mailbox = fixi.createTestData()
     }
 
 
-    void testHasAnyNewMessages_3new_true(){
-        assertThat(mailbox, is(notNullValue()))
-        assertTrue mailbox.hasAnyNewMessages()
+    void testHasAnyNewMessages_withNew_true(){
+        def fixture = MailboxFixture.setupSampleBoxFixture()
+        assert fixture.ownerFixture
+        assert fixture.ownerFixture.testData.name
+        def mailbox = fixture.createTestData()
+        fixture.addRelationData(mailbox)
+        assert mailbox.member.name
+        assertThat(mailbox.hasAnyNewMessages(), is(true))
     }
 
     void testGetInboxMessageAndMarkAsSeen_validId_mesageNotNullAndStatusSeen(){

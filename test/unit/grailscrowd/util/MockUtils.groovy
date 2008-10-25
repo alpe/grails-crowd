@@ -35,6 +35,7 @@ class MockUtils {
          addPersistenceAttributes(clazz, obj)
          addRelations(clazz, obj)
          addCriteriaMethod(clazz, obj)
+         addExecuteQuery(clazz, obj)
 
        grails.test.MockUtils.mockDomain(clazz, [obj])
      }
@@ -44,6 +45,12 @@ class MockUtils {
            return new Expando([list:{closure->[]}])
        }
     }
+    
+    static def addExecuteQuery(Class clazz, obj) {
+       clazz.metaClass.'static'.executeQuery ={
+           return []}
+    }
+
 
 
      static def addPersistenceAttributes(Class clazz, obj) {
@@ -66,8 +73,8 @@ class MockUtils {
         def missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "hasMany")
         if (missingProperties) {
             missingProperties.each {key, value ->
-                if (!clazz.metaClass.hasProperty(obj, key)) {
-                    clazz.metaClass."$key" = null
+                if (!obj.metaClass.hasProperty(obj, key)) {
+                    obj.metaClass."$key" = null
                 }
             }
         }
@@ -76,8 +83,8 @@ class MockUtils {
         if (missingProperties) {
             missingProperties.each {entry->
                 if (entry instanceof Map.Entry){
-                    if (!clazz.metaClass.hasProperty(obj, entry.key)) {
-                        clazz.metaClass."${entry.key}" = null
+                    if (!obj.metaClass.hasProperty(obj, entry.key)) {
+                        obj.metaClass."${entry.key}" = null
                     }
                 }
             }

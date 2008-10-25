@@ -5,41 +5,53 @@ import grailscrowd.util.AbstractDomainFixture
 /**
  * @author ap
  */
-class ConversationThreadFixture extends AbstractDomainFixture{
+class ConversationThreadFixture extends AbstractDomainFixture {
 
-    static final String ANY_TOPIC ="anyTopic..blabla"
+    static final String ANY_TOPIC = "anyTopic..blabla"
 
-    MessageFixture messageFixture
+    List messageFixtures
+    List participationMemberFixtures
 
     String topic
 
-    ConversationThreadFixture(){
-        this(new MessageFixture())
+    ConversationThreadFixture() {
+        this([])
+    }
+    ConversationThreadFixture(MessageFixture messageFixture) {
+        this([messageFixture])
     }
 
-    ConversationThreadFixture(messageFixture){
+
+    ConversationThreadFixture(List messageFixtures) {
         super()
-        this.messageFixture = messageFixture
+        this.messageFixtures = []
+        this.messageFixtures.addAll(messageFixtures)
     }
 
     @Override
-    def createTestDataInstance(){
-        return new ConversationThread(topic:topic)
+    def createTestDataInstance() {
+        return new ConversationThread(topic:topic, visibility:ThreadVisibility.PRIVATE)
     }
 
     @Override
-    void addRelationData(obj){
+    void addRelationData(obj) {
+        obj.participators = participationMemberFixtures.collect{it.testData}
+//        obj.participators.each{println "thread-member: "+it.dump()}
+        messageFixtures.each {
+            obj.addNewMessage(it.anySenderFixture.testData, it.testData)
+        }
 
     }
 
     @Override
-    void reset(){
+    void reset() {
         super.reset()
         fixtureType = ConversationThreadFixtureType.NEW
         topic = ANY_TOPIC
+        messageFixtures?.clear()
     }
 }
 
-enum ConversationThreadFixtureType{
+enum ConversationThreadFixtureType {
     NEW
 }

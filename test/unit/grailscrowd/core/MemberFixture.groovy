@@ -9,11 +9,14 @@ class MemberFixture extends AbstractDomainFixture{
 
     MailboxFixture  mailboxFixture
 
-    MemberFixture(){
-        super()
-        mailboxFixture = new MailboxFixture(this)
+    public MemberFixture(){
+        this(new MailboxFixture())
+        mailboxFixture.ownerFixture = this
     }
-
+    public MemberFixture(MailboxFixture mailboxFixture){
+        super()
+        this.mailboxFixture = mailboxFixture
+    }
 
     /** {@inheritDoc} */
     @Override
