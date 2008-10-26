@@ -14,13 +14,13 @@ class MemberController extends SecureController {
 
     def handleRegistration = {
         def member = new Member(params)
-        member.mailbox = new Mailbox()
+        member.mailbox = new Mailbox(member:member)
         if (params.password != params.confirm) {
             onUpdateAttempt 'Passwords you entered do not match. Please try again.', false
             render(view: 'registrationForm', model: [member: member])
             return
         }
-        if (member.save()) {
+        if (member.save(flush:true)) {
             session.memberId = member.id
 			member.lastLogin = member.joinedOn
             redirect(action: editProfile)
