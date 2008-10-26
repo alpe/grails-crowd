@@ -38,7 +38,7 @@ class MessageService {
     }
 
     public void respondToMessage(long messageId, Member sender, GenericMessage msg){
-        respondTo(GenericMessage.get(messageId), sender, msg)
+        respondToMessage(GenericMessage.get(messageId), sender, msg)
     }
 
     public void respondToMessage(GenericMessage message, Member sender, GenericMessage msg){
