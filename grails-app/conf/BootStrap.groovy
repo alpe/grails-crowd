@@ -9,16 +9,28 @@ class BootStrap {
 
     def init = {servletContext ->
 
-
         if (GrailsUtil.environment == "development") {
+                GrailsProject.withTransaction{tx->
             //Just for testing
             List sampleMembers = []
             10.times {i ->
                 def result = new Member(name: "name$i", email: "name$i@example.com", password: "passwd$i", displayName: "Name $i",
                         about: "hellooo", mailbox: new Mailbox())
-                assert result.save(flush: true)
+                result.validate()
+                if (result.hasErrors()){
+                    result.errors.each{
+                        log.debug it
+                    }
+                }
+                result.save(flush: true)
                 sampleMembers.add(result)
             }
+           int x = 1 // >1 fails, duno why
+           x.times{i->
+                    messageService.startNewFreeFormConversation('anySubject'+i, sampleMembers[3], sampleMembers[6], 'anyBody'+i)
+            }
+            assert sampleMembers[6].mailbox.getInboxThreads().size() == x
+                    
             def creatorMember = sampleMembers[0]
             assert creatorMember
             def project = projectService.createProject(uri: 'http://grailscrowd.com',
@@ -40,16 +52,12 @@ class BootStrap {
             def anyMember = sampleMembers[1]
             assert anyMember
             project.inviteParticipant(creatorMember, anyMember)
-            int x = 1 // 
-    x.times{i->
-        GrailsProject.withTransaction{tx->
-            messageService.startNewFreeFormConversation('anySubject'+i, sampleMembers[3], sampleMembers[6], 'anyBody'+i)
+      def result = new Member(name: "alpe", email: "a@a.com", password: "xxxxxx", displayName: "Alex Peters",
+                    about: "hellooo", mailbox: new Mailbox())
+            assert result.save(flush: true)
+
         }
-
-    }
-    assert sampleMembers[6].mailbox.getInboxThreads().size() == x
-    }
-
+            }
     }
 
     def destroy = {
