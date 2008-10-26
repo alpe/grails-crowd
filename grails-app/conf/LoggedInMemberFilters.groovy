@@ -6,11 +6,12 @@ class LoggedInMemberFilters {
         exposeLoggedInMember(controller: '*', action: '*') {
             after = {model ->
                 if (session.memberId) {
+                    def loggedInMember = Member.get(session.memberId)
                     if(model) {
-                        model.loggedInMember = Member.get(session.memberId)
+                        model.loggedInMember = loggedInMember
                     }
-                    else {                        
-                        model = [loggedInMember:Member.get(session.memberId)]
+                    else {
+                        model = [loggedInMember:loggedInMember]
                     }
                 }
             }
