@@ -166,4 +166,21 @@ class MemberController extends SecureController {
         }
     }
 
+    def searchAJAX = {
+           def members = Member.findAllByDisplayNameLike("%${params.query}%")
+
+           //Create XML response
+           render(contentType: "text/xml") {
+           results() {
+               members.each { member ->
+               result(){
+                   displayName(member.displayName)
+                           //Optional id which will be available in onItemSelect
+                           name(member.name)
+               }
+           }
+               }
+           }
+       }
+
 }
