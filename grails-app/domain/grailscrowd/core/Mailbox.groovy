@@ -19,6 +19,12 @@ class Mailbox {
     static belongsTo = [member: Member]
 //    static fetchMode = [messages: 'eager']
 
+    static constraints = {
+        conversations(nullable:false)
+        member(nullable: false)
+    }
+
+
 
     /** has any new message in any thread */
     boolean hasAnyNewMessages() {
@@ -28,8 +34,9 @@ class Mailbox {
 
     /** get number of new message in all thread */
     def getNumberOfNewMessages() {
+        return 0L
         // TODO: put into cache when performance is bad
-        def result =  Mailbox.executeQuery(
+/*        def result =  Mailbox.executeQuery(
             "select count(m.id) from grailscrowd.core.Mailbox as b "+
                     "inner join b.conversations as c inner join c.messages as m "+
                     "where b.id=? and m.status =? and m.fromMember!=?",
@@ -38,7 +45,7 @@ class Mailbox {
         if (result){
             result = result.iterator().next()
         }
-        return result
+        return result*/
     }
 
 
@@ -77,7 +84,11 @@ class Mailbox {
      * @return collection
      */
     public Collection getInboxThreads(){
-        return conversations.grep{it.containsMessageFor(member)}
+        log.debug "Fetching inbox conversations for member: "+member
+        return conversations.grep{
+            log.debug "Searching thread $it.id for inbox messages."
+            it.containsMessageFor(member)
+        }
     }
 
     /** Get Collection of threads with messages sent out by this member.
