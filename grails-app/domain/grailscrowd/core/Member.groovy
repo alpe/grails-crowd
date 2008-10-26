@@ -39,6 +39,7 @@ class Member extends NumberOfViewsTrackable implements Comparable {
         password(blank: false, minSize: 5)
         displayName(blank: false, maxSize: 1000)
         email(blank: false, email: true)
+        mailbox(nullable:false)        
         homePageUri(nullable: true, url: true)
         about(nullable: true, maxSize: 4000)
         location(nullable: true, maxSize: 2000)
@@ -79,6 +80,7 @@ class Member extends NumberOfViewsTrackable implements Comparable {
             about = null
         }
     }
+
 
     // Social feature: gets a list of 'colleagues' working on the same projects as *this* member
     def getProjectColleagues() {
