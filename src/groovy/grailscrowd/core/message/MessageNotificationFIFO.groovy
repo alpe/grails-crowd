@@ -64,8 +64,8 @@ class MessageNotificationFIFO implements MessageNotificationFIFOMBean {
     /**
      * Remove first element from queue and return.
      */
-    public GenericMessage popOffStack() {
-        messagesToMail.pop()
+    public GenericMessage pollOffStack() {
+        messagesToMail.poll()
     }
 
 
