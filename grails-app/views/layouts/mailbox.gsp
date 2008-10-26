@@ -12,9 +12,9 @@
         <g:render template="/mailbox/mailboxMenu" model="[location: model]"/>
     </div>
     <div  style="width: 850px; float: left; padding-top:10px; padding-left: 10px; ">
-        <g:render template="/shared/messagesRenderer" model="[:]" />        
-        <g:layoutBody/>    
+        <g:render template="/shared/messagesRenderer" model="[modelBean:formBean]" />
+        <g:layoutBody/>
     </div>
-  </div>        
+  </div>
   </body>
 </g:applyLayout>    
