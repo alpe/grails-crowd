@@ -28,7 +28,8 @@ class MessageService {
     protected void startNewConversation(String topic, Member sender, Member recipient, GenericMessage msg){
         assert sender
         assert recipient
-        List participators = [sender, recipient]
+        assert sender !=recipient
+        Set participators = [sender, recipient] as Set
         def thread = ConversationThread.newInstance(topic, participators)
         participators.each{it.mailbox.addToConversations(thread)}
         addMessage(thread, sender, msg)
