@@ -6,6 +6,7 @@ This project requires the following plugins which are not checked in into VCS:
 - Avatar plugin
 - Mail plugin
 - Testing plugin
+- Quartz plugin
 
 After fresh checkout from VCS, run the following commands to install the above mentioned plugins:
 
@@ -16,5 +17,6 @@ After fresh checkout from VCS, run the following commands to install the above m
 'grails install-plugin avatar'
 'grails install-plugin mail'
 'grails install-plugin testing'
+'grails install-plugin quartz'
 
 Also change the email related settings in Config.groovy
