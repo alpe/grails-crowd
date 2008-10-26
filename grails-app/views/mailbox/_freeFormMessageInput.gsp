@@ -3,11 +3,15 @@
         <input type="hidden" name="toMemberName" value="${fieldValue(bean: formBean, field: 'toMemberName')}"/>
     </g:if>
     <g:else>
+        <resource:autoComplete skin="default" />
         <p>
             <label for="subject">To:</label><br/>
+            <richui:autoComplete name="toMemberName" action="${createLinkTo('dir': 'member/searchAJAX')}" />
+<% /*
             <input type="text" id="toMemberName" name="toMemberName" maxlength="99"
                     style="width:200px"
                     value="${fieldValue(bean: formBean, field: 'toMemberName')}"/>
+*/ %>
         </p>
     </g:else>
 
