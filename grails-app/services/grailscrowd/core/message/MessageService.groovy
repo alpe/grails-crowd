@@ -12,6 +12,8 @@ class MessageService {
 
     boolean transactional = true
 
+    def messageNotificationFIFO
+
     public void startNewSystemConversation(projectName, Member sender, Member recipient, GenericMessage msg){
         if(!msg.isSystemMessage()){
             throw new IllegalAccessException("Given message is not a system message!");
@@ -36,26 +38,29 @@ class MessageService {
     }
 
     public void respondToMessage(long messageId, Member sender, GenericMessage msg){
-        responseTo(GenericMessage.get(messageId), sender, msg)
+        respondTo(GenericMessage.get(messageId), sender, msg)
     }
 
     public void respondToMessage(GenericMessage message, Member sender, GenericMessage msg){
-        responseTo(message.getThread(), sender, msg)
+        respondTo(message.getThread(), sender, msg)
     }
 
     public void respondToThread(long threadId, Member sender, GenericMessage msg){
-        responseTo(ConversationThread.get(threadId), sender, msg)
+        respondTo(ConversationThread.get(threadId), sender, msg)
     }
 
-    public void responseTo(ConversationThread thread, Member sender, GenericMessage msg){
+    public void respondTo(ConversationThread thread, Member sender, GenericMessage msg){
         addMessage(thread, sender, msg)
     }
 
     private void addMessage(thread, sender, msg){
         msg.fromMember = sender.name
         thread.addNewMessage(sender, msg)
-        // Todo: inform conversation members except sender
-        // recipient....canBeNotifiedViaEmail
+        Thread.start{
+        messageNotificationFIFO.pushOnStack(msg)
+            // Todo: inform conversation members except sender
+            // recipient....canBeNotifiedViaEmail
+        }
     }
   
 }
