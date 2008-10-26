@@ -22,9 +22,13 @@ class MailboxController extends SecureController {
 
     /** Show incomming mails */
     def inbox= {
+        log.debug "Loading inbox view for member: "+session.memberId
         def member = freshCurrentlyLoggedInMember()
+        log.debug "Fresh member instance loaded"
         def mailbox = member.mailbox
-        def threads = mailbox.inboxThreads .collect{
+        log.debug "Mailbox loaded: "+mailbox?.id
+        def threads = mailbox.inboxThreads.collect{
+            log.debug "Collecting unread messages for thread: "+it.id
             def msg = it.getHighlightInboxMessageFor(member)
             mapThreadForView(member, it) +
                     [highlightUnreadMessages:true]+
@@ -49,16 +53,19 @@ class MailboxController extends SecureController {
 
     /** thread domain to data transfer object */
     def mapThreadForView = {member, thread ->
+        log.debug "Mapping thread $thread.id for view"
         return [id:thread.id, topic:thread.topic ]
     }
 
     def mapMessageForView = {msg, withPayload = false, displaySender=true->
+        log.debug "Mapping message for view: "+msg?.id
         if (!msg){return null}
         def sender = displaySender? msg.getSender():msg.getRecipients().iterator().next()
         sender = [name:sender.name, displayName:sender.displayName, email:sender.email,]
         def message = [id:msg.id, subject:msg.subject, systemMessage:msg.isSystemMessage(), sentDate:msg.sentDate,
                 hasReply:msg.isAnswered(),sender:sender, unread:msg.isNew()]
         if (withPayload){
+            log.debug "Mapping payload for view"
              if (message.systemMessage){
                  def reader = freshCurrentlyLoggedInMember()
                  // do not show actions in sentbox && anything pending                               
@@ -125,13 +132,19 @@ class MailboxController extends SecureController {
             composeFreeForm(cmd)
             return
         }
-        log.info("persisting!"+params)
+        def currentMember = freshCurrentlyLoggedInMember()
+        if (cmd.toMemberName==currentMember.name){
+            onUpdateAttempt("Soliloquies may be supported in a future version.", true)
+            cmd.toMemberName = ""
+            composeFreeForm(cmd)
+            return
+        }
         def recipient =  Member.findByName(cmd.toMemberName)
         if (!recipient){
             composeFreeForm(cmd)
             return
         }
-        messageService.startNewFreeFormConversation (cmd.subject, freshCurrentlyLoggedInMember(), recipient, cmd.body)
+        messageService.startNewFreeFormConversation (cmd.subject, currentMember, recipient, cmd.body)
         onUpdateAttempt("Your message has been sent.", true)
         redirect(action:'inbox')
     }
