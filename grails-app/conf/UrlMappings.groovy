@@ -32,6 +32,7 @@ class UrlMappings {
         "/members/current/projects/participatingIn"(controller: 'member', action: 'participatingInProjects')
         "/members/current/colleagues"(controller: 'member', action: 'colleagues')
 		"/members/latest/feed/atom"(controller: 'member', action: 'latestFeed')
+        "/member/searchAJAX"(controller: 'member', action: 'searchAJAX')
 
         //********** PROFILE *******************************************/
         "/profile/current/updatable"(controller: "member", action: "editProfile") //GET form representation
