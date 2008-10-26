@@ -1,4 +1,4 @@
-<% def sender = message.sender %>
+<g:set var="sender" value="${message.sender}" scope="page" />
         <span style="float:left;">
             <span style="padding-left:5px;">
                 <g:if test="${message.unread}">

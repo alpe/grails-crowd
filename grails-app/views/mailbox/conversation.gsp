@@ -9,10 +9,7 @@
         <h1>${thread.topic.encodeAsHTML()}</h1>
     </div>
     <g:each in="${thread.messages}" var="message">
-        <%
-        def sender = message.sender
-        %>
-        
+        <g:set var="sender" value="${message.sender}" scope="page" />
         <div style="clear:both;" />
             <g:render template="messageDetailHeader" model="[message:message]"/>
             <div style="clear:both; padding-left:5px" />
