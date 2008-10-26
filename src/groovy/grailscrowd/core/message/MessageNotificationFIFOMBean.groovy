@@ -28,4 +28,10 @@ interface MessageNotificationFIFOMBean {
      * Enable fifo to accept new messages.
      */
     public void acceptNewNotifications()
+
+    /**
+     * Clear notification queue and accept new messages.
+     */
+    public void reset()
+
 }

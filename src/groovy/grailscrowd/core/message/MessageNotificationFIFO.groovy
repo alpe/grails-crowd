@@ -9,42 +9,63 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * @author ap
  */
-class MessageNotificationFIFO implements MessageNotificationFIFOMBean{
+class MessageNotificationFIFO implements MessageNotificationFIFOMBean {
 
     private final AtomicBoolean active = new AtomicBoolean(true)
 
     private final Queue messagesToMail = new ConcurrentLinkedQueue()
 
-
+    /**
+     * @see MessageNotificationFIFOMBean#getCurrentQueueQuantity()
+     */
     public int getCurrentQueueQuantity() {
         return messagesToMail.size()
     }
 
-
+    /**
+     * @see MessageNotificationFIFOMBean#isAcceptingNewNotification()
+     */
     public boolean isAcceptingNewNotification() {
         return active.get()
     }
 
+    /**
+     * @see MessageNotificationFIFOMBean#declineNewNotifications()
+     */
     public void declineNewNotifications() {
         active.set(false)
     }
 
+    /**
+     * @see MessageNotificationFIFOMBean#acceptNewNotifications()
+     */
     public void acceptNewNotifications() {
         active.set(true)
     }
 
 
-    public void pushOnStack(GenericMessage message) {
-        messagesToMail << message
-    }
-
-    public GenericMessage popOffStack() {
-        messagesToMail.pop()
-    }
-
+    /**
+     * @see MessageNotificationFIFOMBean#reset()
+     */
     public void reset() {
         messagesToMail.clear()
         active.set(true)
+    }
+
+    /**
+     * Put given message into queue when acceptance flag is enabled. (default: setting)
+     */
+    public void pushOnStack(GenericMessage message) {
+        if (active.get()) {
+            messagesToMail << message
+        }
+    }
+
+    /**
+     * Remove first element from queue and return.
+     */
+    public GenericMessage popOffStack() {
+        messagesToMail.pop()
     }
 
 
