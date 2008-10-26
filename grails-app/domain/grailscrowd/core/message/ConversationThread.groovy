@@ -19,6 +19,8 @@ class ConversationThread implements Comparable {
 
     SortedSet messages
 
+    SortedSet participators
+
     ThreadVisibility visibility
 
     static belongsTo = Mailbox
@@ -29,6 +31,8 @@ class ConversationThread implements Comparable {
     static constraints = {
         topic(nullable: false, blank: false, maxSize: 100)
         visibility(nullable: false)
+        participators(nullable:false, minSize:2)
+        messages(nullable:false)
     }
 
 

@@ -5,7 +5,11 @@ package grailscrowd.core.message
 class GenericMessagePayload {
 
     static belongsTo = [message:GenericMessage]
-    
+
+    static constraints = {
+          message(nullable:false)
+      }
+
     static mapping = {
         tablePerHierarchy false
 //        cache usage:'nonstrict-read-write'

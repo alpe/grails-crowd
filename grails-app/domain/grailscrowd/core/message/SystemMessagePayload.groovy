@@ -20,6 +20,12 @@ class SystemMessagePayload extends GenericMessagePayload{
 
     static transients =  ['systemPayload', 'messageCode']
 
+    static constraints = {
+        projectId(nullable:false)
+        type(nullable:false)
+    }
+
+
     /**
      * Package private constructor to prevent manual instanciation. Use SystemMessageFactory.
      */

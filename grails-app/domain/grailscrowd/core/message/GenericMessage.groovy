@@ -34,7 +34,7 @@ class GenericMessage implements Comparable {
         fromMember(nullable:false, blank: false)
         status(nullable:false)
         payload(nullable:false)
-//        thread(nullable:false)
+        thread(nullable:false)
     }
 
     GenericMessage(){
