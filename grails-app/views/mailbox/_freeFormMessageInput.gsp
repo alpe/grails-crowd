@@ -6,7 +6,7 @@
         <resource:autoComplete skin="default" />
         <p>
             <label for="subject">To:</label><br/>
-            <richui:autoComplete name="toMemberName" action="${createLinkTo('dir': 'member/searchAJAX')}" />
+            <richui:autoComplete style="margin-top: -18px;" name="toMemberName" action="${createLinkTo('dir': 'member/searchAJAX')}" />
         </p>
     </g:else>
 
