@@ -20,7 +20,6 @@ class Mailbox {
 //    static fetchMode = [messages: 'eager']
 
     static constraints = {
-        conversations(nullable:false)
         member(nullable: false)
     }
 
@@ -34,18 +33,20 @@ class Mailbox {
 
     /** get number of new message in all thread */
     def getNumberOfNewMessages() {
-        return 0L
+        assert getMember()
+        assert getMember().name
+//        return 0L
         // TODO: put into cache when performance is bad
-/*        def result =  Mailbox.executeQuery(
+        def result =  Mailbox.executeQuery(
             "select count(m.id) from grailscrowd.core.Mailbox as b "+
                     "inner join b.conversations as c inner join c.messages as m "+
                     "where b.id=? and m.status =? and m.fromMember!=?",
-                [id, MessageLifecycle.NEW, this.member.name]
+                [id, MessageLifecycle.NEW, getMember().name]
         )
         if (result){
             result = result.iterator().next()
         }
-        return result*/
+        return result
     }
 
 
@@ -71,7 +72,7 @@ class Mailbox {
     }
 
     public def getTheadById(id){
-        return conversations.find{it.id == id}
+        return getConversations().find{it.id == id}
     }
 
     /** Mark all unread messages of given Thread as read.
@@ -85,7 +86,7 @@ class Mailbox {
      */
     public Collection getInboxThreads(){
         log.debug "Fetching inbox conversations for member: "+member
-        return conversations.grep{
+        return getConversations().grep{
             log.debug "Searching thread $it.id for inbox messages."
             it.containsMessageFor(member)
         }
@@ -95,14 +96,14 @@ class Mailbox {
      * @return collection
      */
     public Collection getSentboxThreads(){
-        return conversations.grep{it.containsMessageFrom(member)}
+        return getConversations().grep{it.containsMessageFrom(member)}
     }
 
     /** Find inbox message by given id.
      * @return msg or null when not found.
      */
     def getInboxMessageById(msgId){
-        for (thread in conversations){
+        for (thread in getConversations()){
             def result = thread.getMessageByIdFor(msgId, member)
             if (result){ return result}
          }

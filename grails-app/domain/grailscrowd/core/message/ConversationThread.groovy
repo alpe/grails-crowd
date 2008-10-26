@@ -39,7 +39,7 @@ class ConversationThread implements Comparable {
     /**
      * Factory method to create new instances.
      */
-    public static ConversationThread newInstance(String topic, Collection members) {
+    public static ConversationThread newInstance(String topic, Set members) {
         if (!members || members.size() < 2) {
             throw new IllegalArgumentException("Minimal 2 participators are required!")
         }
@@ -56,7 +56,7 @@ class ConversationThread implements Comparable {
 
     /** does given member participate in this conversation  */
     def isParticipator(member) {
-        return participators.any {it.name == member.name}
+        return getParticipators().any {it.name == member.name}
     }
 
     /** Check visibility and participation status of member, fail when not allowed else execute closure.
@@ -89,14 +89,14 @@ class ConversationThread implements Comparable {
     /** contains one or more message for given member  */
     def containsMessageFor(recipient) {
         inThreadContext(recipient) {
-            messages.any {!it.isSender(recipient)}
+            getMessages().any {!it.isSender(recipient)}
         }
     }
 
     /** member instance */
     def getMessagesFor(recipient) {
         inThreadContext(recipient) {
-            messages.findAll {
+            getMessages().findAll {
                 !it.isSender(recipient)
             }
         }
@@ -105,7 +105,7 @@ class ConversationThread implements Comparable {
     /** contains one or more message from given member  */
     def containsMessageFrom(sender) {
         inThreadContext(sender) {
-            messages.any {it.fromMember == sender.name}
+            getMessages().any {it.fromMember == sender.name}
         }
     }
 
@@ -113,7 +113,7 @@ class ConversationThread implements Comparable {
      */
     def getMessagesFrom(sender) {
         inThreadContext(sender) {
-            return messages.findAll {it.fromMember == sender.name}
+            return getMessages().findAll {it.fromMember == sender.name}
         }
     }
 
@@ -121,7 +121,7 @@ class ConversationThread implements Comparable {
      */
     protected def getSender(mail) {
         if (mail.fromMember) {
-            return participators.find {it.name == mail.fromMember}
+            return getParticipators().find {it.name == mail.fromMember}
         }
     }
 
@@ -178,25 +178,20 @@ class ConversationThread implements Comparable {
      */
     String getSubject(message) {
         return (!isResponse(message) ? '' : RESPONSE_PREFIX + ': ') + topic
-
-//        if(!previousMessages.empty){
-//            return RESPONSE_PREFIX+ /* system message response would be: previousMessages.last().getSubject() */
-//        }
-//        return topic
     }
 
     def getRecipients(message) {
-        return participators.grep {it.name != message.fromMember}
+        return getParticipators().grep {it.name != message.fromMember}
     }
 
     /** Is a response message to thread start message.  */
     boolean isResponse(message) {
-        messages.any {it.fromMember != message.fromMember && it.sentDate < message.sentDate}
+        getMessages().any {it.fromMember != message.fromMember && it.sentDate < message.sentDate}
     }
 
     /** Is any message of another author after this in this conversation. */
     boolean hasResponse(message) {
-        messages.any {it.fromMember != message.fromMember && it.sentDate > message.sentDate}
+        getMessages().any {it.fromMember != message.fromMember && it.sentDate > message.sentDate}
     }
 
     /**
