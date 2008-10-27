@@ -1,7 +1,7 @@
 package grailscrowd.core.message
 
 /**
- * Jmx managed FIFO to store messagesToMail for email notification like in grails.org.
+ * JMX managed FIFO to store messagesToMail for email notification like in grails.org.
  *
  * @author ap
  */
