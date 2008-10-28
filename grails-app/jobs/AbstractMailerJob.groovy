@@ -8,19 +8,22 @@ import grailscrowd.core.message.*
  */
 abstract class AbstractMailerJob {
 
-    /** blacklist impl    */
+    /** blacklist impl     */
     def blacklist
 
-    /** plugin mail service    */
+    /** plugin mail service     */
     def mailService
 
     def mailCircuitBreaker
 
     abstract def getMailerJobStatistics()
+
     abstract def getMailerJobConfig()
+
     abstract def getMessageFIFO()
-    
+
     abstract String createSubject(recipient, messag)
+
     abstract String createBody(recipient, messag)
 
     def getStartDelay() {
@@ -35,7 +38,7 @@ abstract class AbstractMailerJob {
     /** Job jump in method.
      */
     def execute() {
-        if (!mailerJobConfig?.enabled){ return }
+        if (!mailerJobConfig?.enabled) { return }
         mailerJobStatistics?.markJobStarted()
         try {
             // execute in fail fast circuit breaker
@@ -46,8 +49,10 @@ abstract class AbstractMailerJob {
                     message.getRecipients().grep {
                         it.canBeNotifiedViaEmail && !isInBlacklist(it)
                     }.each {recipient ->
+                        log.debug "Sending mail to ${recipient.name} (${recipient.email}) with subject '${createSubject(recipient, message)}'"
+                        mailerJobStatistics.addMailRecipient(recipient.email)                        
                         mailService?.sendMail {
-                            title  createSubject(recipient, message)
+                            title createSubject(recipient, message)
                             from "noreply@grailscrowd.com"
                             replyTo "noreply@grailscrowd.com"
                             to recipient.email
@@ -61,9 +66,20 @@ abstract class AbstractMailerJob {
         }
     }
 
-    /** Is given recipient in blacklist?   */
+    /** Is given recipient in blacklist?    */
     public boolean isInBlacklist(recipient) {
         return blacklist.isInBlacklist(recipient.email)
+    }
+
+    String defaultFooter() {
+        StringBuffer sb = new StringBuffer()
+        sb << "\n"
+        sb << "Regards,\n"
+        sb << "Your GC Email Monkey\n"
+        sb << "-- \n"
+        sb << "You can change your mail and notification settings at:\n"
+        sb << "http://www:grailscrowd.com/grailscrowd/account\n"
+        return sb.toString()
     }
 
 
