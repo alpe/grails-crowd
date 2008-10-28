@@ -6,12 +6,12 @@ import grailscrowd.core.message.*
 class MailboxMailerJob extends AbstractMailerJob {
 
 
-    /** notification fifo      */
-    def mailboxMessageNotificationFIFO
+    /** notification fifo       */
+    def mailboxMessageNotificationQueue
 
     def mailboxMailerJobConfig
 
-    /** job statistics      */
+    /** job statistics       */
     def mailboxMailerJobStatistics
 
 
@@ -24,7 +24,7 @@ class MailboxMailerJob extends AbstractMailerJob {
     }
 
     def getMessageFIFO() {
-        return mailboxMessageNotificationFIFO
+        return mailboxMessageNotificationQueue
     }
 
     /**
@@ -47,12 +47,7 @@ class MailboxMailerJob extends AbstractMailerJob {
         sb << "'${message.subject}'\n"
         sb << "\n"
         sb << "Visit it at: http://www.grailscrowd.com/grailscrowd/mailbox/inbox\n"
-        sb << "\n"
-        sb << "Regards,\n"
-        sb << "Your GC Email Monkey\n"
-        sb << "-- \n"
-        sb << "You can change your mail and notification settings at:\n"
-        sb << "http://www:grailscrowd.com/grailscrowd/account\n"
+        sb << defaultFooter()
         return sb.toString()
     }
 
