@@ -1,8 +1,12 @@
 import grailscrowd.core.*
 
+import grailscrowd.core.message.SystemMessageFactory
+
 class GrailsProjectController extends SecureController {
 
     ProjectService projectService
+
+    def messageService
 
     def beforeInterceptor = [action: this.&auth, only: ['editProject',
             'handleProjectCreation',
@@ -184,21 +188,12 @@ class GrailsProjectController extends SecureController {
             grailsProject.addToComments(comment)
 			//Only send email notification if posting a comment succeeded
 			if(grailsProject.save()) {	
-				def recipients = grailsProject.uniqueMembersWhoPostedComments.findAll { it.canBeNotifiedViaEmail }.collect { it.email }
-				recipients += grailsProject.creator.email
-				recipients -= comment.member.email
+				def recipients = grailsProject.uniqueMembersWhoPostedComments.findAll { it.canBeNotifiedViaEmail }
+				recipients += grailsProject.creator
+				recipients -= comment.member
 				if(recipients) {
-/* todo:					try {
-						sendMail {
-							bcc recipients as Object[]
-			   				subject "A new comment for project [${grailsProject.name}] has been posted"     
-			   				body "${comment.member.displayName} said:\n\n${comment.body}\n\nSee the comment in context: ${createLink(controller: 'grailsProject', action: 'viewProject', id: params.id, absolute: true)}"
-						}
-					}
-					catch (Exception e) {
-						log.debug("Exception is caught during send mail [${e.getMessage()}] Continueing...")
-					}
-*/
+                    def msg = SystemMessageFactory.createProjectCommentNotificationMessage(recipients, grailsProject, comment)
+                    messageService.sendTransientMessage(msg)
 				}
 			}
 			redirect(action: 'viewProject', id: grailsProject.id)
