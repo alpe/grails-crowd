@@ -14,7 +14,7 @@ class BootStrap {
             //Just for testing
             List sampleMembers = []
             10.times {i ->
-                def result = new Member(name: "name$i", email: "name$i@example.com", password: "passwd$i", displayName: "Name $i",
+                def result = new Member(name: "name$i", email: "gash@gmx.de", password: "passwd$i", displayName: "Name $i",
                         about: "hellooo", mailbox: new Mailbox())
                 result.validate()
                 if (result.hasErrors()){
@@ -52,7 +52,7 @@ class BootStrap {
             def anyMember = sampleMembers[1]
             assert anyMember
             project.inviteParticipant(creatorMember, anyMember)
-      def result = new Member(name: "alpe", email: "a@a.com", password: "xxxxxx", displayName: "Alex Peters",
+      def result = new Member(name: "alpe", email: "gash@gmx.de", password: "xxxxxx", displayName: "Alex Peters",
                     about: "hellooo", mailbox: new Mailbox())
             assert result.save(flush: true)
 
