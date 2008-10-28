@@ -45,7 +45,6 @@ class GenericMessage implements Comparable {
     /**
      * Get message subject. 
      */
-    @Deprecated
     public String getSubject(){
             return thread.getSubject(this)
     }
