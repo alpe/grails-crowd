@@ -29,6 +29,13 @@ interface BlacklistMBean {
      * Get list of all current blacklist elements.
      * @return result
      */
-    public List getBlacklistElements()
+    public String getBlacklistElements()
+
+    /**
+     * Get current quantity of blacklist hits. 
+     *
+     * @return quantity
+     */
+    public int getHitQuantity()
 
 }

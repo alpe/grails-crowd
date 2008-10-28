@@ -1,5 +1,7 @@
 package grailscrowd.core.message
 
+import java.util.concurrent.atomic.AtomicInteger
+
 /**
  * To prevent flooding accounts, any outgoing mailaddress must not
  * be in this regExp blacklist.
@@ -8,8 +10,19 @@ package grailscrowd.core.message
  */
 class Blacklist implements BlacklistMBean{
 
+    private final AtomicInteger counter = new AtomicInteger(0)
+
     /** regExp list initialized with our test addresses */
-    private final List blacklistRegExps = [".*@example.com", "gash@gmx.de"].asSynchronized()
+    private final Set blacklistRegExps = (new HashSet()).asSynchronized()
+
+
+    /**
+     * Set initial blacklist values.
+     * @param blacklistRegExps values to add 
+     */
+    public void setBlacklistRegExps(Collection blacklistRegExps){
+        this.blacklistRegExps.addAll(blacklistRegExps)
+    }
 
 
     /**
@@ -20,6 +33,7 @@ class Blacklist implements BlacklistMBean{
             blacklistRegExps.add(regExp.trim())
         }
     }
+
 
     /**
      * {@inheritDoc }
@@ -32,15 +46,26 @@ class Blacklist implements BlacklistMBean{
      * {@inheritDoc }
      */
     public boolean isInBlacklist(String emailAddressToCheck) {
-        return blacklistRegExps.any {emailAddressToCheck ==~ it}
-
+        boolean result = blacklistRegExps.any {emailAddressToCheck ==~ it}
+        if (result){
+            counter.incrementAndGet()
+        }
+        return result
     }
-    
+
     /**
      * {@inheritDoc }
      */
-    public List getBlacklistElements() {
-        return blacklistRegExps.asImmutable()
+    public String getBlacklistElements() {
+        return blacklistRegExps.join(', ')
     }
+
+    /**
+     * {@inheritDoc }
+     */
+    public int getHitQuantity(){
+        return counter.get()
+    }
+    
 
 }
