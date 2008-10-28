@@ -1,6 +1,7 @@
 package grailscrowd.core.message
 
-import grailscrowd.core.Member
+import grailscrowd.core.*
+import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
 
 /**
  * Factory to create system messages.
@@ -8,11 +9,13 @@ import grailscrowd.core.Member
  */
 class SystemMessageFactory extends AbstractMessageFactory {
 
+
+
     /**
      * To support new and legacy message a version number is stored in payload.
      * @return latest version by type
      */
-    static int getLatestMessageVersion(messageType){
+    static int getLatestMessageVersion(messageType) {
         return 1
     }
 
@@ -21,18 +24,19 @@ class SystemMessageFactory extends AbstractMessageFactory {
     public static String getSubject(GenericMessage msg, projectName) {
         return getSubject(msg.payload.type, projectName)
     }
+
     /**
      * Get message subject in default language: en.
      */
     public static String getSubject(SystemMessageType messageType, String projectName) {
         // always latest version
-        switch(messageType){
-            case  SystemMessageType.PROJECT_JOIN_REQUEST:
+        switch (messageType) {
+            case SystemMessageType.PROJECT_JOIN_REQUEST:
                 return "Project '${projectName}' participation request"
             case SystemMessageType.PROJECT_INVITATION:
-            return "Project Invitation to '${projectName}'"
+                return "Project Invitation to '${projectName}'"
             default:
-                throw new AssertionError("Not supported messageType: "+messageType)
+                throw new AssertionError("Not supported messageType: " + messageType)
         }
     }
 
@@ -94,10 +98,21 @@ class SystemMessageFactory extends AbstractMessageFactory {
     static def createSystemMail(SystemMessageType messageType, String senderInternalName, grailsProject) {
         def payload = new SystemMessagePayload(type: messageType,
                 projectId: grailsProject.id,
-                messageVersion:getLatestMessageVersion(messageType)
+                messageVersion: getLatestMessageVersion(messageType)
         )
         return createSimpleMail(senderInternalName, payload)
     }
 
 
+    public static TransientMessage createProjectCommentNotificationMessage(recipients, grailsProject, Comment comment) {
+        def appTagLib = new ApplicationTagLib()        
+        String subject = "A new comment for project [${grailsProject.name}] has been posted"
+        StringBuilder sb = new StringBuilder()
+        sb << "${comment.member.displayName} said:\n"
+        sb << "\n"
+        sb << "${comment.body}\n"
+        sb << "\n"
+        sb << "See the comment in context: ${appTagLib.createLink(controller: 'grailsProject', action: 'viewProject', id: grailsProject.id, absolute: true)}\n"
+        return new TransientMessage(recipients: recipients, subject: subject, body: sb.toString())
+    }
 }
