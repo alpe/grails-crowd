@@ -8,7 +8,7 @@ interface MailerJobStatisticsMBean {
     public Date getJobEndTime()
     public long getJobDurationInMillis()
     public int getSentMailsQuantity()
-    public Set getLastRecipients()
+    public String getLastRecipients()
     public boolean isRunning()    
 
 }

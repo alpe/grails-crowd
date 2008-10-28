@@ -57,8 +57,8 @@ class MailerJobStatistics implements MailerJobStatisticsMBean {
     /**
      * {@inheritDoc}
      */
-    public Set getLastRecipients() {
-        return jobStatistic.recipients
+    public String getLastRecipients() {
+        return jobStatistic.recipients.join(', ')
     }
 
     /**
