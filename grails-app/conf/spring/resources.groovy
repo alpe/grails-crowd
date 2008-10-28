@@ -27,25 +27,25 @@ beans = {
         resetTime = 8*60*1000 // ms
     }
 
-
+    blacklist(Blacklist){
+        blacklistRegExps =[".*@example.com", "gash@gmx.de"]
+    }
     //-------------------------------------------
     // grailscrowd beans
     //-------------------------------------------
-    mailerJobConfig(MailerJobConfig){
+    mailboxMailerJobConfig(MailerJobConfig){
         startDelay = 6000
         timeout = 60000     // execute job every minute
         enabled = true
     }
 
-    mailerJobStatistics(MailerJobStatistics){
+    mailboxMailerJobStatistics(MailerJobStatistics){
         // noting to configure
     }
 
-    blacklist(Blacklist){
-        // noting to configure
-    }
 
-    messageNotificationFIFO(MessageNotificationFIFO){
+
+    mailboxMessageNotificationFIFO(MessageNotificationFIFO){
         // noting to configure
     }
 
@@ -72,11 +72,11 @@ beans = {
         server = mbeanServer
         assembler = assembler
         beans = ['gc.hibernate:name=hibernate.statistics':hibernateStatistics,
-                 'gc.mail:name=notification.fifo':messageNotificationFIFO,
-                'gc.mail:name=job.settings':mailerJobConfig,
-                'gc.mail:name=job.statistics':mailerJobStatistics,
-                'gc.mail:name=blacklist':blacklist,
-                'gc.mail:name=circuitbreaker.ext':mailCircuitBreaker
+                 'gc.mail:name=mailbox.notification.fifo':mailboxMessageNotificationFIFO,
+                 'gc.mail:name=mailboxjob.settings':mailboxMailerJobConfig,
+                 'gc.mail:name=mailboxjob.statistics':mailboxMailerJobStatistics,
+                 'gc.mail:name=blacklist':blacklist,
+                 'gc.mail:name=circuitbreaker.ext':mailCircuitBreaker
         ]
     }
 
