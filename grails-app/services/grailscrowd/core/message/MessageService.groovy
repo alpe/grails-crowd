@@ -12,7 +12,18 @@ class MessageService {
 
     boolean transactional = true
 
-    def mailboxMessageNotificationFIFO
+    def mailboxMessageNotificationQueue
+
+    def transientMessageNotificationQueue
+
+
+    public void sendTransientMessage(TransientMessage msg){
+        Thread.start{
+            transientMessageNotificationQueue.pushOnStack(msg)
+        }
+
+    }
+
 
     public void startNewSystemConversation(projectName, Member sender, Member recipient, GenericMessage msg){
         if(!msg.isSystemMessage()){
@@ -57,9 +68,7 @@ class MessageService {
         msg.fromMember = sender.name
         thread.addNewMessage(sender, msg)
         Thread.start{
-        mailboxMessageNotificationFIFO.pushOnStack(msg)
-            // Todo: inform conversation members except sender
-            // recipient....canBeNotifiedViaEmail
+            mailboxMessageNotificationQueue.pushOnStack(msg)
         }
     }
   
