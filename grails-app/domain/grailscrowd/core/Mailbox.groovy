@@ -42,11 +42,6 @@ class Mailbox {
         sb << "where (s is null or s.readerName=:name and s.status=:status) "
         sb << "and b.id=:boxId and m.fromMember!=:name"
         def result =  Mailbox.executeQuery(sb.toString() ,[boxId:id, name:getMember().name, status:MessageLifecycle.NEW])
-
-
-
-
-
         if (result){
             result = result.iterator().next()
         }
