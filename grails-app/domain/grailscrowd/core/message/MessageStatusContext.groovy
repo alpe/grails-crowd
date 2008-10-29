@@ -1,5 +1,6 @@
 package grailscrowd.core.message
 
+import java.sql.Timestamp
 import grailscrowd.core.Member
 
 /**
@@ -11,6 +12,12 @@ import grailscrowd.core.Member
 class MessageStatusContext {
 
     static belongsTo = [GenericMessage]
+
+    /** DB entry last modified field, automatically set  */
+    Timestamp lastUpdated
+
+    /** DB entry created field, automatically set */
+    Timestamp dateCreated
 
     MessageLifecycle status
 

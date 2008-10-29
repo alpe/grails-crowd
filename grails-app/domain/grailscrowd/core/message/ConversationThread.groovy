@@ -89,31 +89,41 @@ class ConversationThread implements Comparable {
     /** contains one or more message for given member  */
     def containsMessageFor(recipient) {
         inThreadContext(recipient) {
-            getMessages().any {!it.isSender(recipient)}
+            getMessages().any(messageForCondition.curry(recipient))
         }
     }
 
     /** member instance */
     def getMessagesFor(recipient) {
         inThreadContext(recipient) {
-            getMessages().findAll {
-                !it.isSender(recipient)
-            }
+            getMessages().findAll(messageForCondition.curry(recipient))
         }
     }
+
+    /** is recipient and not deleted */
+    private def messageForCondition = {recipient, it->
+        !it.isSender(recipient) && !it.isDeleted(recipient)
+    }
+
+    /** is sender and not deleted  */
+    private def messageFromCondition = {sender, it->
+        it.isSender(sender) && !it.isDeleted(sender)
+    }
+
+
 
     /** contains one or more message from given member  */
     def containsMessageFrom(sender) {
         inThreadContext(sender) {
-            getMessages().any {it.fromMember == sender.name}
+            getMessages().any(messageFromCondition.curry(sender))
         }
     }
 
-    /** Get all messages sent by member
+    /** Get all messages sent by member.
      */
     def getMessagesFrom(sender) {
         inThreadContext(sender) {
-            return getMessages().findAll {it.fromMember == sender.name}
+            return getMessages().findAll(messageFromCondition.curry(sender))
         }
     }
 
@@ -128,7 +138,7 @@ class ConversationThread implements Comparable {
     /** Are any new messages for given member in current conversation thread.
      */
     def hasAnyNewMessages(recipient) {
-        getMessagesFor(recipient).any {it.isNew()}
+        getMessagesFor(recipient).any {it.isUnread(recipient)}
     }
 
     /** Get oldest of unread messages for given member.
@@ -139,11 +149,11 @@ class ConversationThread implements Comparable {
 
     /** Get all unread messages for given member  */
     def getNewMessagesFor(recipient) {
-        getMessagesFor(recipient).grep {it.isNew()}
+        getMessagesFor(recipient).grep {it.isUnread(recipient)}
     }
 
     void markNewMessagesAsSeen(recipient) {
-        getNewMessagesFor(recipient).each {it.markAsSeen()}
+        getNewMessagesFor(recipient).each {it.markAsSeen(recipient)}
     }
 
 
@@ -168,10 +178,16 @@ class ConversationThread implements Comparable {
         return getMessagesFrom(sender).max()
     }
 
-    def markAsDeleted(member) {
-        getMessagesFor(member).each {it.markAsDeleted()}
+    def markInboxMessagesAsDeleted(reader) {
+        getMessagesFor(reader).each {it.markAsDeleted(reader)}
         return true
     }
+
+    def markSentboxMessagesAsDeleted(reader) {
+        getMessagesFrom(reader).each {it.markAsDeleted(reader)}
+        return true
+    }
+
 
     /**
      * Get message subject.  
@@ -201,6 +217,9 @@ class ConversationThread implements Comparable {
         return other.dateCreated <=> this.dateCreated
     }
 
+    /**
+     * Get single message, ignore delete status!
+     */
     public def getMessageByIdFor(id, recipient) {
         inThreadContext(recipient) {
             getMessagesFor(recipient).find {it.id == id}

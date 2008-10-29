@@ -9,6 +9,8 @@ class ContextAwareMessageAdapter {
 //    def thread
     private def currentReader
 
+    /** was message new when fetching it */
+    private boolean isNewFlag
 
     def getSender() {
         return message.getSender()
@@ -39,8 +41,12 @@ class ContextAwareMessageAdapter {
     }
 
     boolean isUnread() {
-        return isNew()
+       isNewFlag
     }
+    boolean isNew() {
+        return isNewFlag
+    }
+    
 
     def getPayload() {
         if (message.isSystemMessage()) {
@@ -63,20 +69,17 @@ class ContextAwareMessageAdapter {
     }
 
 
-    boolean isNew() {
-        message.isNew(currentReader)
-    }
-
     boolean isDeleted() {
         message.isDeleted(currentReader)
     }
 
     /**
      * Create new View adapter for inbox messages.
+     * @return wrapped message or null when deleted for user or message was null
      */
     static ContextAwareMessageAdapter newInstance(currentReader, message){
         if (!message){return null}
-        return  new ContextAwareMessageAdapter(currentReader:currentReader, message:message)
+        return  new ContextAwareMessageAdapter(currentReader:currentReader, message:message, isNewFlag:message.isUnread(currentReader))
     }
 
 
