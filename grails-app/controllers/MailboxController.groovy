@@ -54,14 +54,18 @@ class MailboxController extends SecureController {
     /** thread domain to data transfer object */
     def mapThreadForView = {member, thread ->
         log.debug "Mapping thread $thread.id for view"
-        return [id:thread.id, topic:thread.topic ]
+        return [id:thread.id, topic:thread.topic, participators:thread.participators.collect(mapMemberForView) ]
+    }
+
+    def mapMemberForView = {member->
+        [name:member.name, displayName:member.displayName, email:member.email]
     }
 
     def mapMessageForView = {msg, withPayload = false, displaySender=true->
         log.debug "Mapping message for view: "+msg?.id
         if (!msg){return null}
         def sender = displaySender? msg.getSender():msg.getRecipients().iterator().next()
-        sender = [name:sender.name, displayName:sender.displayName, email:sender.email,]
+        sender = mapMemberForView(sender)
         def message = [id:msg.id, subject:msg.subject, systemMessage:msg.isSystemMessage(), sentDate:msg.sentDate,
                 hasReply:msg.isAnswered(),sender:sender, unread:msg.isNew()]
         if (withPayload){
@@ -194,12 +198,6 @@ class MailboxController extends SecureController {
         } else {
             redirect(controller:'sentbox')
         }
-    }
-
-    @Deprecated
-    def archiveMessage = {
-        freshCurrentlyLoggedInMember().mailbox.markMessageAsArchived(params.id.toLong())
-        redirect(controller:'mailbox')
     }
 
     def deleteInboxMessage = {

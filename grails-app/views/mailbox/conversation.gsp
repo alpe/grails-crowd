@@ -6,7 +6,12 @@
 <body id="message">
 <div style="width:820px; ">
     <div >
-        <h1>${thread.topic.encodeAsHTML()}</h1>
+        <h1 style="float:left;">${thread.topic.encodeAsHTML()}</h1>
+        <div style="float:right;">
+        <g:each in="${thread.participators}" var="participator">
+            <g:render style ="" template="/shared/memberIconSmall" model="[name:participator.name, email:participator.email]" />            
+        </g:each>
+        </div>
     </div>
     <g:each in="${thread.messages}" var="message">
         <g:set var="sender" value="${message.sender}" scope="page" />
