@@ -299,8 +299,5 @@
       <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
     </library>
   </component>
-  <UsedPathMacros>
-    <macro name="GRAILS_HOME" />
-  </UsedPathMacros>
 </project>
 
