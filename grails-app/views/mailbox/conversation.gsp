@@ -21,9 +21,12 @@
             <hr />
             <g:render style ="" template="/shared/memberIconSmall" model="[name:sender.name, email:sender.email]" />
         <div style="margin-left:38px; margin-top:-30px; margin-bottom:10px;">
-                <g:if test="${message.systemMessage}">
-                    <g:render template="showSystemMessage" model="[message:message]" />
+                <g:if test="${message.isDeleted()}">
+                    <g:render template="showDeletedMessage" model="[message:message]" />
                 </g:if>
+                <g:elseif test="${message.systemMessage}">
+                    <g:render template="showSystemMessage" model="[message:message]" />
+                </g:elseif>
                 <g:else>
                     <g:render template="showFreeFormMessage" model="[message:message]"/>
                 </g:else>

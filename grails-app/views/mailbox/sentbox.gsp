@@ -11,6 +11,7 @@
         <g:else>
             <table class="data">
                 <tbody>
+                    <g:set var="sentboxView" value="${true}" scope="request"/>
                     <g:render template="conversationSummary" collection="${threads}" var="thread"/>                    
                 </tbody>
             </table>
