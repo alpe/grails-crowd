@@ -6,7 +6,12 @@
 <body id="message">
 <div style="width:820px; ">
     <div >
-        <h1>${thread.topic.encodeAsHTML()}</h1>
+        <h1 style="float:left;">${thread.topic.encodeAsHTML()}</h1>
+        <div style="float:right;">
+        <g:each in="${thread.participators}" var="participator">
+            <g:render style ="" template="/shared/memberIconSmall" model="[name:participator.name, email:participator.email]" />            
+        </g:each>
+        </div>
     </div>
     <g:each in="${thread.messages}" var="message">
         <g:set var="sender" value="${message.sender}" scope="page" />
@@ -16,9 +21,12 @@
             <hr />
             <g:render style ="" template="/shared/memberIconSmall" model="[name:sender.name, email:sender.email]" />
         <div style="margin-left:38px; margin-top:-30px; margin-bottom:10px;">
-                <g:if test="${message.systemMessage}">
-                    <g:render template="showSystemMessage" model="[message:message]" />
+                <g:if test="${message.isDeleted()}">
+                    <g:render template="showDeletedMessage" model="[message:message]" />
                 </g:if>
+                <g:elseif test="${message.systemMessage}">
+                    <g:render template="showSystemMessage" model="[message:message]" />
+                </g:elseif>
                 <g:else>
                     <g:render template="showFreeFormMessage" model="[message:message]"/>
                 </g:else>

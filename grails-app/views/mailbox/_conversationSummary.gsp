@@ -1,6 +1,5 @@
 <g:set var="message" value="${thread.highlightMessage}" scope="page" />
-<g:set var="sender" value="${message.sender}" scope="page" />
-
+<g:set var="sender" value="${!sentboxView?message.sender:message.getRecipients()?.iterator().next()}" scope="page" />
 
 <g:if test="${thread.highlightUnreadMessages && message.unread}">
     <tr class="new" style="vertical-align:middle">

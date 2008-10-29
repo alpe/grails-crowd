@@ -13,7 +13,7 @@ class TransientMessage {
         return true
     }
 
-    def isNew(){
+    def isUnread(anyOne){
         return true
     }
 

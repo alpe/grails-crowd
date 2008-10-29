@@ -45,10 +45,10 @@ abstract class AbstractMailerJob {
             mailCircuitBreaker.execute {
                 def message
                 while ((message = messageFIFO?.pollOffStack())) {
-                    if (!message.isNew()) { return }
                     message.getRecipients().grep {
                         it.canBeNotifiedViaEmail && !isInBlacklist(it)
                     }.each {recipient ->
+                        if (!message.isUnread(recipient)) { return }
                         log.debug "Sending mail to ${recipient.name} (${recipient.email}) with subject '${createSubject(recipient, message)}'"
                         mailerJobStatistics.addMailRecipient(recipient.email)                        
                         mailService?.sendMail {
@@ -72,7 +72,7 @@ abstract class AbstractMailerJob {
     }
 
     String defaultFooter() {
-        StringBuffer sb = new StringBuffer()
+        StringBuilder sb = new StringBuilder()
         sb << "\n"
         sb << "Regards,\n"
         sb << "Your GC Email Monkey\n"

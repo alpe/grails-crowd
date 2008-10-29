@@ -28,21 +28,20 @@ class Mailbox {
     /** has any new message in any thread */
     boolean hasAnyNewMessages() {
         return getNumberOfNewMessages()
-//            conversations.any{it.hasAnyNewMessages(member)}
     }
 
     /** get number of new message in all thread */
     def getNumberOfNewMessages() {
         assert getMember()
         assert getMember().name
-//        return 0L
         // TODO: put into cache when performance is bad
-        def result =  Mailbox.executeQuery(
-            "select count(m.id) from grailscrowd.core.Mailbox as b "+
-                    "inner join b.conversations as c inner join c.messages as m "+
-                    "where b.id=? and m.status =? and m.fromMember!=?",
-                [id, MessageLifecycle.NEW, getMember().name]
-        )
+        StringBuilder sb = new StringBuilder()
+        sb << "select count(m.id) from grailscrowd.core.Mailbox as b "
+        sb << "inner join b.conversations as c inner join c.messages as m "
+        sb << "left join m.statusContext s "
+        sb << "where (s is null or s.readerName=:name and s.status=:status) "
+        sb << "and b.id=:boxId and m.fromMember!=:name"
+        def result =  Mailbox.executeQuery(sb.toString() ,[boxId:id, name:getMember().name, status:MessageLifecycle.NEW])
         if (result){
             result = result.iterator().next()
         }
@@ -54,21 +53,12 @@ class Mailbox {
         !msg.isDeleted() && msg.sentDate >( new Date()-MAX_DAYS_VISIBILITY)
     }
 
-    @Deprecated
-    def markMessageAsArchived(id) {
-        throw new AssertionError("Will be removed after refactoring")
-        // remove
-    }
-
-    @Deprecated
-    def markMessageAsAcknowleged(id) {
-        throw new AssertionError("Will be removed after refactoring")        
-        // remove
-
-    }
-
     def deleteInboxThread(id){
-       getTheadById(id)?.markAsDeleted(member) 
+       getTheadById(id)?.markInboxMessagesAsDeleted(member)
+    }
+
+    def deleteSentboxThread(id){
+         getTheadById(id)?.markSentboxMessagesAsDeleted(member)
     }
 
     public def getTheadById(id){
@@ -108,32 +98,5 @@ class Mailbox {
             if (result){ return result}
          }
     }
-
-    /**
-     * Get all messages sent within the last 80 days.
-     * @return List of GenericMessages
-
-    public List getSentboxMessages(){
-        def c = GenericMessage.createCriteria()
-        return  c.list(sentboxMessageCriteria)
-    }
-   
-
-    def getSentboxMessage(id){
-        def c = GenericMessage.createCriteria()
-        return  c.get{
-                idEq(id)
-                and(sentboxMessageCriteria)
-                }
-    }
-
-    private def sentboxMessageCriteria ={
-            and {
-                eq('fromMember', member.name)
-                gt('sentDate', new Date()-MAX_DAYS_VISIBILITY)  // not older than x days
-            }
-            order("sentDate", "desc")
-        }
-         */
 
 }

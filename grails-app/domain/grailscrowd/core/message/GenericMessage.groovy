@@ -11,91 +11,141 @@ import java.sql.Timestamp
  * @author ap
  */
 class GenericMessage implements Comparable {
-    
-    /** DB entry last modified field, automatically set */
+
+    /** DB entry last modified field, automatically set  */
     Timestamp lastUpdated
 
     Timestamp sentDate
 
-
-    /** internal unique member name */
+    /** internal unique member name  */
     String fromMember
 
-    MessageLifecycle status
 
     GenericMessagePayload payload
 
-
     static belongsTo = [thread: ConversationThread]
 
-    static transients =  ['subject']
+    static hasMany = [statusContext: MessageStatusContext]
+
+    static transients = ['subject']
+
 
     static constraints = {
-        fromMember(nullable:false, blank: false)
-        status(nullable:false)
-        payload(nullable:false)
-        thread(nullable:false)
+        fromMember(nullable: false, blank: false)
+        payload(nullable: false)
+        thread(nullable: false)
     }
 
-    GenericMessage(){
+    GenericMessage() {
         sentDate = new Timestamp(System.currentTimeMillis())
-        status = MessageLifecycle.NEW
+    }
+
+
+    /**
+     * Get message status for current reader.
+     * When not set message is always new. When new a new MessageStatusContext is persisted.
+     * @return status in MessageLifecycle for current reader  
+     */
+    private MessageLifecycle getCurrentStatus(currentReader) {
+        if (!currentReader) { return MessageLifecycle.NEW }
+        return findOrCreateContext(currentReader).status
+    }
+
+    /**
+     * Set message status for current reader.
+     * @param newStatus status to set
+     */
+    private void setCurrentStatus(currentReader, MessageLifecycle newStatus) {
+        if (!currentReader) {return}
+        findOrCreateContext(currentReader).switchToStatus(newStatus)
+    }
+
+    /**
+     * Load status context for corrent reader or create a one when none exists.
+     * @return persistent status context 
+     */
+    private MessageStatusContext findOrCreateContext(currentReader) {
+        def context = getStatusContext().find{it.readerName == currentReader.name}
+        if (!context) {
+            log.debug "Creating status context for reader: "+ currentReader
+            context = MessageStatusContext.newInstance(currentReader)
+            addToStatusContext(context)
+        }
+        return context
     }
 
     /**
      * Get message subject. 
      */
-    public String getSubject(){
-            return thread.getSubject(this)
+    public String getSubject() {
+        return thread.getSubject(this)
     }
- 
-    def markAsSeen() {
-        if(MessageLifecycle.NEW == this.status){
-            this.status = MessageLifecycle.SEEN
+
+    def markAsSeen(currentReader) {
+        setCurrentStatus(currentReader, MessageLifecycle.SEEN)
+    }
+
+    def markAsDeleted(currentReader) {
+        setCurrentStatus(currentReader, MessageLifecycle.DELETED)
+    }
+
+    def isUnread(currentReader) {
+        if (isSender(currentReader)){
+            return !isSeenByAnyMember()
         }
-    }
-    
-    def markAsDeleted() {
-        this.status = MessageLifecycle.DELETED  
+        MessageLifecycle.NEW == getCurrentStatus(currentReader)
     }
 
-
-    def isNew() {
-        MessageLifecycle.NEW == this.status 
+    def isDeleted(currentReader) {
+        MessageLifecycle.DELETED == getCurrentStatus(currentReader)
     }
 
-    def isDeleted(){
-        MessageLifecycle.DELETED == this.status
+    /**
+     * Is message not new for any member. Can be read or already deleted.
+     * @return boolean result
+     */
+    def isSeenByAnyMember(){
+        return statusContext?.any{it.status!=MessageLifecycle.NEW}
     }
 
-    def isSystemMessage(){
-        payload.with{isSystemPayload()}
+    /**
+     * Is Message delete in all current member context?
+     * @return boolean result
+     */
+    def isDeletedByAllReaders(){
+        return statusContext?.every{it.status==MessageLifecycle.DELETED}
     }
 
-    def isAnswered(){
+    def isSystemMessage() {
+        payload.with {isSystemPayload()}
+    }
+
+    def isAnswered() {
         thread.hasResponse(this)
-   }
+    }
 
-   def isSender(Member member){
-       member && isSender(member.name)
-   }
-   protected isSender(String name){
+
+    def isSender(Member member) {
+        member && isSender(member.name)
+    }
+
+    protected isSender(String name) {
         name && this.fromMember == name
-   }
+    }
 
-   def getSender(){
-       thread.getSender(this)
-   }
+    def getSender() {
+        thread.getSender(this)
+    }
 
-    def getRecipients(){
+    def getRecipients() {
         thread.getRecipients(this)
     }
 
     /**
      * Compare by sentData.
      */
-    public int compareTo(other){
-      return this.sentDate<=>other.sentDate
+    public int compareTo(other) {
+        return this.sentDate <=> other.sentDate
     }
 
 }

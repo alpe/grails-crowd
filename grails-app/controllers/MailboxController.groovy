@@ -32,8 +32,8 @@ class MailboxController extends SecureController {
             def msg = it.getHighlightInboxMessageFor(member)
             mapThreadForView(member, it) +
                     [highlightUnreadMessages:true]+
-                    [highlightMessage: mapMessageForView(msg)]
-        }
+                    [highlightMessage: ContextAwareMessageAdapter.newInstance(member, msg)]
+        }.grep{it}
         render(view: 'inbox', model: [mailbox: mailbox, threads:threads])
     }
 
@@ -46,38 +46,19 @@ class MailboxController extends SecureController {
             def msg = it.getHighlightSentboxMessageFor(member)
             mapThreadForView(member, it) +
                     [highlightUnreadMessages:false] +
-                    [highlightMessage: mapMessageForView(msg, false, false)]
-        }
+                    [highlightMessage: ContextAwareMessageAdapter.newInstance(member, msg)]
+        }.grep{it}
         render(view: 'sentbox', model: [mailbox: mailbox, threads:threads])
     }
 
     /** thread domain to data transfer object */
     def mapThreadForView = {member, thread ->
         log.debug "Mapping thread $thread.id for view"
-        return [id:thread.id, topic:thread.topic ]
+        return [id:thread.id, topic:thread.topic, participators:thread.participators.collect(mapMemberForView) ]
     }
 
-    def mapMessageForView = {msg, withPayload = false, displaySender=true->
-        log.debug "Mapping message for view: "+msg?.id
-        if (!msg){return null}
-        def sender = displaySender? msg.getSender():msg.getRecipients().iterator().next()
-        sender = [name:sender.name, displayName:sender.displayName, email:sender.email,]
-        def message = [id:msg.id, subject:msg.subject, systemMessage:msg.isSystemMessage(), sentDate:msg.sentDate,
-                hasReply:msg.isAnswered(),sender:sender, unread:msg.isNew()]
-        if (withPayload){
-            log.debug "Mapping payload for view"
-             if (message.systemMessage){
-                 def reader = freshCurrentlyLoggedInMember()
-                 // do not show actions in sentbox && anything pending                               
-                 boolean responseActionPending=  msg.getSender().name!=reader.name &&
-                         msg.payload.isResponseActionPending(reader)
-                message = message +[payload:[messageCode:msg.payload.messageCode, projectId:msg.payload.projectId,
-                        responseActionPending:responseActionPending]]
-             }else{
-                 message = message +[payload:[body:msg.payload.body]]
-             }
-        }
-        return message
+    def mapMemberForView = {member->
+        [name:member.name, displayName:member.displayName, email:member.email]
     }
 
 
@@ -93,7 +74,9 @@ class MailboxController extends SecureController {
         log.info "Looking for thread ${threadId}: "+thread.messages.size()
         if (thread) {
             render(view:'conversation', model:[thread:mapThreadForView(member, thread)+
-                    [messages:thread.messages.collect{mapMessageForView(it, true)}]
+                    [messages:thread.messages.collect{
+                        ContextAwareMessageAdapter.newInstance(member, it)
+                    }.grep{it}]
             ])
             mailbox.markThreadAsSeen(thread)            
             return
@@ -150,7 +133,7 @@ class MailboxController extends SecureController {
     }
 
 
-    /** Show single inbox message
+    /** Show single inbox message thread
      */
     def showInboxMessage = {
         params.each{println it}
@@ -196,15 +179,9 @@ class MailboxController extends SecureController {
         }
     }
 
-    @Deprecated
-    def archiveMessage = {
-        freshCurrentlyLoggedInMember().mailbox.markMessageAsArchived(params.id.toLong())
-        redirect(controller:'mailbox')
-    }
-
     def deleteInboxMessage = {
         def threadId = params.id.toLong()
-        log.info "deleting message with id:$threadId"
+        log.info "Deleting inbox messages of thread id: $threadId"
         if (freshCurrentlyLoggedInMember().mailbox.deleteInboxThread(threadId)){
             onUpdateAttempt("Message deleted.", false)
         }else{
@@ -212,6 +189,18 @@ class MailboxController extends SecureController {
         }
         redirect(action:'inbox')
     }
+
+    def deleteSentboxMessage = {
+        def threadId = params.id.toLong()
+        log.info "Deleting sentbox messages of thread id: $threadId"
+        if (freshCurrentlyLoggedInMember().mailbox.deleteSentboxThread(threadId)){
+            onUpdateAttempt("Message deleted.", false)
+        }else{
+            onUpdateAttempt("Failed to delete message.", true)
+        }
+        redirect(action:'sentbox')
+    }
+
 }
 
 /**

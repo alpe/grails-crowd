@@ -29,8 +29,16 @@
             </span>
 
             <span style="padding-left:10px;">
-                <g:link controller="mailbox" action="deleteInboxMessage" params="[id:threadId, msgId:message.id]">
-                    <img src="${createLinkTo(dir: 'images', file: '../images/icons/action_delete.gif')}" alt="delete"/>
-                </g:link>
+                <g:if test="${!sentboxView}" ><!-- currently delete only inbox messages-->
+                    <g:link controller="mailbox" action="deleteInboxMessage" params="[id:threadId, msgId:message.id]">
+                        <img src="${createLinkTo(dir: 'images', file: '../images/icons/action_delete.gif')}" alt="delete"/>
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link controller="mailbox" action="deleteSentboxMessage" params="[id:threadId, msgId:message.id]">
+                        <img src="${createLinkTo(dir: 'images', file: '../images/icons/action_delete.gif')}" alt="delete"/>
+                    </g:link>
+                </g:else>
             </span>
+
         </span>

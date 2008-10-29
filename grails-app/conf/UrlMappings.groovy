@@ -95,6 +95,7 @@ class UrlMappings {
         "/mailbox/inbox/$id/$msgId?"(controller: 'mailbox', action: 'showConversation') //GET
 //        "/mailbox/inbox/converation/$id/$msgId"(controller: 'mailbox', action: 'showConversation') //GET
         "/mailbox/sentbox/$id"(controller: 'mailbox', action: 'showSentboxMessage') //GET
+        "/mailbox/sentbox/$id/delete"(controller: 'mailbox', action: 'deleteSentboxMessage') //GET        
         "/mailbox/inbox/$id/delete"(controller: 'mailbox', action: 'deleteInboxMessage') //GET
         "/mailbox/inbox/$id/reply"(controller: 'mailbox', action: 'reply') //POST
 

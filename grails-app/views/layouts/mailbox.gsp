@@ -8,7 +8,8 @@
 
   <div class="content" >
     <div style="width: 120px; float: left; padding-left: 5px;padding-right: 5px; background: #EDECE3;">
-        <g:set var="model" value="${pageProperty(name:"page.pageNav")}" scope="page" />
+<% /* does not work      <g:set var="model" value="${pageProperty(name:"page.pageNav")}" scope="request" /> */ %>
+  <%def model = pageProperty(name:"page.pageNav") %>
         <g:render template="/mailbox/mailboxMenu" model="[location: model]"/>
     </div>
     <div  style="width: 850px; float: left; padding-top:10px; padding-left: 10px; ">
