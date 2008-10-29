@@ -183,9 +183,9 @@ class MailboxController extends SecureController {
         def threadId = params.id.toLong()
         log.info "Deleting inbox messages of thread id: $threadId"
         if (freshCurrentlyLoggedInMember().mailbox.deleteInboxThread(threadId)){
-            onUpdateAttempt("Message deleted.", false)
+            onUpdateAttempt("Message deleted.", true)
         }else{
-            onUpdateAttempt("Failed to delete message.", true)
+            onUpdateAttempt("Failed to delete message.", false)
         }
         redirect(action:'inbox')
     }
@@ -194,9 +194,9 @@ class MailboxController extends SecureController {
         def threadId = params.id.toLong()
         log.info "Deleting sentbox messages of thread id: $threadId"
         if (freshCurrentlyLoggedInMember().mailbox.deleteSentboxThread(threadId)){
-            onUpdateAttempt("Message deleted.", false)
+            onUpdateAttempt("Message deleted.", true)
         }else{
-            onUpdateAttempt("Failed to delete message.", true)
+            onUpdateAttempt("Failed to delete message.", false)
         }
         redirect(action:'sentbox')
     }
