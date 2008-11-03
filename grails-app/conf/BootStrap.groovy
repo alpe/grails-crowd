@@ -55,9 +55,8 @@ class BootStrap {
       def result = new Member(name: "alpe", email: "a@a.com", password: "xxxxxx", displayName: "Alex Peters",
                     about: "hellooo", mailbox: new Mailbox())
             assert result.save(flush: true)
-
+    }
         }
-            }
     }
 
     def destroy = {
