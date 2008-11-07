@@ -3,6 +3,11 @@ package grailscrowd.util
 import grails.test.MockUtils
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import grails.test.GrailsUnitTestCase
+import java.beans.PropertyDescriptor
+import java.beans.Introspector
+import java.beans.PropertyDescriptor
+
+
 
 /**
  * Helper class to mock domain instances and fake framework methods.
@@ -36,8 +41,8 @@ class MockUtils {
          addRelations(clazz, obj)
          addCriteriaMethod(clazz, obj)
          addExecuteQuery(clazz, obj)
-
-       grails.test.MockUtils.mockDomain(clazz, [obj])
+         grails.test.MockUtils.mockLogging(clazz)
+         grails.test.MockUtils.mockDomain(clazz, [obj])
      }
 
     static def addCriteriaMethod(Class clazz, obj) {
@@ -56,16 +61,13 @@ class MockUtils {
      static def addPersistenceAttributes(Class clazz, obj) {
          ['id', 'version'].each {
             if (!clazz.metaClass.hasProperty(obj, it)) {
-                clazz.metaClass."$it" =null
+                clazz.metaClass."$it" = 0L
             }
         }
         obj.metaClass = clazz.metaClass
-        ['id', 'version'].each {
-            // init with long value, must not be integer
-            if (!obj."$it") {
-                obj."$it" = 1L
-            }
-          }
+        if (!obj.id) {
+            obj.id = System.currentTimeMillis()
+        }
     }
 
     /** add hasMany, belongsTo methods */
@@ -74,15 +76,15 @@ class MockUtils {
         if (missingProperties) {
             missingProperties.each {key, value ->
                 if (!obj.metaClass.hasProperty(obj, key)) {
-                    obj.metaClass."$key" = null
+                    obj.metaClass."$key" = new TreeSet()
                 }
             }
         }
-
+        // constraint on named belongsTo does currently not work without an declared member attribute  
         missingProperties = GrailsClassUtils.getStaticPropertyValue(clazz, "belongsTo")
         if (missingProperties) {
             missingProperties.each {entry->
-                if (entry instanceof Map.Entry){
+               if (entry instanceof Map.Entry){
                     if (!obj.metaClass.hasProperty(obj, entry.key)) {
                         obj.metaClass."${entry.key}" = null
                     }

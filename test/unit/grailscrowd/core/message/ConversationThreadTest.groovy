@@ -19,12 +19,10 @@ class ConversationThreadTest extends AbstractBaseUnitTestCase{
        void setUp(){
            super.setUp()
            thread = null
-           anySenderFixture = new MemberFixture()
-           anyRecipientFixture = new MemberFixture()
+           anySenderFixture = MemberFixture.ottoFixture
+           anyRecipientFixture = MemberFixture.donnyFixture
            anySubject = 'This is any subject'
            anyBody = 'Hello, this is any body'
-           anySenderFixture.createTestData()
-           anyRecipientFixture.createTestData()
            threadFixture = new ConversationThreadFixture()
        }
 
@@ -32,9 +30,8 @@ class ConversationThreadTest extends AbstractBaseUnitTestCase{
         threadFixture.participationMemberFixtures= [anySenderFixture, anyRecipientFixture]
         threadFixture.messageFixtures.add(new MessageFixture(anySenderFixture, threadFixture))
         threadFixture.messageFixtures.add(new MessageFixture(anySenderFixture, threadFixture))
-        thread = threadFixture.createTestData()
-        println thread.dump()
-        assertThat(thread.getNewMessagesFor(anyBody).size(), is (2))
+        thread = threadFixture.testData
+        assertThat(thread.getNewMessagesFor(anyRecipientFixture.testData).size(), is (2))
 
     }
 

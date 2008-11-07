@@ -47,6 +47,14 @@ class MemberFixture extends AbstractDomainFixture{
         obj.mailbox = mailboxFixture.testData
     }
 
+    static MemberFixture getOttoFixture(){
+        return new MemberFixture(fixtureType:MemberFixtureType.OTTO_ONE)
+    }
+
+    static MemberFixture getDonnyFixture(){
+        return new MemberFixture(fixtureType:MemberFixtureType.DONNY_DUEMPLEMEIER)
+    }
+
     /**
      * Example user: Otto One, empty mailbox
      */

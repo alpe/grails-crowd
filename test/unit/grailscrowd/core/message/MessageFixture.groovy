@@ -23,7 +23,9 @@ class MessageFixture extends AbstractDomainFixture{
     }
     MessageFixture(MemberFixture anySenderFixture){
         this(anySenderFixture, new ConversationThreadFixture())
+        conversationThreadFixture.participationMemberFixtures<<anySenderFixture
         conversationThreadFixture.messageFixtures.add(this)
+
     }
     MessageFixture(MemberFixture anySenderFixture, ConversationThreadFixture conversationThreadFixture){        
         super()

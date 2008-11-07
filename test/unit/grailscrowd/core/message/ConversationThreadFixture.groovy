@@ -26,6 +26,7 @@ class ConversationThreadFixture extends AbstractDomainFixture {
         super()
         this.messageFixtures = []
         this.messageFixtures.addAll(messageFixtures)
+        this.participationMemberFixtures =[]
     }
 
     @Override
@@ -35,8 +36,9 @@ class ConversationThreadFixture extends AbstractDomainFixture {
 
     @Override
     void addRelationData(obj) {
-        obj.participators = participationMemberFixtures.collect{it.testData}
-//        obj.participators.each{println "thread-member: "+it.dump()}
+        participationMemberFixtures.collect{it.testData}.each{
+            obj.addToParticipators(it)
+        }
         messageFixtures.each {
             obj.addNewMessage(it.anySenderFixture.testData, it.testData)
         }
@@ -49,6 +51,7 @@ class ConversationThreadFixture extends AbstractDomainFixture {
         fixtureType = ConversationThreadFixtureType.NEW
         topic = ANY_TOPIC
         messageFixtures?.clear()
+        participationMemberFixtures?.clear()
     }
 }
 

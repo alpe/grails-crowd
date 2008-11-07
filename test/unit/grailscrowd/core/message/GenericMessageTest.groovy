@@ -4,6 +4,7 @@ import grailscrowd.core.*
 import grailscrowd.util.*
 import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.assertThat
+import java.sql.Timestamp
 
 
 /**
@@ -48,11 +49,11 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
     }
 
     void testCompareTo_samples_orderedAsExpected(){
-        message.sentDate = new Date()
+        message.sentDate = new Timestamp(System.currentTimeMillis())
         def message2 = messageFixture.createTestData(MessageFixtureType.INVITATION)
-        message2.sentDate = new Date()-10
+        message2.sentDate = new Timestamp((new Date()-10).time)
         def message3 = messageFixture.createTestData(MessageFixtureType.FREEFORM)
-        message3.sentDate = new Date()-5
+        message3.sentDate = new Timestamp((new Date()-5).time)
         def sortedList = [message, message2, message3].sort()
         assertThat("recieved: "+sortedList*.sentDate, sortedList, is ([message, message3, message2]))
     }

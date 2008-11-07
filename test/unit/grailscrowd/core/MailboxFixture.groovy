@@ -19,19 +19,20 @@ class MailboxFixture extends AbstractDomainFixture{
        this.ownerFixture = new MemberFixture(this)
     }
     
-    public MailboxFixture(MemberFixture ownerFixture){
+/*    public MailboxFixture(MemberFixture ownerFixture){
         this(ownerFixture, new ConversationThreadFixture(new MessageFixture(ownerFixture)))
     }
 
     public MailboxFixture(MemberFixture ownerFixture, ConversationThreadFixture threadFixture){
         this(ownerFixture, [threadFixture])
     }
-
+  */
     public MailboxFixture(MemberFixture ownerFixture, List threadFixtures){
-        super()
+//        super()
         this.ownerFixture = ownerFixture
         this.threadFixtures = []
         this.threadFixtures.addAll(threadFixtures)
+
     }
 
    /** {@inheritDoc} */
@@ -53,9 +54,9 @@ class MailboxFixture extends AbstractDomainFixture{
                 break
         }      */
         assert obj
-        obj.member = ownerFixture.testData
+        obj.member = ownerFixture?.testData
         threadFixtures.each{
-            obj.addToConversations(it.testData)
+              obj.addToConversations(it.testData)
         }
         long newMessageCount = !obj.getConversations()?0:obj.getConversations().inject(0){count, thread->
                 thread.getNumberOfNewMessagesFor(obj.member)
@@ -77,9 +78,9 @@ class MailboxFixture extends AbstractDomainFixture{
        def ownerFixture = result.ownerFixture
        assert ownerFixture
        def anyMember1Fixture = new MemberFixture()
-       def thread1Fixture = new ConversationThreadFixture(topic:"sample thread1")
+       def thread1Fixture = new ConversationThreadFixture(topic:"sample thread1", participationMemberFixtures:[ownerFixture,anyMember1Fixture])
        result.threadFixtures.add(thread1Fixture)
-       def msg1Fixture = new MessageFixture()
+       def msg1Fixture = new MessageFixture(ownerFixture, thread1Fixture)
        assert msg1Fixture.createTestData()
        thread1Fixture.messageFixtures = [msg1Fixture]
        result.createTestData()
