@@ -70,13 +70,13 @@ class MailboxController extends SecureController {
     def renderConversation ={Long threadId ->
         def member = freshCurrentlyLoggedInMember()
         def mailbox = member.mailbox
-        def thread = mailbox.getTheadById(threadId)
+        def thread = mailbox.getThreadById(threadId)
         log.info "Looking for thread ${threadId}: "+thread.messages.size()
         if (thread) {
             render(view:'conversation', model:[thread:mapThreadForView(member, thread)+
                     [messages:thread.messages.collect{
                         ContextAwareMessageAdapter.newInstance(member, it)
-                    }.grep{it}]
+                    }.grep{it}.sort()]
             ])
             mailbox.markThreadAsSeen(thread)            
             return
