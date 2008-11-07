@@ -1,9 +1,12 @@
 package grailscrowd.core.message
 
 /**
+ * Message adapter to generic message with current reader as context.
+ * To be used within Controller or Views.
+ *
  * @author ap
  */
-class ContextAwareMessageAdapter {
+class ContextAwareMessageAdapter implements Comparable{
 
     private def message
 //    def thread
@@ -82,5 +85,13 @@ class ContextAwareMessageAdapter {
         return  new ContextAwareMessageAdapter(currentReader:currentReader, message:message, isNewFlag:message.isUnread(currentReader))
     }
 
+    /**
+     * Compare by sentData asc
+     */
+    public int compareTo(other) {
+        int result =  this.sentDate <=> other.sentDate
+        // must match "consistent with equals" contract for TreeSet
+        return result?:this.hashCode()<=>other.hashCode()
+    }
 
 }
