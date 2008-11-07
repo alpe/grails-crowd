@@ -211,10 +211,18 @@ class ConversationThread implements Comparable {
     }
 
     /**
-     * Compare by dateCreated desc.
+     * Compare by dateCreated desc and topic when equals.
      */
     public int compareTo(other) {
-        return other.dateCreated <=> this.dateCreated
+        int result
+        if (!this.dateCreated){
+             result = !other.dateCreated?0:-1
+        }else{
+            result =  !other.dateCreated?1:other.dateCreated <=> this.dateCreated
+        }
+        // must match "consistent with equals" contract for TreeSet
+        return result?:this.hashCode()<=>other.hashCode()
+
     }
 
     /**

@@ -22,6 +22,10 @@ class GenericMessage implements Comparable {
 
 
     GenericMessagePayload payload
+    
+    ConversationThread thread
+    
+    Set statusContext
 
     static belongsTo = [thread: ConversationThread]
 
@@ -145,7 +149,10 @@ class GenericMessage implements Comparable {
      * Compare by sentData.
      */
     public int compareTo(other) {
-        return this.sentDate <=> other.sentDate
+        int result =  this.sentDate <=> other.sentDate
+        // must match "consistent with equals" contract for TreeSet
+        return result?:this.hashCode()<=>other.hashCode()        
+
     }
 
 }
