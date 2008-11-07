@@ -146,13 +146,12 @@ class GenericMessage implements Comparable {
     }
 
     /**
-     * Compare by sentData.
+     * Compare by sentData desc
      */
     public int compareTo(other) {
-        int result =  this.sentDate <=> other.sentDate
+        int result =  other.sentDate <=> this.sentDate
         // must match "consistent with equals" contract for TreeSet
         return result?:this.hashCode()<=>other.hashCode()        
-
     }
 
 }
