@@ -127,7 +127,7 @@
     </content>
     <orderEntry type="library" name="libs" level="project" />
     <orderEntry type="library" name="GROOVY" level="application" />
-    <orderEntry type="library" name="grails-1.0.3" level="application" />
+    <orderEntry type="library" exported="" name="grails-1.0.3" level="application" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
