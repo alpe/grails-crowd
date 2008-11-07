@@ -25,11 +25,16 @@ class BootStrap {
                 result.save(flush: true)
                 sampleMembers.add(result)
             }
-           int x = 1 // >1 fails, duno why
-           x.times{i->
-                    messageService.startNewFreeFormConversation('anySubject'+i, sampleMembers[3], sampleMembers[6], 'anyBody'+i)
-            }
-            assert sampleMembers[6].mailbox.getInboxThreads().size() == x
+           int x = 1
+           int counter = 0
+           [sampleMembers, sampleMembers].combinations().each{mList->
+               def sender = mList[0]
+               def recipient = mList[1]
+               if (sender==recipient){return}
+               x.times{
+                    messageService.startNewFreeFormConversation('anySubject'+counter++, sender, recipient, 'anyBody'+i)
+                }
+           }
                     
             def creatorMember = sampleMembers[0]
             assert creatorMember
