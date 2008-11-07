@@ -10,14 +10,13 @@ import grailscrowd.core.message.ConversationThread
 
 class Mailbox {
 
-    /** maximum days any message is visible in in- or sentbox */
-    public static final int MAX_DAYS_VISIBILITY = 80
-
     SortedSet conversations
     
+    Member member
+    
     static hasMany = [conversations: ConversationThread]
+    
     static belongsTo = [member: Member]
-//    static fetchMode = [messages: 'eager']
 
     static constraints = {
         member(nullable: false)
@@ -48,10 +47,6 @@ class Mailbox {
         return result
     }
 
-
-    def visibleInInbox = {msg->
-        !msg.isDeleted() && msg.sentDate >( new Date()-MAX_DAYS_VISIBILITY)
-    }
 
     def deleteInboxThread(id){
        getTheadById(id)?.markInboxMessagesAsDeleted(member)

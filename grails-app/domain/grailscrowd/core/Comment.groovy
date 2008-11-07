@@ -13,6 +13,8 @@ class Comment implements Comparable {
     }
 
 	public int compareTo(Object obj) {
-    	return dateCreated <=> obj.dateCreated
-  	}
+    	int result =  dateCreated <=> obj.dateCreated
+        // must match "consistent with equals" contract for TreeSet
+        return result?:this.hashCode()<=>obj.hashCode()
+      }
 }

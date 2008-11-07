@@ -32,7 +32,10 @@ class Tagging implements Comparable {
 
 	// taggings are sorted alphabetically by tag name
     public int compareTo(Object obj) {
-        return tag.name <=> obj.tag.name
+        int result = tag.name <=> obj.tag.name
+        // must match "consistent with equals" contract for TreeSet
+        return result?:this.hashCode()<=>obj.hashCode()
+
     }
 
     private static def withTagAndCountsMap(callable) {

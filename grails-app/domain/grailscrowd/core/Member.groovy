@@ -185,10 +185,13 @@ class Member extends NumberOfViewsTrackable implements Comparable {
     }
 
     // members are sorted alphabetically by their display name
-    public int compareTo(Object obj) {
-        return displayName <=> obj.displayName
+    public int compareTo(Object other) {
+        int result = displayName <=> other.displayName
+        // must match "consistent with equals" contract for TreeSet
+        return result?:this.hashCode()<=>other.hashCode()
     }
-    
+
+
     public String toString(){
         return "displayName: $displayName ($name)"
     }
