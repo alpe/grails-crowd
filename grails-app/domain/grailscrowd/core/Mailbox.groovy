@@ -49,14 +49,14 @@ class Mailbox {
 
 
     def deleteInboxThread(id){
-       getTheadById(id)?.markInboxMessagesAsDeleted(member)
+       getThreadById(id)?.markInboxMessagesAsDeleted(member)
     }
 
     def deleteSentboxThread(id){
-         getTheadById(id)?.markSentboxMessagesAsDeleted(member)
+         getThreadById(id)?.markSentboxMessagesAsDeleted(member)
     }
 
-    public def getTheadById(id){
+    public def getThreadById(id){
         return getConversations().find{it.id == id}
     }
 
@@ -70,9 +70,7 @@ class Mailbox {
      * @return collection
      */
     public Collection getInboxThreads(){
-        log.debug "Fetching inbox conversations for member: "+member
         return getConversations().grep{
-            log.debug "Searching thread $it.id for inbox messages."
             it.containsMessageFor(member)
         }
     }
