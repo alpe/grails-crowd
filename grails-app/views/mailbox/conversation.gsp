@@ -39,10 +39,10 @@
     <hr />
         <g:render style ="" template="/shared/memberIconSmall" model="[name:loggedInMember.name, email:loggedInMember.email]" />
         <div style="margin-left:38px; margin-top:-30px; margin-bottom:10px;">
-            <g:render template="replyInput" model="[messages:messages]"/>
+            <g:render template="replyInput" model="[messages:messages, offset:offset, max:max]"/>
         </div>
     </div>
     <div >
-        <g:link class="inline-link" controller="mailbox">&laquo; Go back to mailbox</g:link>
+        <g:link class="inline-link" controller="mailbox" params="[offset:offset, max:max]">&laquo; Go back to mailbox</g:link>
     </div>
 </body>

@@ -1,6 +1,9 @@
 <div>
 <g:form method="post" action="reply" id="${fieldValue(bean: thread, field: 'id')}">
-<input type="hidden" name="threadId" value="${fieldValue(bean: thread, field: 'id')}"/>   
+<input type="hidden" name="threadId" value="${fieldValue(bean: thread, field: 'id')}"/>
+<input type="hidden" name="offset" value="${offset}"/>
+<input type="hidden" name="max" value="${max}"/>
+    
 <p>
     <label for="body">Reply:</label>
     (<a href="http://hobix.com/textile/quick.html" target="_blank">Textile enabled</a>):<br/>

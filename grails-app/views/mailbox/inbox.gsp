@@ -12,10 +12,10 @@
         <g:else>
             <table class="data">
                 <tbody>
-                    <g:render template="conversationSummary" collection="${threads}" var="thread"/>
-                    <%/*g:render template="messageSummary" collection="${messages}" var="message"/*/%>
+                    <g:render template="conversationSummary" collection="${threads}" var="thread"/> 
                 </tbody>
             </table>
+            <g:paginate controller="mailbox" action="inbox" total="${total}" />
         </g:else>
     </span>
 </div><!-- main-->

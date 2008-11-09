@@ -13,7 +13,7 @@
     </div>
     <div style="clear:both; padding-top:5px;padding-left:25px;">
         <g:render template="/shared/memberIconSmall" model="[name:sender.name, email:sender.email]" />
-        <g:link class="inline-link" style="padding-left: 10px;vertical-align:top;text-decoration:none; " controller="mailbox" action="showConversation" params="[id:thread.id, msgId:message.id]">
+        <g:link class="inline-link" style="padding-left: 10px;vertical-align:top;text-decoration:none; " controller="mailbox" action="showConversation" params="[id:thread.id, msgId:message.id, offset:params?.offset, max:params?.max]">
             <strong>${message.subject.encodeAsHTML()}</strong>
         </g:link>
     </div>
