@@ -1,6 +1,7 @@
 class UtilFilters {
 
-    private static MAX_RESULTS_PER_PAGE = 20
+    private static final Integer MAX_RESULTS_PER_PAGE = 20
+    private static final Integer MAX_MAIL_RESULTS_PER_PAGE = 10
 
     def filters = {
         clearFlashMessage(controller: '*', action: '*') {
@@ -11,11 +12,17 @@ class UtilFilters {
             }
         }
 
-        setupCommonQueryParams(controller: "(member|grailsProject|comment)",
-                action: "(listProjectLocations|listMemberLocations|findByName|findByLocation|findByTagGlobally|findByTagForMember|list)") {
+        setupCommonQueryParams(controller: "(member|grailsProject|comment|mailbox)",
+                action: "(listProjectLocations|listMemberLocations|findByName|findByLocation|findByTagGlobally|findByTagForMember|list|inbox|sentbox)") {
             before = {
+
                 if (actionName == 'listProjectLocations' || actionName == 'listMemberLocations') {
-                    configureDefaultMaxResults(params)
+                    configureDefaultMaxResults(params, MAX_RESULTS_PER_PAGE)
+                    convertPaginationParamsToInteger(params)
+                }
+                if (actionName == 'inbox'|| actionName == 'sentbox'){
+                    configureDefaultMaxResults(params, MAX_MAIL_RESULTS_PER_PAGE)
+                    configureDefaultResultOffset(params)                    
                     convertPaginationParamsToInteger(params)
                 }
                 if (controllerName == 'grailsProject' && actionName == 'findByLocation') {
@@ -31,7 +38,7 @@ class UtilFilters {
                     }
                 }
                 if (actionName == 'findByName' || actionName == 'findByTagGlobally' || actionName == 'findByTagForMember' || actionName == 'list') {
-                    configureDefaultMaxResults(params)
+                    configureDefaultMaxResults(params, MAX_RESULTS_PER_PAGE)
                 }
             }
         }
@@ -64,9 +71,14 @@ class UtilFilters {
         true
     }
 
-    private configureDefaultMaxResults(params) {
+    private configureDefaultMaxResults(params, max) {
         if (!params.max) {
-            params.max = MAX_RESULTS_PER_PAGE
+            params.max = max
+        }
+    }
+    private configureDefaultResultOffset(params) {
+        if (!params.offset) {
+            params.offset = 0
         }
     }
 

@@ -17,24 +17,30 @@ class MailboxController extends SecureController {
 
     /** start with inbox */
     def index = {
-        redirect(action:'inbox')
+        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
     }
 
     /** Show incomming mails */
     def inbox= {
+        Mailbox.withTransaction{tx->
         log.debug "Loading inbox view for member: "+session.memberId
         def member = freshCurrentlyLoggedInMember()
         log.debug "Fresh member instance loaded"
         def mailbox = member.mailbox
         log.debug "Mailbox loaded: "+mailbox?.id
-        def threads = mailbox.inboxThreads.collect{
+        def threads = mailbox.getInboxThreads(params.offset, params.max)
+        threads.each{println "id: $it.id, participators: ${it.participators*.id}"}
+        threads = threads.collect{
             log.debug "Collecting unread messages for thread: "+it.id
             def msg = it.getHighlightInboxMessageFor(member)
             mapThreadForView(member, it) +
                     [highlightUnreadMessages:true]+
                     [highlightMessage: ContextAwareMessageAdapter.newInstance(member, msg)]
-        }.grep{it}
-        render(view: 'inbox', model: [mailbox: mailbox, threads:threads])
+        }
+
+        //render(view: 'inbox', model: [mailbox: mailbox, threads:threads, total:mailbox.totalInboxThreads])
+            render(view: 'inbox', model: [mailbox: mailbox, threads:threads, total:mailbox?.totalInboxThreads])
+        }            
     }
 
     /** Show outgoing mails */
@@ -64,24 +70,27 @@ class MailboxController extends SecureController {
 
     def showConversation = {
         Long threadId = params.id.toLong()
-        renderConversation(threadId)
+        renderConversation(threadId, params)
     }
 
-    def renderConversation ={Long threadId ->
+    def renderConversation ={Long threadId, params ->
         def member = freshCurrentlyLoggedInMember()
         def mailbox = member.mailbox
         def thread = mailbox.getThreadById(threadId)
-        log.info "Looking for thread ${threadId}: "+thread.messages.size()
+        log.debug "Looking for thread ${threadId}: "+thread.messages.size()
         if (thread) {
             render(view:'conversation', model:[thread:mapThreadForView(member, thread)+
                     [messages:thread.messages.collect{
                         ContextAwareMessageAdapter.newInstance(member, it)
-                    }.grep{it}.sort()]
+                    }.grep{it}.sort()
+                    ],
+                    offset:params.offset,
+                    max:params.max
             ])
             mailbox.markThreadAsSeen(thread)            
             return
         } else {
-            redirect(controller:'inbox')
+            redirect(action:'inbox', params:[offset:params.offset, max:params.max])
         }
 
     }
@@ -129,7 +138,7 @@ class MailboxController extends SecureController {
         }
         messageService.startNewFreeFormConversation (cmd.subject, currentMember, recipient, cmd.body)
         onUpdateAttempt("Your message has been sent.", true)
-        redirect(action:'inbox')
+        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
     }
 
 
@@ -146,19 +155,19 @@ class MailboxController extends SecureController {
             render(view: 'message', model: [message: msg])
 			return;
         } else {
-            redirect(controller:'inbox')
+            redirect(action:'inbox', params:[offset:params.offset, max:params.max])
         }
     }
 
     def reply = { ReplyFormCommand cmd->
         if (cmd.hasErrors()){
-            renderConversation(cmd.threadId)
+            renderConversation(cmd.threadId, params)
             return 
         }
         def message = FreeFormMessageFactory.createNewMessage(freshCurrentlyLoggedInMember(), cmd.body)
         messageService.respondToThread (cmd.threadId, freshCurrentlyLoggedInMember(), message)
         onUpdateAttempt("Your message has been sent.", true)
-        redirect(action:'inbox')
+        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
     }
 
 
@@ -175,7 +184,7 @@ class MailboxController extends SecureController {
             render(view: 'message', model: [message: msg])
 			return;
         } else {
-            redirect(controller:'sentbox')
+            redirect(action:'sentbox', params:[offset:params.offset, max:params.max])
         }
     }
 
@@ -187,7 +196,7 @@ class MailboxController extends SecureController {
         }else{
             onUpdateAttempt("Failed to delete message.", false)
         }
-        redirect(action:'inbox')
+        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
     }
 
     def deleteSentboxMessage = {

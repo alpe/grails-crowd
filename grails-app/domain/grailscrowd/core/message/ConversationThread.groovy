@@ -93,26 +93,26 @@ class ConversationThread implements Comparable {
         }
     }
 
-    /** member instance */
+    /** Find messages for girven member. */
     def getMessagesFor(recipient) {
         inThreadContext(recipient) {
             getMessages().findAll(messageForCondition.curry(recipient))
         }
     }
 
-    /** is recipient and not deleted */
+    /** Is recipient and not deleted. */
     private def messageForCondition = {recipient, it->
         !it.isSender(recipient) && !it.isDeleted(recipient)
     }
 
-    /** is sender and not deleted  */
+    /** Is sender and not deleted.  */
     private def messageFromCondition = {sender, it->
         it.isSender(sender) && !it.isDeleted(sender)
     }
 
 
 
-    /** contains one or more message from given member  */
+    /** Contains any message from given member.  */
     def containsMessageFrom(sender) {
         inThreadContext(sender) {
             getMessages().any(messageFromCondition.curry(sender))
@@ -127,7 +127,7 @@ class ConversationThread implements Comparable {
         }
     }
 
-    /** Get member instance of mail sender
+    /** Get member instance of mail sender.
      */
     protected def getSender(mail) {
         if (mail.fromMember) {
@@ -163,14 +163,14 @@ class ConversationThread implements Comparable {
         getNewMessagesFor(recipient).size()
     }
 
-    /** Get last inbox message in this thread for recipient  */
-    def getLastMessageFor(recipient) {
+    /** Get latest inbox message in this thread for recipient  */
+    private def getLastestMessageFor(recipient) {
         getMessagesFor(recipient).max()
     }
 
     def getHighlightInboxMessageFor(recipient) {
         def result = getFirstNewMessage(recipient)
-        return result ?: getLastMessageFor(recipient)
+        return result ?: getLastestMessageFor(recipient)
     }
 
     /** last sent message of given member  */
@@ -211,15 +211,16 @@ class ConversationThread implements Comparable {
     }
 
     /**
-     * Compare by dateCreated desc and topic when equals.
+     * Compare by lastUpdated desc, topic asc
      */
     public int compareTo(other) {
         int result
-        if (!this.dateCreated){
-             result = !other.dateCreated?0:-1
+        if (!this.lastUpdated){
+             result = !other.lastUpdated?0:-1
         }else{
-            result =  !other.dateCreated?1:other.dateCreated <=> this.dateCreated
+            result =  !other.lastUpdated?1:other.lastUpdated <=> this.lastUpdated
         }
+        result = result?:this.topic<=>other.topic
         // must match "consistent with equals" contract for TreeSet
         return result?:this.hashCode()<=>other.hashCode()
 
