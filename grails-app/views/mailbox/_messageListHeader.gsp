@@ -8,8 +8,8 @@
                 </g:else>
             </span>
             <span>
-                <g:link class="membernameSmall" controller="member" action="viewProfile" params="[_name:sender.name]">
-                    ${sender.displayName.encodeAsHTML()}
+                <g:link class="membernameSmall" controller="member" action="viewProfile" params="[_name:memberInFocus.name]">
+                    ${memberInFocus.displayName.encodeAsHTML()}
                 </g:link>
             </span>
         </span>
@@ -29,7 +29,7 @@
             </span>
 
             <span style="padding-left:10px;">
-                <g:if test="${!sentboxView}" ><!-- currently delete only inbox messages-->
+                <g:if test="${!sentboxView}" >
                     <g:link controller="mailbox" action="deleteInboxMessage" params="[id:threadId, msgId:message.id, offset:params?.offset, max:params?.max]">
                         <img src="${createLinkTo(dir: 'images', file: '../images/icons/action_delete.gif')}" alt="delete"/>
                     </g:link>
