@@ -12,59 +12,55 @@ class MailboxController extends SecureController {
 
     def beforeInterceptor = [action: this.&auth]
 
-    /** message infrastructure service */
+    /** message infrastructure service  */
     MessageService messageService
 
-    /** start with inbox */
+    /** start with inbox  */
     def index = {
-        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
+        redirect(action: 'inbox', params: [offset: params.offset, max: params.max])
     }
 
-    /** Show incomming mails */
-    def inbox= {
-        Mailbox.withTransaction{tx->
-        log.debug "Loading inbox view for member: "+session.memberId
-        def member = freshCurrentlyLoggedInMember()
-        log.debug "Fresh member instance loaded"
-        def mailbox = member.mailbox
-        log.debug "Mailbox loaded: "+mailbox?.id
-        def threads = mailbox.getInboxThreads(params.offset, params.max)
-        threads.each{println "id: $it.id, participators: ${it.participators*.id}"}
-        threads = threads.collect{
-            log.debug "Collecting unread messages for thread: "+it.id
-            def msg = it.getHighlightInboxMessageFor(member)
-            mapThreadForView(member, it) +
-                    [highlightUnreadMessages:true]+
-                    [highlightMessage: ContextAwareMessageAdapter.newInstance(member, msg)]
+    /** Show incomming mails  */
+    def inbox = {
+        Mailbox.withTransaction {tx ->
+            def member = freshCurrentlyLoggedInMember()
+            def mailbox = member.mailbox
+            def threads = mailbox.getInboxThreads(params.offset, params.max)
+            threads = threads.collect {
+                def msg = it.getHighlightInboxMessageFor(member)
+                mapThreadForView(member, it) +
+                        [highlightUnreadMessages: true] +
+                        [highlightMessage: ContextAwareMessageAdapter.newInstance(member, msg)]
+            }
+            render(view: 'inbox', model: [mailbox: mailbox, threads: threads, total: mailbox?.totalInboxThreads])
         }
-
-        //render(view: 'inbox', model: [mailbox: mailbox, threads:threads, total:mailbox.totalInboxThreads])
-            render(view: 'inbox', model: [mailbox: mailbox, threads:threads, total:mailbox?.totalInboxThreads])
-        }            
     }
 
-    /** Show outgoing mails */
-    def sentbox= {
-        def member = freshCurrentlyLoggedInMember()
-        def mailbox = member.mailbox
-        def threads = mailbox.sentboxThreads .collect{
-
-            def msg = it.getHighlightSentboxMessageFor(member)
-            mapThreadForView(member, it) +
-                    [highlightUnreadMessages:false] +
-                    [highlightMessage: ContextAwareMessageAdapter.newInstance(member, msg)]
-        }.grep{it}
-        render(view: 'sentbox', model: [mailbox: mailbox, threads:threads])
+    /** Show outgoing mails  */
+    def sentbox = {
+        Mailbox.withTransaction {tx ->
+            println "offset: $params.offset"
+            def member = freshCurrentlyLoggedInMember()
+            def mailbox = member.mailbox
+            def threads = mailbox.getSentboxThreads(params.offset, params.max)
+            threads = threads.collect {
+                def msg = it.getHighlightSentboxMessageFor(member)
+                mapThreadForView(member, it) +
+                        [highlightUnreadMessages: false] +
+                        [highlightMessage: ContextAwareMessageAdapter.newInstance(member, msg)]
+            }
+            render(view: 'sentbox', model: [mailbox: mailbox, threads: threads, total: mailbox?.totalSentboxThreads])
+        }
     }
 
-    /** thread domain to data transfer object */
+    /** thread domain to data transfer object  */
     def mapThreadForView = {member, thread ->
         log.debug "Mapping thread $thread.id for view"
-        return [id:thread.id, topic:thread.topic, participators:thread.participators.collect(mapMemberForView) ]
+        return [id: thread.id, topic: thread.topic, participators: thread.participators.collect(mapMemberForView)]
     }
 
-    def mapMemberForView = {member->
-        [name:member.name, displayName:member.displayName, email:member.email]
+    def mapMemberForView = {member ->
+        [name: member.name, displayName: member.displayName, email: member.email]
     }
 
 
@@ -73,101 +69,101 @@ class MailboxController extends SecureController {
         renderConversation(threadId, params)
     }
 
-    def renderConversation ={Long threadId, params ->
+    def renderConversation = {Long threadId, params ->
         def member = freshCurrentlyLoggedInMember()
         def mailbox = member.mailbox
         def thread = mailbox.getThreadById(threadId)
-        log.debug "Looking for thread ${threadId}: "+thread.messages.size()
+        log.debug "Looking for thread ${threadId}: " + thread.messages.size()
         if (thread) {
-            render(view:'conversation', model:[thread:mapThreadForView(member, thread)+
-                    [messages:thread.messages.collect{
+            render(view: 'conversation', model: [thread: mapThreadForView(member, thread) +
+                    [messages: thread.messages.collect {
                         ContextAwareMessageAdapter.newInstance(member, it)
-                    }.grep{it}.sort()
+                    }.grep {it}.sort()
                     ],
-                    offset:params.offset,
-                    max:params.max
+                    offset: params.offset,
+                    max: params.max
             ])
-            mailbox.markThreadAsSeen(thread)            
+            mailbox.markThreadAsSeen(thread)
             return
         } else {
-            redirect(action:'inbox', params:[offset:params.offset, max:params.max])
+            redirect(action: 'inbox', params: [offset: params.offset, max: params.max])
         }
 
     }
 
-    /** Fill form command and render compose page */
-    private def composeFreeForm = {cmd->
+    /** Fill form command and render compose page  */
+    private def composeFreeForm = {cmd ->
         String name = cmd.toMemberName
-        if (name){
+        if (name) {
             def member = Member.findByName(name)
-            if (member){
-                cmd.toMember =  [name:name, email:member.email,displayName:member.displayName]
-                render (view:'compose', model:[formBean:cmd])
+            if (member) {
+                cmd.toMember = [name: name, email: member.email, displayName: member.displayName]
+                render(view: 'compose', model: [formBean: cmd])
                 return
-            }else{
-                onUpdateAttempt("Member not found.", true)                
+            } else {
+                onUpdateAttempt("Member not found.", true)
             }
         }
-        render (view:'compose', model:[formBean:cmd])
+        render(view: 'compose', model: [formBean: cmd])
         return
- }
+    }
 
-    /** New mail input form */
+    /** New mail input form  */
     def compose = {
-           def cmd = new FreeFormCommand(toMemberName:params.to)
-           composeFreeForm(cmd)
+        def cmd = new FreeFormCommand(toMemberName: params.to)
+        composeFreeForm(cmd)
     }
 
     /* Create persistent mail */
-    def create = {FreeFormCommand cmd->
-        if (cmd.hasErrors()){
+    def create = {FreeFormCommand cmd ->
+        if (cmd.hasErrors()) {
             composeFreeForm(cmd)
             return
         }
         def currentMember = freshCurrentlyLoggedInMember()
-        if (cmd.toMemberName==currentMember.name){
+        if (cmd.toMemberName == currentMember.name) {
             onUpdateAttempt("Soliloquies may be supported in a future version.", true)
             cmd.toMemberName = ""
             composeFreeForm(cmd)
             return
         }
-        def recipient =  Member.findByName(cmd.toMemberName)
-        if (!recipient){
+        def recipient = Member.findByName(cmd.toMemberName)
+        if (!recipient) {
             composeFreeForm(cmd)
             return
         }
-        messageService.startNewFreeFormConversation (cmd.subject, currentMember, recipient, cmd.body)
+        messageService.startNewFreeFormConversation(cmd.subject, currentMember, recipient, cmd.body)
         onUpdateAttempt("Your message has been sent.", true)
-        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
+        redirect(action: 'inbox', params: [offset: params.offset, max: params.max])
     }
 
 
     /** Show single inbox message thread
      */
     def showInboxMessage = {
-        params.each{println it}
+        params.each {println it}
 //        long msgId = params.id.toLong()
 //redirect failure:        redirect(uri: '/notAllowed')
 
         def mailbox = freshCurrentlyLoggedInMember().mailbox
-		def msg = mailbox.getInboxMessageAndMarkAsSeen(msgId)
+        def msg = mailbox.getInboxMessageAndMarkAsSeen(msgId)
         if (msg) {
             render(view: 'message', model: [message: msg])
-			return;
+            return;
         } else {
-            redirect(action:'inbox', params:[offset:params.offset, max:params.max])
+            redirect(action: 'inbox', params: [offset: params.offset, max: params.max])
         }
     }
 
-    def reply = { ReplyFormCommand cmd->
-        if (cmd.hasErrors()){
+    def reply = {ReplyFormCommand cmd ->
+        if (cmd.hasErrors()) {
             renderConversation(cmd.threadId, params)
-            return 
+            return
         }
         def message = FreeFormMessageFactory.createNewMessage(freshCurrentlyLoggedInMember(), cmd.body)
-        messageService.respondToThread (cmd.threadId, freshCurrentlyLoggedInMember(), message)
+        messageService.respondToThread(cmd.threadId, freshCurrentlyLoggedInMember(), message)
         onUpdateAttempt("Your message has been sent.", true)
-        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
+        redirect(action: 'inbox', params: [offset: 0, max: params.max])
     }
 
 
@@ -176,38 +172,38 @@ class MailboxController extends SecureController {
     /** Show single sent message.
      */
     def showSentboxMessage = {
-	    def msgId = params.id.toLong()
+        def msgId = params.id.toLong()
 //			redirect(uri: '/notAllowed')
-		def mailbox = freshCurrentlyLoggedInMember().mailbox
-		def msg = mailbox.getSentboxMessage(msgId)
+        def mailbox = freshCurrentlyLoggedInMember().mailbox
+        def msg = mailbox.getSentboxMessage(msgId)
         if (msg) {
             render(view: 'message', model: [message: msg])
-			return;
+            return;
         } else {
-            redirect(action:'sentbox', params:[offset:params.offset, max:params.max])
+            redirect(action: 'sentbox', params: [offset: params.offset, max: params.max])
         }
     }
 
     def deleteInboxMessage = {
         def threadId = params.id.toLong()
         log.info "Deleting inbox messages of thread id: $threadId"
-        if (freshCurrentlyLoggedInMember().mailbox.deleteInboxThread(threadId)){
+        if (freshCurrentlyLoggedInMember().mailbox.deleteInboxThread(threadId)) {
             onUpdateAttempt("Message deleted.", true)
-        }else{
+        } else {
             onUpdateAttempt("Failed to delete message.", false)
         }
-        redirect(action:'inbox', params:[offset:params.offset, max:params.max])
+        redirect(action: 'inbox', params: [offset: params.offset, max: params.max])
     }
 
     def deleteSentboxMessage = {
         def threadId = params.id.toLong()
         log.info "Deleting sentbox messages of thread id: $threadId"
-        if (freshCurrentlyLoggedInMember().mailbox.deleteSentboxThread(threadId)){
+        if (freshCurrentlyLoggedInMember().mailbox.deleteSentboxThread(threadId)) {
             onUpdateAttempt("Message deleted.", true)
-        }else{
+        } else {
             onUpdateAttempt("Failed to delete message.", false)
         }
-        redirect(action:'sentbox')
+        redirect(action: 'sentbox')
     }
 
 }
@@ -215,38 +211,38 @@ class MailboxController extends SecureController {
 /**
  * Formular validation command.
  */
-class FreeFormCommand{
+class FreeFormCommand {
 
-    /** transient member data */
+    /** transient member data  */
     def toMember
-    
+
     String subject
     String body
     String toMemberName
-    
-    FreeFormCommand(){
+
+    FreeFormCommand() {
         this.subject = ''
         this.body = ''
         this.toMemberName = ''
     }
 
-    boolean isKnownMember(){
-        return toMember!=null
+    boolean isKnownMember() {
+        return toMember != null
     }
 
     static constraints = {
         // should match FreeFormMessagePayload#constraints
-        subject(nullable: false, blank:false, maxSize: 100)
+        subject(nullable: false, blank: false, maxSize: 100)
         body(nullable: false, blank: false, maxSize: 3500)
         // member name is not restricted in size but 100 is a lot
-        toMemberName(nullable:false, blank:false, maxSize: 100)
+        toMemberName(nullable: false, blank: false, maxSize: 100)
     }
 }
 
 /**
  * Formular validation command.
  */
-class ReplyFormCommand{
+class ReplyFormCommand {
     Long threadId
     String body
 

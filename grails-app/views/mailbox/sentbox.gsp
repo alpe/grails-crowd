@@ -15,6 +15,7 @@
                     <g:render template="conversationSummary" collection="${threads}" var="thread"/>                    
                 </tbody>
             </table>
+            <g:paginate controller="mailbox" action="sentbox" total="${total}"  next="Forward" prev="Back"/>
         </g:else>
     </span>
 </div><!-- main-->

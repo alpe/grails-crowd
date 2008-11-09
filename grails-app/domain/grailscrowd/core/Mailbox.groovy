@@ -70,28 +70,34 @@ class Mailbox {
     }
 
     public Collection getInboxThreads(int offset, int max){
+        return getThreads(true, offset, max)
+    }
+    private  Collection getThreads(boolean inbox, int offset, int max){
         StringBuilder sb = new StringBuilder()
         sb << "select c "
-        sb << "from grailscrowd.core.Mailbox as b "
-        sb << "inner join b.conversations as c "
-        sb << "inner join c.messages as m "
-        sb << "left join m.statusContext s "
-        sb << "where  b.id=:boxId and m.fromMember!=:name "
-        sb << "and (s is null or s.readerName=:name and s.status!=:status) "
+        sb << conversationSelect(inbox)
         sb << "group by c.id order by c.lastUpdated desc, c.topic asc"
         def result = Mailbox.executeQuery(sb.toString() ,[boxId:id, name:member.name, status:MessageLifecycle.DELETED],[offset:offset, max:max])
        return result
    }
-    
+
+
     def getTotalInboxThreads(){
+        return getTotalThreadCount(true)
+    }
+    public Collection getSentboxThreads(int offset, int max){
+        return getThreads(false, offset, max)
+    }
+
+    def getTotalSentboxThreads(){
+        return getTotalThreadCount(false)
+    }
+
+
+    private getTotalThreadCount(inbox){
         StringBuilder sb = new StringBuilder()
         sb << "select count(distinct c.id) "
-        sb << "from grailscrowd.core.Mailbox as b "
-        sb << "inner join b.conversations as c "
-        sb << "inner join c.messages as m "
-        sb << "left join m.statusContext s "
-        sb << "where  b.id=:boxId and m.fromMember!=:name "
-        sb << "and (s is null or s.readerName=:name and s.status!=:status) "
+        sb << conversationSelect(inbox)
         def result = Mailbox.executeQuery(sb.toString() ,[boxId:id, name:member.name, status:MessageLifecycle.DELETED])
         if (result){
             result = result.iterator().next()
@@ -99,16 +105,20 @@ class Mailbox {
         return result
     }
 
-
-    /** Get Collection of threads with messages sent out by this member.
-     * @return collection
-     */
-    @Deprecated
-    public Collection getSentboxThreads(){
-        return getConversations().grep{it.containsMessageFrom(member)}
-    }
-    public Collection getSentboxThreads(int offset, int max){
-
+    private def conversationSelect(boolean inbox) {
+        StringBuilder sb = new StringBuilder()
+        sb << "from grailscrowd.core.Mailbox as b "
+        sb << "inner join b.conversations as c "
+        sb << "inner join c.messages as m "
+        sb << "left join m.statusContext s "
+        sb << "where  b.id=:boxId "
+        if (inbox){
+            sb << "and  m.fromMember!=:name "
+        }else{
+            sb << "and  m.fromMember=:name "
+        }
+        sb << "and (s is null or s.readerName=:name and s.status!=:status) "
+        return sb
     }
 
     /** Find inbox message by given id.
