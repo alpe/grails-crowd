@@ -203,7 +203,7 @@ class MailboxController extends SecureController {
         } else {
             onUpdateAttempt("Failed to delete message.", false)
         }
-        redirect(action: 'sentbox')
+        redirect(action: 'sentbox', params: [offset: params.offset, max: params.max])
     }
 
 }
