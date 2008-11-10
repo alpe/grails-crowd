@@ -10,7 +10,7 @@ import grailscrowd.core.message.ConversationThread
 
 class Mailbox {
 
-    SortedSet conversations
+    Set conversations
     
     Member member
     
@@ -59,8 +59,6 @@ class Mailbox {
         thread?.inThreadContext(member){
             return thread
         }
-
-        return getConversations().find{it.id == id}
     }
 
     /** Mark all unread messages of given Thread as read.
