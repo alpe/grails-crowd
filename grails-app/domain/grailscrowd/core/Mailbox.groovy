@@ -36,8 +36,9 @@ class Mailbox {
         sb << "select count(m.id) from grailscrowd.core.Mailbox as b "
         sb << "inner join b.conversations as c inner join c.messages as m "
         sb << "left join m.statusContext s "
-        sb << "where (s is null or s.readerName=:name and s.status=:status) "
-        sb << "and b.id=:boxId and m.fromMember!=:name"
+        sb << "where "
+        sb << "b.id=:boxId and m.fromMember!=:name "
+        sb << "and (s is null or s.readerName!=:name or s.readerName=:name and s.status!=:status) "
         def result =  Mailbox.executeQuery(sb.toString() ,[boxId:id, name:getMember().name, status:MessageLifecycle.NEW])
         if (result){
             result = result.iterator().next()
@@ -115,7 +116,7 @@ class Mailbox {
         }else{
             sb << "and  m.fromMember=:name "
         }
-        sb << "and (s is null or s.readerName=:name and s.status!=:status) "
+        sb << "and (s is null or s.readerName!=:name or s.readerName=:name and s.status!=:status) "
         return sb
     }
 
