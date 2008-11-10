@@ -65,8 +65,8 @@ class MessageService {
     }
 
     private void addMessage(thread, sender, msg){
-        msg.fromMember = sender.name
-        thread.addNewMessage(sender, msg)
+            msg.fromMember = sender.name
+            thread.addNewMessage(sender, msg)
         Thread.start{
             mailboxMessageNotificationQueue.pushOnStack(msg)
         }
