@@ -19,7 +19,7 @@ class ConversationThread implements Comparable {
 
     SortedSet messages
 
-    SortedSet participators
+    Set participators
 
     ThreadVisibility visibility
 
@@ -86,15 +86,9 @@ class ConversationThread implements Comparable {
         }
     }
 
-    /** contains one or more message for given member  */
-    def containsMessageFor(recipient) {
-        inThreadContext(recipient) {
-            getMessages().any(messageForCondition.curry(recipient))
-        }
-    }
 
     /** Find messages for girven member. */
-    def getMessagesFor(recipient) {
+    private def getMessagesFor(recipient) {
         inThreadContext(recipient) {
             getMessages().findAll(messageForCondition.curry(recipient))
         }
@@ -111,17 +105,9 @@ class ConversationThread implements Comparable {
     }
 
 
-
-    /** Contains any message from given member.  */
-    def containsMessageFrom(sender) {
-        inThreadContext(sender) {
-            getMessages().any(messageFromCondition.curry(sender))
-        }
-    }
-
     /** Get all messages sent by member.
      */
-    def getMessagesFrom(sender) {
+    private def getMessagesFrom(sender) {
         inThreadContext(sender) {
             return getMessages().findAll(messageFromCondition.curry(sender))
         }
@@ -135,11 +121,6 @@ class ConversationThread implements Comparable {
         }
     }
 
-    /** Are any new messages for given member in current conversation thread.
-     */
-    def hasAnyNewMessages(recipient) {
-        getMessagesFor(recipient).any {it.isUnread(recipient)}
-    }
 
     /** Get oldest of unread messages for given member.
      */
@@ -156,12 +137,6 @@ class ConversationThread implements Comparable {
         getNewMessagesFor(recipient).each {it.markAsSeen(recipient)}
     }
 
-
-    /** Get number of unread messages for given membem in this thread.
-     */
-    def getNumberOfNewMessagesFor(recipient) {
-        getNewMessagesFor(recipient).size()
-    }
 
     /** Get latest inbox message in this thread for recipient  */
     private def getLastestMessageFor(recipient) {
