@@ -11,7 +11,7 @@ import grailscrowd.core.Member
  */
 class MessageStatusContext {
 
-    static belongsTo = [GenericMessage]
+    static belongsTo = [message:GenericMessage]
 
     /** DB entry last modified field, automatically set  */
     Timestamp lastUpdated
