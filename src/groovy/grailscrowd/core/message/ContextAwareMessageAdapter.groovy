@@ -1,5 +1,7 @@
 package grailscrowd.core.message
 
+import grailscrowd.core.Member 
+
 /**
  * Message adapter to generic message with current reader as context.
  * To be used within Controller or Views.
@@ -80,7 +82,7 @@ class ContextAwareMessageAdapter implements Comparable{
      * Create new View adapter for inbox messages.
      * @return wrapped message or null when deleted for user or message was null
      */
-    static ContextAwareMessageAdapter newInstance(currentReader, message){
+    static ContextAwareMessageAdapter newInstance(Member currentReader, GenericMessage message){
         if (!message){return null}
         return  new ContextAwareMessageAdapter(currentReader:currentReader, message:message, isNewFlag:message.isUnread(currentReader))
     }
