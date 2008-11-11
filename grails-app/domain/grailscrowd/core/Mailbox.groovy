@@ -33,7 +33,7 @@ class Mailbox {
     def getNumberOfNewMessages() {
         // TODO: put into cache when performance is bad
         StringBuilder sb = new StringBuilder()
-        sb << "select count(m.id) from grailscrowd.core.Mailbox as b "
+        sb << "select count(distinct m.id) from grailscrowd.core.Mailbox as b "
         sb << "inner join b.conversations as c inner join c.messages as m "
         sb << "left join m.statusContext s "
         sb << "where "
@@ -117,6 +117,7 @@ class Mailbox {
             sb << "and  m.fromMember=:name "
         }
         sb << "and (s is null or s.readerName!=:name or s.readerName=:name and s.status!=:status) "
+        sb << "group by c.id order by c.lastUpdated desc, c.topic asc having count(m)>0"
         return sb
     }
 
