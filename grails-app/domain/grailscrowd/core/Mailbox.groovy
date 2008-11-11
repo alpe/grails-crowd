@@ -33,12 +33,18 @@ class Mailbox {
     def getNumberOfNewMessages() {
         // TODO: put into cache when performance is bad
         StringBuilder sb = new StringBuilder()
-        sb << "select count(distinct m.id) from grailscrowd.core.Mailbox as b "
-        sb << "inner join b.conversations as c inner join c.messages as m "
-        sb << "left join m.statusContext s "
+        sb << "select count(distinct m) from grailscrowd.core.Mailbox as b "
+        sb << "inner join b.conversations as c "
+        sb << "inner join c.messages as m "
         sb << "where "
         sb << "b.id=:boxId and m.fromMember!=:name "
-        sb << "and (s is null or s.readerName!=:name or s.readerName=:name and s.status!=:status) "
+        sb << "and (not exists elements(m.statusContext) "
+        sb << "or exists ( "
+        sb << "  select s from grailscrowd.core.message.MessageStatusContext s "
+        sb << "where s.message=m "
+        sb << "and (s.readerName!=:name or s.readerName=:name and s.status=:status) "
+        sb << " ) "
+        sb << ") "
         def result =  Mailbox.executeQuery(sb.toString() ,[boxId:id, name:getMember().name, status:MessageLifecycle.NEW])
         if (result){
             result = result.iterator().next()
@@ -95,7 +101,7 @@ class Mailbox {
 
     private getTotalThreadCount(inbox){
         StringBuilder sb = new StringBuilder()
-        sb << "select count(distinct c.id) "
+        sb << "select count(distinct c) "
         sb << conversationSelect(inbox)
         def result = Mailbox.executeQuery(sb.toString() ,[boxId:id, name:member.name, status:MessageLifecycle.DELETED])
         if (result){
@@ -108,16 +114,17 @@ class Mailbox {
         StringBuilder sb = new StringBuilder()
         sb << "from grailscrowd.core.Mailbox as b "
         sb << "inner join b.conversations as c "
-        sb << "inner join c.messages as m "
-        sb << "left join m.statusContext s "
         sb << "where  b.id=:boxId "
+        sb << "and exists ( "
+        sb << "  select m from grailscrowd.core.message.GenericMessage m left join m.statusContext s "
+        sb << "where m.thread=c "
         if (inbox){
-            sb << "and  m.fromMember!=:name "
+            sb << "and m.fromMember!=:name "
         }else{
-            sb << "and  m.fromMember=:name "
+            sb << "and m.fromMember=:name "
         }
         sb << "and (s is null or s.readerName!=:name or s.readerName=:name and s.status!=:status) "
-        sb << "group by c.id order by c.lastUpdated desc, c.topic asc having count(m)>0"
+        sb << " ) "
         return sb
     }
 
