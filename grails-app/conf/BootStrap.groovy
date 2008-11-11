@@ -2,14 +2,14 @@ import grailscrowd.core.*
 import grailscrowd.core.message.*
 import grails.util.GrailsUtil
 
-class BootStrap {
+class   BootStrap {
 
     ProjectService projectService
     MessageService messageService
 
     def init = {servletContext ->
 
-        if (GrailsUtil.environment == "development") {
+        if (false && GrailsUtil.environment == "development") {
                 GrailsProject.withTransaction{tx->
             //Just for testing
             List sampleMembers = []
@@ -25,14 +25,14 @@ class BootStrap {
                 result.save(flush: true)
                 sampleMembers.add(result)
             }
-           int x = 1
+           int x = 500
            int counter = 0
            [sampleMembers, sampleMembers].combinations().each{mList->
                def sender = mList[0]
                def recipient = mList[1]
                if (sender==recipient){return}
                x.times{
-                    messageService.startNewFreeFormConversation('anySubject'+counter++, sender, recipient, 'anyBody'+i)
+                    messageService.startNewFreeFormConversation('anySubject'+counter++, sender, recipient, 'anyBody'+counter)
                 }
            }
                     
