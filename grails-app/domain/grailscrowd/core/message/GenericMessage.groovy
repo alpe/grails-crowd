@@ -93,7 +93,7 @@ class GenericMessage implements Comparable {
         setCurrentStatus(currentReader, MessageLifecycle.DELETED)
     }
 
-    def isUnread(currentReader) {
+    def isUnread(Member currentReader) {
         if (isSender(currentReader)){
             return !isSeenByAnyMember()
         }
