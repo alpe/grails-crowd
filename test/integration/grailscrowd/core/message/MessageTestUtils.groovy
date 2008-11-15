@@ -5,7 +5,7 @@ package grailscrowd.core.message
 class MessageTestUtils {
 
 
-    static def createMessages= {threadQuantity, int msgQuantity = 1->
+    static def createMessages= {threadQuantity=1, int msgQuantity = 1->
           def anySubject = "anySubject"
           def anyBody = "anyBody"
           def result = []

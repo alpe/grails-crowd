@@ -28,7 +28,9 @@ class GrailsProjectSystemMessageTest extends GroovyTestCase {
             projectOwner = memberFixi.getAnyNewSubscribedMember()
             project = new GrailsProjectDBFixture().getAnyNewEnteredProject(projectOwner)
             assertThat(project, is(notNullValue()))
-        project.inviteParticipant(projectOwner, anyMember)
+            project.inviteParticipant(projectOwner, anyMember)
+            project.save(flush:true)
+        }
         assertThat(anyMember.mailbox.getNumberOfNewMessages(), is (1L))
         def inboxThreads = anyMember.mailbox.getInboxThreads(0, 10)
         assertThat(inboxThreads.size(), is(1))
@@ -40,8 +42,6 @@ class GrailsProjectSystemMessageTest extends GroovyTestCase {
         message = inboxThreads.iterator().next().getMessagesFrom(projectOwner).iterator().next()
         assertThat(message.payload.type, is(SystemMessageType.PROJECT_INVITATION))
         //TODO: thread->message: assertThat(sentFolder.iterator().next(), is(message))
-        project.save()
-        }
     }
 
 }

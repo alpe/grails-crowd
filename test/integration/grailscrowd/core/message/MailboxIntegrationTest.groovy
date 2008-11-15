@@ -27,7 +27,6 @@ class MailboxIntegrationTest extends GroovyTestCase {
          mailbox = anyRecipient.mailbox
          createMessages = MessageTestUtils.createMessages
          createMessages.delegate = this
-
      }
 
 
