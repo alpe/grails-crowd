@@ -48,6 +48,7 @@ class MessageStatusContext {
      * @see MessageLifecycle#canSwitchTo(MessageLifecycle) 
      */
     boolean switchToStatus(MessageLifecycle newStatus){
+        log.debug "Switching to status $newStatus can: "+status.canSwitchTo(newStatus)
         if (status.canSwitchTo(newStatus)){
             status=newStatus
             return true
