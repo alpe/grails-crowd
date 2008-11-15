@@ -2,6 +2,8 @@ import grailscrowd.core.*
 
 class ProjectService {
 
+    boolean transactional = true 
+
     def createProject(args, creator) {
         if (!creator) {
             throw new IllegalArgumentException("Cannot create project without a creator")
@@ -15,6 +17,7 @@ class ProjectService {
             project.addToTaggings(Tagging.createFor(creator, it, project))
         }
         if (!project.save()) {
+            log.warn("Failed to save project: "+project.dump());
             return project
         }
         ProjectParticipation.active(creator, project)
