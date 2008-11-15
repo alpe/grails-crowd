@@ -63,6 +63,9 @@ class ConversationThread implements Comparable {
      */
     def inThreadContext(member, closure) {
         switch (visibility) {
+
+            case ThreadVisibility.NONE:
+                throw new IllegalArgumentException("Current thread is not visible to anyone.")
             case ThreadVisibility.PRIVATE:
                 if (!isParticipator(member)) {
                     throw new IllegalArgumentException("Given member is not part of this private conversation!")
@@ -87,8 +90,8 @@ class ConversationThread implements Comparable {
     }
 
 
-    /** Find messages for girven member. */
-    private def getMessagesFor(recipient) {
+    /** Find messages for given member. */
+    public def getMessagesFor(recipient) {
         inThreadContext(recipient) {
             getMessages().findAll(messageForCondition.curry(recipient))
         }
@@ -107,7 +110,7 @@ class ConversationThread implements Comparable {
 
     /** Get all messages sent by member.
      */
-    private def getMessagesFrom(sender) {
+    public def getMessagesFrom(sender) {
         inThreadContext(sender) {
             return getMessages().findAll(messageFromCondition.curry(sender))
         }
@@ -213,5 +216,5 @@ class ConversationThread implements Comparable {
 }
 
 enum ThreadVisibility {
-    PRIVATE, MEMBERS, ALL
+    NONE, PRIVATE, MEMBERS, ALL
 }
