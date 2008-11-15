@@ -43,6 +43,7 @@ class MessageFixture extends AbstractDomainFixture{
            case MessageFixtureType.INVITATION:
                 return getAnyInviationMessage()
         }
+        throw new AssertionError("No fixture Type defined.")
     }
 
     @Override

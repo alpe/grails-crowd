@@ -22,31 +22,16 @@ class SystemMessageFactoryTest extends AbstractBaseUnitTestCase{
         anyProject = projectFixture.createTestData()
     }
 
-    void addInvitationToMailbox(){
-        def otherSender = memberFixture.createTestData() 
-        def invitation = SystemMessageFactory.createInvitation(otherSender, anyProject)
-        anySender.mailbox.addToMessages(invitation)
-    }
-    void addJoinRequestToMailbox(){
-
-        def otherSender = memberFixture.createTestData()
-        def invitation = SystemMessageFactory.createJoinRequest(otherSender, anyProject)
-        anySender.mailbox.addToMessages(invitation)
-                                     
-    }
-
     void testCreateInvitation_withValidValues_returnMessageAsExpected(){
         def msg = SystemMessageFactory.createInvitation(anySender, anyProject)
         assertMessageMachesExpectations(msg, SystemMessageType.PROJECT_INVITATION)
     }
 
     void testCreateRejectInvitation__withValidValues_returnMessageAsExpected(){
-        addInvitationToMailbox()
         def msg = SystemMessageFactory.createRejectInvitation(anySender, anyProject)
         assertMessageMachesExpectations(msg, SystemMessageType.PROJECT_INVITATION_REJECTION)
     }
     void testCreateAcceptInvitation__withValidValues_returnMessageAsExpected(){
-        addInvitationToMailbox()
         def msg = SystemMessageFactory.createAcceptInvitation(anySender, anyProject)
         assertMessageMachesExpectations(msg, SystemMessageType.PROJECT_INVITATION_ACCEPTANCE)
     }
@@ -58,12 +43,10 @@ class SystemMessageFactoryTest extends AbstractBaseUnitTestCase{
     
 
     void testCreateApproveToJoinRequest__withValidValues_returnMessageAsExpected(){
-        addJoinRequestToMailbox()
         def msg = SystemMessageFactory.createApproveToJoinRequest(anySender, anyProject)
         assertMessageMachesExpectations(msg, SystemMessageType.PROJECT_REQUEST_APPROVAL)
     }
     void testCreateDisapprovalToJoinRequest__withValidValues_returnMessageAsExpected(){
-        addJoinRequestToMailbox()
         def msg = SystemMessageFactory.createDisapprovalToJoinRequest(anySender, anyProject)
         assertMessageMachesExpectations(msg, SystemMessageType.PROJECT_REQUEST_DISAPPROVAL)
     }

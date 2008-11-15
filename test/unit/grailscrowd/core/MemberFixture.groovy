@@ -8,6 +8,7 @@ import grailscrowd.util.AbstractDomainFixture
 class MemberFixture extends AbstractDomainFixture{
 
     MailboxFixture  mailboxFixture
+    String username = "anyUser"+System.currentTimeMillis()
 
     public MemberFixture(){
         this(new MailboxFixture())
@@ -23,6 +24,9 @@ class MemberFixture extends AbstractDomainFixture{
     def createTestDataInstance() {
         def sampleData
         switch (fixtureType) {
+            case MemberFixtureType.AYNBODY:
+                sampleData = getAnybodySample()
+                break
             case MemberFixtureType.OTTO_ONE:
                 sampleData = getOttoOneSample()
                 break
@@ -37,7 +41,7 @@ class MemberFixture extends AbstractDomainFixture{
     /** {@inheritDoc} */
     @Override
     void reset() {
-        this.fixtureType = MemberFixtureType.OTTO_ONE
+        this.fixtureType = MemberFixtureType.AYNBODY
         super.reset()        
     }
 
@@ -53,6 +57,13 @@ class MemberFixture extends AbstractDomainFixture{
 
     static MemberFixture getDonnyFixture(){
         return new MemberFixture(fixtureType:MemberFixtureType.DONNY_DUEMPLEMEIER)
+    }
+      /**
+     * Example user: anybody
+     */
+    private def getAnybodySample() {
+        [name:username, email: "${username}@example.com", password: "xxxxxx", displayName: "any body",
+                about: "Example user x for testing purpose"]
     }
 
     /**
@@ -71,6 +82,7 @@ class MemberFixture extends AbstractDomainFixture{
                 about: "Example user 2 for testing purpose"]
     }
 }
+
 enum MemberFixtureType {
-    OTTO_ONE, DONNY_DUEMPLEMEIER
+    AYNBODY, OTTO_ONE, DONNY_DUEMPLEMEIER
 }

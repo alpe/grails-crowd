@@ -15,12 +15,6 @@ class GrailsProjectSystemMessageTest extends GroovyTestCase {
 
     void setUp(){
         super.setUp()
-            def memberFixi = new MemberDBFixture()
-            anyMember = memberFixi.getAnyNewSubscribedMember()
-            projectOwner = memberFixi.getAnyNewSubscribedMember()
-            project = new GrailsProjectDBFixture().getAnyNewEnteredProject(projectOwner)
-            assertThat(project, is(notNullValue()))
-
     }
 
     void tearDown(){
@@ -28,18 +22,26 @@ class GrailsProjectSystemMessageTest extends GroovyTestCase {
     }
 
     void testInviteParticipant_systemMessageSent(){
+        GrailsProject.withTransaction{tx->
+            def memberFixi = new MemberDBFixture()            
+            anyMember = memberFixi.getAnyNewSubscribedMember()
+            projectOwner = memberFixi.getAnyNewSubscribedMember()
+            project = new GrailsProjectDBFixture().getAnyNewEnteredProject(projectOwner)
+            assertThat(project, is(notNullValue()))
         project.inviteParticipant(projectOwner, anyMember)
         assertThat(anyMember.mailbox.getNumberOfNewMessages(), is (1L))
-        def inboxThreads = anyMember.mailbox.inboxThreads
+        def inboxThreads = anyMember.mailbox.getInboxThreads(0, 10)
         assertThat(inboxThreads.size(), is(1))
         def message = inboxThreads.iterator().next().getHighlightInboxMessageFor(anyMember)
         assertThat(message.payload.type, is(SystemMessageType.PROJECT_INVITATION))
-        def sentThreads = projectOwner.mailbox.getSentboxThreads()
+        def sentThreads = projectOwner.mailbox.getSentboxThreads(0, 10)
         assertThat(sentThreads, is(notNullValue()))
         assertThat(sentThreads.size(), is(1))
         message = inboxThreads.iterator().next().getMessagesFrom(projectOwner).iterator().next()
         assertThat(message.payload.type, is(SystemMessageType.PROJECT_INVITATION))
         //TODO: thread->message: assertThat(sentFolder.iterator().next(), is(message))
+        project.save()
+        }
     }
 
 }

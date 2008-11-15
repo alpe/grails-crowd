@@ -2,7 +2,7 @@ package grailscrowd.core.message
 
 import grailscrowd.core.*
 import static org.hamcrest.CoreMatchers.*
-import static org.junit.Assert.*
+import static org.junit.Assert.assertThat
 
 /**
  * @author ap
@@ -11,8 +11,8 @@ class MessageServiceIntegrationTest extends GroovyTestCase {
 
     MessageService messageService
 
-     def anySender
-     def anyRecipient
+    def anySender
+    def anyRecipient
     def memberFixi
 
      void setUp(){
@@ -41,7 +41,7 @@ class MessageServiceIntegrationTest extends GroovyTestCase {
             assertThat(persistentMessage.subject, is(anySubject))
             assertThat GenericMessage.exists(message.id), is(true)
             }
-            assertThat(anyRecipient.mailbox.getInboxThreads().size(), is(10))
+            assertThat(anyRecipient.mailbox.getInboxThreads(0, 10000).size(), is(10))
         }
        // assertThat(anyRecipient.mailbox.getNumberOfNewMessages(), is(10L))
         

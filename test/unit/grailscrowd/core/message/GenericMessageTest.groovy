@@ -31,23 +31,23 @@ class GenericMessageTest extends AbstractBaseUnitTestCase{
     void testIsSystemMessage_withFreeFormMessage_expectFalse(){
             assertFalse(message.isSystemMessage())
         }
-
-    void testIsDeleted_notDelStatus_false(){
+/*
+    void testIsDeleted_notDelStatus_returnsFalse(){
         for (status in MessageLifecycle.values()){
             if (status == MessageLifecycle.DELETED){ continue}
-            message.status=status
+            message.statusContext=status
             assertFalse(message.isDeleted())
         }
     }
-    void testIsDeleted_delStatus_true(){
-        message.status=MessageLifecycle.DELETED
+    void testIsDeleted_delStatus_returnsTrue(){
+        message.statusContext=[MessageLifecycle.DELETED] as Set
         assertThat(message.isDeleted(), is(true))
     }
     void testMarkAsDeleted_success(){
         message.markAsDeleted()
         assertThat(message.isDeleted(), is(true))
     }
-
+  */
     void testCompareTo_samples_orderedAsExpected(){
         message.sentDate = new Timestamp(System.currentTimeMillis())
         def message2 = messageFixture.createTestData(MessageFixtureType.INVITATION)

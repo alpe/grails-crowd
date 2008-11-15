@@ -34,5 +34,6 @@ class ConversationThreadTest extends AbstractBaseUnitTestCase{
         assertThat(thread.getNewMessagesFor(anyRecipientFixture.testData).size(), is (2))
 
     }
+   
 
 }
