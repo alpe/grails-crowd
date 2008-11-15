@@ -101,6 +101,7 @@
       <sourceFolder url="file://$MODULE_DIR$/grails-app/utils" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/easybtest-0.1/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/feeds-1.4/test/integration" isTestSource="true" />
@@ -122,6 +123,7 @@
       <sourceFolder url="file://$MODULE_DIR$/plugins/testing-0.3/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test/behavior" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
     </content>
@@ -150,9 +152,11 @@
           <root url="file://$MODULE_DIR$/plugins/richui-0.4/lib" />
           <root url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" />
           <root url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/lib" />
+          <root url="file://$MODULE_DIR$/plugins/easybtest-0.1/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/easybtest-0.1/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/mail-0.4/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/lib" recursive="false" />
