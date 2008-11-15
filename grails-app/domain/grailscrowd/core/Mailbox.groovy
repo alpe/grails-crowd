@@ -31,7 +31,6 @@ class Mailbox {
 
     /** get number of new message in all thread */
     def getNumberOfNewMessages() {
-        // TODO: put into cache when performance is bad
         StringBuilder sb = new StringBuilder()
         sb << "select count(distinct m) from grailscrowd.core.Mailbox as b "
         sb << "inner join b.conversations as c "
@@ -46,24 +45,28 @@ class Mailbox {
         sb << " ) "
         sb << ") "
         def result =  Mailbox.executeQuery(sb.toString() ,[boxId:id, name:getMember().name, status:MessageLifecycle.NEW])
-        if (result){
-            result = result.iterator().next()
-        }
-        return result
+        return result?result.iterator().next():result
     }
 
 
     def deleteInboxThread(id){
-       getThreadById(id)?.markInboxMessagesAsDeleted(member)
+        Mailbox.withTransaction{tx->
+            log.debug "Deleting inbox thread with id :$id"
+            getThreadById(id)?.markInboxMessagesAsDeleted(member)
+        }
     }
 
     def deleteSentboxThread(id){
-         getThreadById(id)?.markSentboxMessagesAsDeleted(member)
+        Mailbox.withTransaction{tx->
+            log.debug "Deleting sentbox thread with id :$id"
+            getThreadById(id)?.markSentboxMessagesAsDeleted(member)
+        }
     }
 
     public def getThreadById(id){
         def thread = ConversationThread.get(id)
         thread?.inThreadContext(member){
+            log.debug ("Returning thread: "+thread)
             return thread
         }
     }
@@ -75,42 +78,47 @@ class Mailbox {
     }
 
     public Collection getInboxThreads(int offset, int max){
-        return getThreads(true, offset, max)
+       return getThreads(conversationSelect.curry(true), offset, max)
     }
-    private  Collection getThreads(boolean inbox, int offset, int max){
+
+
+    def getTotalInboxThreads(){
+        return getTotalThreadCount(conversationSelect.curry(true))
+    }
+    public Collection getSentboxThreads(int offset, int max){
+        return getThreads(conversationSelect.curry(false), offset, max)
+    }
+
+    def getTotalSentboxThreads(){
+        return getTotalThreadCount(conversationSelect.curry(false))
+    }
+
+    def getTotalTrashboxThreads(){
+       return getTotalThreadCount(deletedThreadSelect())
+    }
+
+    public Collection getTrashboxThreads(int offset, int max){
+        return getThreads(deletedThreadSelect, offset, max)
+    }
+
+    private def getThreads = {Closure select,  int offset, int max->
         StringBuilder sb = new StringBuilder()
-        sb << "select c "
-        sb << conversationSelect(inbox)
-        sb << "group by c.id order by c.lastUpdated desc, c.topic asc"
+        sb << "select distinct c "
+        sb << select.call()
+        sb << "order by c.lastUpdated desc, c.topic asc"
         def result = Mailbox.executeQuery(sb.toString() ,[boxId:id, name:member.name, status:MessageLifecycle.DELETED],[offset:offset, max:max])
        return result
    }
 
-
-    def getTotalInboxThreads(){
-        return getTotalThreadCount(true)
-    }
-    public Collection getSentboxThreads(int offset, int max){
-        return getThreads(false, offset, max)
-    }
-
-    def getTotalSentboxThreads(){
-        return getTotalThreadCount(false)
-    }
-
-
-    private getTotalThreadCount(inbox){
+    private def getTotalThreadCount = {Closure select ->
         StringBuilder sb = new StringBuilder()
         sb << "select count(distinct c) "
-        sb << conversationSelect(inbox)
+        sb << select.call()
         def result = Mailbox.executeQuery(sb.toString() ,[boxId:id, name:member.name, status:MessageLifecycle.DELETED])
-        if (result){
-            result = result.iterator().next()
-        }
-        return result
+        return result?result.iterator().next():result
     }
 
-    private def conversationSelect(boolean inbox) {
+    def conversationSelect = {boolean inbox ->
         StringBuilder sb = new StringBuilder()
         sb << "from grailscrowd.core.Mailbox as b "
         sb << "inner join b.conversations as c "
@@ -123,9 +131,21 @@ class Mailbox {
         }else{
             sb << "and m.fromMember=:name "
         }
-        sb << "and (s is null or s.readerName!=:name or s.readerName=:name and s.status!=:status) "
-        sb << " ) "
+        sb << "and (s is null or s.readerName=:name and s.status!=:status) "
+        sb << " ) group by c "
         return sb
+    }
+
+    def deletedThreadSelect = {
+        StringBuilder sb = new StringBuilder()
+        sb << "from grailscrowd.core.Mailbox as b "
+        sb << "inner join b.conversations as c "
+        sb << "where  b.id=:boxId "
+        sb << "and not exists ( "
+        sb << "  select m from grailscrowd.core.message.GenericMessage m left join m.statusContext s "
+        sb << "where m.thread=c "
+        sb << "and (s is null or s.readerName=:name and s.status!=:status) "
+        sb << " ) "
     }
 
     /** Find inbox message by given id.
