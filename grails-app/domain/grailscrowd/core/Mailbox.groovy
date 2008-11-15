@@ -31,6 +31,7 @@ class Mailbox {
 
     /** get number of new message in all thread */
     def getNumberOfNewMessages() {
+        // TODO: fix
         StringBuilder sb = new StringBuilder()
         sb << "select count(distinct m) from grailscrowd.core.Mailbox as b "
         sb << "inner join b.conversations as c "
@@ -124,19 +125,24 @@ class Mailbox {
         sb << "inner join b.conversations as c "
         sb << "where  b.id=:boxId "
         sb << "and exists ( "
-        sb << "  select m from grailscrowd.core.message.GenericMessage m left join m.statusContext s "
+        sb << "  select m from grailscrowd.core.message.GenericMessage m "
         sb << "where m.thread=c "
         if (inbox){
             sb << "and m.fromMember!=:name "
         }else{
             sb << "and m.fromMember=:name "
         }
-        sb << "and (s is null or s.readerName=:name and s.status!=:status) "
-        sb << " ) group by c "
+        sb << "and not exists( "
+        sb << "  select s from grailscrowd.core.message.MessageStatusContext s "
+        sb << "where s.message = m "
+        sb << "and s.readerName=:name and s.status=:status "
+        sb << " ) "
+        sb << ") "
         return sb
     }
 
     def deletedThreadSelect = {
+        // TODO: fix
         StringBuilder sb = new StringBuilder()
         sb << "from grailscrowd.core.Mailbox as b "
         sb << "inner join b.conversations as c "
