@@ -90,6 +90,7 @@ class GenericMessage implements Comparable {
     }
 
     def markAsDeleted(currentReader) {
+        log.debug "Setting message $id as deleted for $currentReader"
         setCurrentStatus(currentReader, MessageLifecycle.DELETED)
     }
 
