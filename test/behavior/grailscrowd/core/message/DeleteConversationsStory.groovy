@@ -2,6 +2,7 @@
 import grailscrowd.core.message.*
 import grailscrowd.core.*
 
+
 /*
  */
 scenario "delete an inbox conversation thread" , {
@@ -10,11 +11,12 @@ scenario "delete an inbox conversation thread" , {
     def threadToDel
 
     given "a mailbox with conversations",{
-        // todo: provide testdata
-        mailbox = Mailbox.get(4)
+        mailbox = new MemberDBFixture().anyNewSubscribedMember.mailbox
     }
     and "an inbox conversation to delete", {
-        threadToDel = mailbox.getInboxThreads(0,1)[0]
+        threadToDel = new MessageDBFixture().addIncomingConversation(mailbox)
+        assert threadToDel
+        assert threadToDel.id 
     }
     when "delete on this conversation is called", {
         mailbox.deleteInboxThread(threadToDel.id)
@@ -44,11 +46,10 @@ scenario "delete an sentbox conversation thread" , {
     def threadToDel
 
     given "a mailbox with conversations",{
-        // todo: provide testdata
-        mailbox = Mailbox.get(4)
+        mailbox = new MemberDBFixture().anyNewSubscribedMember.mailbox
     }
     and "a sentbox conversation to delete", {
-        threadToDel = mailbox.getSentboxThreads(0,1)[0]
+       threadToDel = new MessageDBFixture().addOutgoingConversation(mailbox)
     }
     when "delete on this conversation is called", {
         mailbox.deleteSentboxThread(threadToDel.id)

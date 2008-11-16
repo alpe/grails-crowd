@@ -1,25 +1,30 @@
 import grailscrowd.core.message.*
 import grailscrowd.core.*
-import grailscrowd.util.*
+
 /*
  *
  */
 scenario "Mark message as deleted for a specific user." , {
 
+    def fixture = new MemberDBFixture()
     GenericMessage message
     Member newReader
     Map otherReaderWithStatus = [:]
 
-    given "a message with multiple readers",{
-        message= new MessageFixture().getTestData()
-        3.times{
-            def anyOtherReader = new MemberFixture().createTestData()
-            otherReaderWithStatus.put(anyOtherReader, message.isDeleted(anyOtherReader))
+    given "a member as reader",{
+        newReader = fixture.anyNewSubscribedMember
+    }
+
+    and "an unread message",{
+        def messageFixture = new MessageDBFixture()
+        def thread = messageFixture.addIncomingConversation(newReader.mailbox)
+        message = thread.messages.iterator().next()
+/*        3.times{
+            def anyOtherReader = fixture.anyNewSubscribedMember
+            otherReaderWithStatus.put(anyOtherReader, message.isUnread(anyOtherReader))
         }
-    }
-    and "a member as new reader",{
-        newReader = new MemberFixture().getTestData()
-    }
+  */  }
+
     when "mark as deleted is called", {
         message.markAsDeleted(newReader)
     }
@@ -28,10 +33,8 @@ scenario "Mark message as deleted for a specific user." , {
     }
     and "this has no influence on other members message status", {
         otherReaderWithStatus.each{oldReader, expectedStatus->
-        message.isDeleted(oldReader).shouldBe expectedStatus
+            message.isDeleted(oldReader).shouldBe expectedStatus
         }
     }
 
 }
-// do cleanup after scenario is run
-MockUtils.cleanup()

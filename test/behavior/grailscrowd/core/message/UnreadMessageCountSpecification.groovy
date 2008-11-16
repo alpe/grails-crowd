@@ -1,6 +1,5 @@
 import grailscrowd.core.message.*
 import grailscrowd.core.*
-import grailscrowd.util.*
 
 /**
  *
@@ -9,7 +8,6 @@ import grailscrowd.util.*
 def mailbox
 def reader
 def messageFixture
-
 
 before "setup valid mailbox definition", {
     mailbox = new MemberDBFixture().anyNewSubscribedMember.mailbox
