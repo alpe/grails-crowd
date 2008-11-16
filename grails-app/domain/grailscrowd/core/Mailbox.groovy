@@ -38,13 +38,11 @@ class Mailbox {
         sb << "inner join c.messages as m "
         sb << "where "
         sb << "b.id=:boxId and m.fromMember!=:name "
-        sb << "and (not exists elements(m.statusContext) "
-        sb << "or exists ( "
+        sb << "and not exists( "
         sb << "  select s from grailscrowd.core.message.MessageStatusContext s "
-        sb << "where s.message=m "
-        sb << "and (s.readerName!=:name or s.readerName=:name and s.status=:status) "
+        sb << "where s.message = m "
+        sb << "and s.readerName=:name and s.status!=:status "
         sb << " ) "
-        sb << ") "
         def result =  Mailbox.executeQuery(sb.toString() ,[boxId:id, name:getMember().name, status:MessageLifecycle.NEW])
         return result?result.iterator().next():result
     }
@@ -75,7 +73,9 @@ class Mailbox {
     /** Mark all unread messages of given Thread as read.
      */
     public void markThreadAsSeen(ConversationThread thread){
-        thread?.markNewMessagesAsSeen(member)
+        Mailbox.withTransaction{tx->
+            thread?.markNewMessagesAsSeen(member)
+        }
     }
 
     public Collection getInboxThreads(int offset, int max){
