@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.8 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.8.xsd">
+    <changeSet author="ap (generated)" id="1225317894044-1">
+        <createTable tableName="conversation_thread">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="topic" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="visibility" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-2">
+        <createTable tableName="conversation_thread_member">
+            <column name="conversation_thread_participators_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-3">
+        <createTable tableName="free_form_message_payload">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="body" type="TEXT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-4">
+        <createTable tableName="generic_message">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_member" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payload_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sent_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="thread_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-5">
+        <createTable tableName="generic_message_message_status_context">
+            <column name="generic_message_status_context_id" type="BIGINT"/>
+            <column name="message_status_context_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-6">
+        <createTable tableName="generic_message_payload">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-7">
+        <createTable tableName="mailbox_conversation_thread">
+            <column name="mailbox_conversations_id" type="BIGINT"/>
+            <column name="conversation_thread_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-8">
+        <createTable tableName="message_status_context">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reader_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-9">
+        <createTable tableName="system_message_payload">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="message_version" type="INT"/>
+            <column name="project_id" type="BIGINT"/>
+            <column name="type" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-10">
+        <createIndex indexName="FK96B387B397711432" tableName="conversation_thread_member" unique="false">
+            <column name="conversation_thread_participators_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-11">
+        <createIndex indexName="FK96B387B39D5D512E" tableName="conversation_thread_member" unique="false">
+            <column name="member_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-12">
+        <createIndex indexName="FK6513E99F69DBD3CF" tableName="generic_message" unique="false">
+            <column name="payload_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-13">
+        <createIndex indexName="FK6513E99F776520D8" tableName="generic_message" unique="false">
+            <column name="thread_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-14">
+        <createIndex indexName="FKF69AAC3A1B816CB1" tableName="generic_message_message_status_context" unique="false">
+            <column name="message_status_context_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-15">
+        <createIndex indexName="FKF69AAC3A96F30A23" tableName="generic_message_message_status_context" unique="false">
+            <column name="generic_message_status_context_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-16">
+        <createIndex indexName="FK5F4762EE6B023CFE" tableName="generic_message_payload" unique="false">
+            <column name="message_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-17">
+        <createIndex indexName="FKBC6C593B23829515" tableName="mailbox_conversation_thread" unique="false">
+            <column name="mailbox_conversations_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317894044-18">
+        <createIndex indexName="FKBC6C593B4528701C" tableName="mailbox_conversation_thread" unique="false">
+            <column name="conversation_thread_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

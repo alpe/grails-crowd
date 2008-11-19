@@ -1,0 +1,376 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.8 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.8.xsd">
+    <changeSet author="ap (generated)" id="1225317687051-1">
+        <createTable tableName="comment">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-2">
+        <createTable tableName="endorsement">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="by_member_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-3">
+        <createTable tableName="favorite_project_reference">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-4">
+        <createTable tableName="grails_affiliation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-5">
+        <createTable tableName="grails_project">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="architecture_description" type="TEXT"/>
+            <column name="creator_member_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_updated" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="primary_location" type="TEXT"/>
+            <column name="uri" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-6">
+        <createTable tableName="mailbox">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-7">
+        <createTable tableName="member">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="about" type="TEXT"/>
+            <column name="available_for_hire" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="can_be_contacted_via_email" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="can_be_notified_via_email" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="company_name" type="TEXT"/>
+            <column name="company_uri" type="VARCHAR(255)"/>
+            <column name="delicious_profile_name" type="VARCHAR(255)"/>
+            <column name="display_name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="flickr_profile_name" type="VARCHAR(255)"/>
+            <column name="friend_feed_profile_name" type="VARCHAR(255)"/>
+            <column name="home_page_uri" type="VARCHAR(255)"/>
+            <column name="home_town" type="TEXT"/>
+            <column name="joined_on" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_login" type="DATETIME"/>
+            <column name="linked_in_profile_uri" type="VARCHAR(255)"/>
+            <column name="location" type="TEXT"/>
+            <column name="mailbox_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ohloh_profile_name" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="twitter_profile_name" type="VARCHAR(255)"/>
+            <column name="using_grails_since_month" type="VARCHAR(255)"/>
+            <column name="using_grails_since_year" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-8">
+        <createTable tableName="message">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_member" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="kind" type="TINYINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mailbox_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_participation_id" type="BIGINT"/>
+            <column name="sent_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subject" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-9">
+        <createTable tableName="project_participation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="participant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="TINYINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-10">
+        <createTable tableName="tag">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-11">
+        <createTable tableName="tagging">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="member_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-12">
+        <createTable tableName="web_impression_info">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="for_which_resource" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="from_ip_address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="when_occurred" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-13">
+        <createIndex indexName="FK38A5EE5F708CB66C" tableName="comment" unique="false">
+            <column name="project_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-14">
+        <createIndex indexName="FK38A5EE5F9D5D512E" tableName="comment" unique="false">
+            <column name="member_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-15">
+        <createIndex indexName="FK3AD002E9D5D512E" tableName="endorsement" unique="false">
+            <column name="member_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-16">
+        <createIndex indexName="FK79783DC2708CB66C" tableName="favorite_project_reference" unique="false">
+            <column name="project_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-17">
+        <createIndex indexName="FK79783DC29D5D512E" tableName="favorite_project_reference" unique="false">
+            <column name="member_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-18">
+        <createIndex indexName="FK1759594B9D5D512E" tableName="grails_affiliation" unique="false">
+            <column name="member_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-19">
+        <createIndex indexName="name" tableName="grails_project" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-20">
+        <createIndex indexName="uri" tableName="grails_project" unique="true">
+            <column name="uri"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-21">
+        <createIndex indexName="FK318788B49D5D512E" tableName="mailbox" unique="false">
+            <column name="member_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-22">
+        <createIndex indexName="FKBFC28A9A226FDE06" tableName="member" unique="false">
+            <column name="mailbox_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-23">
+        <createIndex indexName="name" tableName="member" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-24">
+        <createIndex indexName="FK38EB0007226FDE06" tableName="message" unique="false">
+            <column name="mailbox_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-25">
+        <createIndex indexName="FK876DCA9B573CF9F5" tableName="project_participation" unique="false">
+            <column name="participant_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-26">
+        <createIndex indexName="FK876DCA9B708CB66C" tableName="project_participation" unique="false">
+            <column name="project_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-27">
+        <createIndex indexName="name" tableName="tag" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-28">
+        <createIndex indexName="FKA3B4CCB5708CB66C" tableName="tagging" unique="false">
+            <column name="project_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-29">
+        <createIndex indexName="FKA3B4CCB59D5D512E" tableName="tagging" unique="false">
+            <column name="member_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap (generated)" id="1225317687051-30">
+        <createIndex indexName="FKA3B4CCB5BC08F246" tableName="tagging" unique="false">
+            <column name="tag_id"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
