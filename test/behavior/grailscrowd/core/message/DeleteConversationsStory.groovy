@@ -18,7 +18,7 @@ scenario "delete an inbox conversation thread" , {
         assert threadToDel
         assert threadToDel.id 
     }
-    when "delete on this conversation is called", {
+    when "delete on this conversation is called by a reader", {
         mailbox.deleteInboxThread(threadToDel.id)
 
     }
@@ -51,7 +51,7 @@ scenario "delete an sentbox conversation thread" , {
     and "a sentbox conversation to delete", {
        threadToDel = new MessageDBFixture().addOutgoingConversation(mailbox)
     }
-    when "delete on this conversation is called", {
+    when "delete on this conversation is called by a reader", {
         mailbox.deleteSentboxThread(threadToDel.id)
 
     }
