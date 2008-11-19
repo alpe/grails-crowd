@@ -117,46 +117,70 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-9">
-        <createIndex indexName="FK96B387B397711432" tableName="conversation_thread_member" unique="false">
+    <changeSet author="ap" id="1227104893074-9">
+        <createIndex indexName="conthrmem_cothpa_idx" tableName="conversation_thread_member" unique="false">
             <column name="conversation_thread_participators_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-10">
-        <createIndex indexName="FK96B387B39D5D512E" tableName="conversation_thread_member" unique="false">
+    <changeSet author="ap" id="1227104893074-10">
+        <createIndex indexName="conthrmem_member_idx" tableName="conversation_thread_member" unique="false">
             <column name="member_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-11">
-        <createIndex indexName="FK6513E99F69DBD3CF" tableName="generic_message" unique="false">
+    <changeSet author="ap" id="1227104893074-11">
+        <createIndex indexName="genmes_payloadId_idx" tableName="generic_message" unique="false">
             <column name="payload_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-12">
-        <createIndex indexName="FK6513E99F776520D8" tableName="generic_message" unique="false">
+    <changeSet author="ap" id="1227104893074-12">
+        <createIndex indexName="genmes_threadId_idx" tableName="generic_message" unique="false">
             <column name="thread_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-13">
-        <createIndex indexName="FK5F4762EE6B023CFE" tableName="generic_message_payload" unique="false">
+    <changeSet author="ap" id="1227104893074-13">
+        <createIndex indexName="genmespay_messageId_idx" tableName="generic_message_payload" unique="false">
             <column name="message_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-14">
-        <createIndex indexName="FKBC6C593B23829515" tableName="mailbox_conversation_thread" unique="false">
+    <changeSet author="ap" id="1227104893074-14">
+        <createIndex indexName="mailconthr_macoid_idx" tableName="mailbox_conversation_thread" unique="false">
             <column name="mailbox_conversations_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-15">
-        <createIndex indexName="FKBC6C593B4528701C" tableName="mailbox_conversation_thread" unique="false">
+    <changeSet author="ap" id="1227104893074-15">
+        <createIndex indexName="mailconthr_cothid_idx" tableName="mailbox_conversation_thread" unique="false">
             <column name="conversation_thread_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="ap (generated)" id="1227104893074-16">
-        <createIndex indexName="FKE8A5199A6B023CFE" tableName="message_status_context" unique="false">
+    <changeSet author="ap" id="1227104893074-16">
+        <createIndex indexName="messtacont_messageid_idx" tableName="message_status_context" unique="false">
             <column name="message_id"/>
         </createIndex>
     </changeSet>
+    <changeSet author="ap" id="1227104893074-19">
+        <createIndex indexName="conthr_topic_idx" tableName="conversation_thread" unique="false">
+            <column name="topic"/>
+        </createIndex>
+    </changeSet>
+    
+    <!-- optional index -->
+    <changeSet author="ap" id="1227104893074-20">
+        <createIndex indexName="genmes_from_idx" tableName="generic_message" unique="false">
+            <column name="from_member"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap" id="1227104893074-21">
+        <createIndex indexName="messtacont_reader_idx" tableName="message_status_context" unique="false">
+            <column name="reader_name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="ap" id="1227104893074-22">
+        <createIndex indexName="messtacont_status_idx" tableName="message_status_context" unique="false">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- drop legacy tables -->
     <changeSet author="ap (generated)" id="1227104893074-17">
         <dropIndex indexName="FK38EB0007226FDE06" tableName="message"/>
     </changeSet>
