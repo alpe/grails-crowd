@@ -3,7 +3,6 @@
  */
 class TransientMailerJob extends AbstractMailerJob {
 
-
     /** notification fifo       */
     def transientMessageNotificationQueue
 
@@ -11,6 +10,11 @@ class TransientMailerJob extends AbstractMailerJob {
 
     /** job statistics       */
     def transientMailerJobStatistics
+
+    /** internal name of job */
+    def getName(){
+        return mailboxMailerJobConfig.name
+    }
 
 
     def getMailerJobStatistics() {

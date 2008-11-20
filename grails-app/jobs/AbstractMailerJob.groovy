@@ -8,6 +8,8 @@ import grailscrowd.core.message.*
  */
 abstract class AbstractMailerJob {
 
+    def group = "mailerGroup"
+
     /** blacklist impl     */
     def blacklist
 

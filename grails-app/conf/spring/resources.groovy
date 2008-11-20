@@ -33,6 +33,8 @@ beans = {
         startDelay = 6000
         timeout = 60000     // execute job every minute
         enabled = true
+        jobName = "mailboxMailer"
+        quartzScheduler = ref("quartzScheduler")
     }
 
     mailboxMailerJobStatistics(MailerJobStatistics) {
@@ -55,6 +57,8 @@ beans = {
         startDelay = 6000
         timeout = 20000     // execute job every 2 minutes
         enabled = true
+        jobName = "transientMailer"
+        quartzScheduler = ref("quartzScheduler")
     }
 
     transientMailerJobStatistics(MailerJobStatistics) {

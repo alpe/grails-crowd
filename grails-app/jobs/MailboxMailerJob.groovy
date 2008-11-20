@@ -5,7 +5,6 @@ import grailscrowd.core.message.*
  */
 class MailboxMailerJob extends AbstractMailerJob {
 
-
     /** notification fifo       */
     def mailboxMessageNotificationQueue
 
@@ -14,6 +13,10 @@ class MailboxMailerJob extends AbstractMailerJob {
     /** job statistics       */
     def mailboxMailerJobStatistics
 
+    /** internal name of job */
+    def getName(){
+        return mailboxMailerJobConfig.name
+    }
 
     def getMailerJobStatistics() {
         return mailboxMailerJobStatistics

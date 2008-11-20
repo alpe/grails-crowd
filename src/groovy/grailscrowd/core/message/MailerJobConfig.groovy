@@ -10,6 +10,13 @@ class MailerJobConfig implements MailerJobConfigMBean{
 
     private boolean enabled = true
 
+    /** internal name of job. must be unique within group!*/
+    def jobName
+    
+    /** internal group of jobs name. */
+    def jobGroup = "mailerGroup"
+
+    def quartzScheduler
 
     public int getStartDelayInMillis(){
         return startDelay
@@ -30,15 +37,17 @@ class MailerJobConfig implements MailerJobConfigMBean{
         this.enabled = value
     }
     
-    public boolean isEnabled(){
+    public boolean isJobSchedulingEnabled(){
         return enabled
     }
 
-    public void disable(){
-       enabled = false
+    public void disableJobScheduling(){
+        enabled = false
+        quartzScheduler.pauseJob(jobName, jobGroup)
     }
 
-    public void enable(){
-        enabled =true
+    public void enableJobScheduling(){
+        enabled = true
+        quartzScheduler.resumeJob(jobName, jobGroup)
     }
 }

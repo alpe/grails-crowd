@@ -12,10 +12,10 @@ interface MailerJobConfigMBean {
 
     public void setTimeoutInMillis(int value)
 
-    public boolean isEnabled()
+    public boolean isJobSchedulingEnabled()
 
-    public void disable()
+    public void disableJobScheduling()
 
-    public void enable()
+    public void enableJobScheduling()
 
 }
