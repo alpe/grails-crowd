@@ -121,6 +121,10 @@
     <option name="IS_EMACS_ERRORS_MODE" value="true" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
+  <component name="LiquibaseProjectComponent">
+    <option name="outputChangeLogFile" value="$PROJECT_DIR$/src/sql/1.2.3_to_1.25-mailext-changelog.xml" />
+    <option name="rootChangeLogFile" />
+  </component>
   <component name="Palette2">
     <group name="Swing">
       <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
