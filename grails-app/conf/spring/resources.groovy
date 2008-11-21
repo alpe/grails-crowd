@@ -72,9 +72,9 @@ beans = {
     mbeanServer(MBeanServerFactoryBean) {
         locateExistingServerIfPossible = true
     }
-    hibernateStatistics(StatisticsService) {sessionFactory ->
+    hibernateStatistics(StatisticsService) {
         statisticsEnabled = true
-        this.sessionFactory = sessionFactory
+        sessionFactory = ref("sessionFactory")
     }
 
     jmxAttributeSource(AnnotationJmxAttributeSource) {}
