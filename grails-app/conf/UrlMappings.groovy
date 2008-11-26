@@ -8,8 +8,9 @@ class UrlMappings {
         "/"(controller: 'homeRouter', action = 'index')
 
         "/signin"(controller: "authentication") {
-            action = [GET: "loginForm", POST: "handleLogin"]
+            action = [GET: "loginForm"]
         }
+        "/signedin"(controller: 'authentication', action: 'handleSuccessfullLogin')        
 
         "/signup"(controller: "member") {
             action = [GET: "registrationForm", POST: "handleRegistration"]
@@ -20,6 +21,8 @@ class UrlMappings {
         }
 
         "/signout"(controller: 'authentication', action: 'handleLogout')
+
+
 
         //********** MEMBERS *******************************************/
         //For some reason $name just wouldn't work, so had to use $_name
@@ -115,5 +118,7 @@ class UrlMappings {
         "404"(controller:"errors", action:"notFound")
         "405"(controller:"errors", action:"notAllowed")
         "/notAllowed"(controller:"errors", action:"notAllowed")
+
+        "/admin/bla"(controller: 'member', action: 'findRandom')
     }
 }

@@ -1,6 +1,7 @@
 package grailscrowd.core
 
 import grailscrowd.capability.NumberOfViewsTrackable
+import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 
 class Member extends NumberOfViewsTrackable implements Comparable {
 
@@ -64,6 +65,10 @@ class Member extends NumberOfViewsTrackable implements Comparable {
 	//static fetchMode = [projectParticipations: 'eager', affiliations: 'eager']
 
     Mailbox mailbox
+
+    /** springsecurity authorities */
+    final def authorities = AuthorizeTools.parseAuthoritiesString('ROLE_USER')
+    final def enabled = true 
 
     def beforeInsert = {
         password = password.encodeAsEncryptedPassword()

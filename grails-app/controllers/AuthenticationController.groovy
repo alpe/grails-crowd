@@ -1,37 +1,28 @@
 import grailscrowd.core.*
 
-class AuthenticationController extends ControllerSupport {
+
+class AuthenticationController extends SecureController {
+
 
     def allowedMethods = [loginForm: 'GET', handleLogin: 'POST']
 
+    def beforeInterceptor = [action: this.&auth, only: ['handleSuccessfullLogin']]
+
+
+
     def loginForm = {
-        if (session.memberId) {
+        if (loggedIn()) {
             redirectToAppropriateControllerAndActionForLoggedInMember()
         }
     }
 
-    def handleLogin = {
-        if (params.name && params.password) {           
-            def member = Member.findByNameAndPassword(params.name, params.password.encodeAsEncryptedPassword())
-            if (member) {
-                session.memberId = member.id
-				member.lastLogin = new Date()
-                redirectToAppropriateControllerAndActionForLoggedInMember()
-            }
-            else {
-                handleInvalidLogin()
-            }
-        }
-        else {
-            render(view: 'loginForm')
-        }
+    def handleSuccessfullLogin = {
+        freshCurrentlyLoggedInMember()?.lastLogin = new Date()
+        redirectToAppropriateControllerAndActionForLoggedInMember()
     }
 
     def handleLogout = {
-        if (session.memberId) {
-            session.memberId = null
-        }
-        redirect(uri: '/')
+        redirect(uri: '/j_spring_security_logout')
     }
 
     private def redirectToAppropriateControllerAndActionForLoggedInMember() {
@@ -46,7 +37,7 @@ class AuthenticationController extends ControllerSupport {
     }
 
     private def handleInvalidLogin() {
-        onUpdateAttempt 'Incorrect login/password combination. Please try again.', false        
+        onUpdateAttempt 'Incorrect login/password combination. Please try again.', false
         render(view: 'loginForm')
     }
 }

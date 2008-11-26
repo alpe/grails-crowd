@@ -19,22 +19,21 @@
         <br/>
 
         <div id="sign-in">
-
-            <g:form controller="authentication" class="box">
+            <form action='${request.contextPath}/j_spring_security_check' method='POST' id='loginForm'  class="box">
                 <p>
                     <label for="name"><g:message code="authentication.login.form.username" />:</label><br/>
-                    <input type="text" size="30" value="" name="name" id="name" />
+                    <input type="text" size="30" value="" name="j_username" id="name" />
                 </p>
                 <p>
                     <label for="password"><g:message code="authentication.login.form.password" />:</label><br/>
-                     <input type="password" size="30" value="" name="password" id="password" autocomplete="off" />
+                     <input type="password" size="30" value="" name="j_password" id="password" autocomplete="off" />
                 </p>
 
                 <p>
                     <input type="submit" class="btn" name="sign-in" id="sign-in-btn" value="${message(code:"authentication.login.form.button")}" />
                 </p>
 
-            </g:form>
+            </form>
 
             <h2><g:message code="authentication.login.register.title" /></h2>
             <g:link controller="member" class="sign-up"><g:message code="authentication.login.register.link" /><span/></g:link>
