@@ -9,7 +9,7 @@ class   BootStrap {
 
     def init = {servletContext ->
 
-        if (false && GrailsUtil.environment == "development") {
+        if ( false && GrailsUtil.environment == "development") {
                 GrailsProject.withTransaction{tx->
             //Just for testing
             List sampleMembers = []
@@ -25,7 +25,7 @@ class   BootStrap {
                 result.save(flush: true)
                 sampleMembers.add(result)
             }
-           int x = 500
+           int x = 100
            int counter = 0
            [sampleMembers, sampleMembers].combinations().each{mList->
                def sender = mList[0]
