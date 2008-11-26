@@ -99,6 +99,14 @@
       <sourceFolder url="file://$MODULE_DIR$/grails-app/services" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/grails-app/utils" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/grails-app/conf" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/grails-app/taglib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/test/integration" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/acegi-0.3/test/unit" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/avatar-0.3/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/easybtest-0.1/src/groovy" isTestSource="false" />
@@ -110,6 +118,9 @@
       <sourceFolder url="file://$MODULE_DIR$/plugins/mail-0.4/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/mail-0.4/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/modalbox-0.3/grails-app/taglib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/oauth-0.1.1/grails-app/controllers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/oauth-0.1.1/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/plugins/oauth-0.1.1/grails-app/taglib" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/grails-app/conf" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/src/java" isTestSource="false" />
@@ -153,12 +164,16 @@
           <root url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" />
           <root url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/lib" />
           <root url="file://$MODULE_DIR$/plugins/easybtest-0.1/lib" />
+          <root url="file://$MODULE_DIR$/plugins/oauth-0.1.1/lib" />
+          <root url="file://$MODULE_DIR$/plugins/acegi-0.3/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/acegi-0.3/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/easybtest-0.1/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/feeds-1.4/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/mail-0.4/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/plugins/oauth-0.1.1/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/quartz-0.4.1-SNAPSHOT/lib" recursive="false" />
         <jarDirectory url="file://$MODULE_DIR$/plugins/richui-0.4/lib" recursive="false" />
       </library>
