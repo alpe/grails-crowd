@@ -1,0 +1,15 @@
++++++++++++++++++++++++++++
++ Security Configurations +
++++++++++++++++++++++++++++
+
+- Url based
+add any url and required roles to "requestMapString" in "grails-app/conf/SecurityConfig"
+
+- Controller based
+extend the SecureController and add a beforeInterceptor calling the "auth" method.
+As default "ROLE_USER" is required but can be changed by the "requestAllowed" attribute.
+
+- Changes in the model
+members are "enabled" and have hard coded "ROLE_USER" as default authority. this may be changed
+to a more fexible authority system with additional roles.
+    
