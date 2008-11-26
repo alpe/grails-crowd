@@ -8,6 +8,7 @@ This project requires the following plugins which are not checked in into VCS:
 - Testing plugin
 - Quartz plugin
 - easyB plugin
+- acegi
 
 After fresh checkout from VCS, run the following commands to install the above mentioned plugins:
 
@@ -20,5 +21,6 @@ After fresh checkout from VCS, run the following commands to install the above m
 'grails install-plugin testing'
 'grails install-plugin quartz'
 'grails install-plugin http://easyb.googlecode.com/svn/trunk/easyb-plugins/grails-plugin/grails-easybtest-0.1.zip'
+'grails install-plugin acegi'
 
 Also change the email related settings in Config.groovy
